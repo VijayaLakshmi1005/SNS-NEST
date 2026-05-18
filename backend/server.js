@@ -1,35 +1,40 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
+import http from 'http';
 import dotenv from 'dotenv';
-import helmet from 'helmet';
-import morgan from 'morgan';
+import app from './src/app.js';
+import { connectDB } from './src/config/db.js';
+import { configureSocket } from './src/config/socket.js';
+import { configureCloudinary } from './src/config/cloudinary.js';
 
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Middleware
-app.use(express.json());
-app.use(cors());
-app.use(helmet());
-app.use(morgan('dev'));
-
-// Basic Route
-app.get('/', (req, res) => {
-  res.send('API is running...');
+// Handle Uncaught Exceptions
+process.on('uncaughtException', (err) => {
+  console.error(`UNCAUGHT EXCEPTION! Shutting down server...`);
+  console.error(err.stack || err.message);
+  process.exit(1);
 });
 
-// Database Connection
-if (process.env.MONGO_URI) {
-  mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.error(err));
-} else {
-  console.log('MONGO_URI is not defined in .env, skipping database connection');
-}
+// Configure services
+configureCloudinary();
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Database Connection
+connectDB();
+
+const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
+
+// Configure Socket.IO
+configureSocket(server);
+
+const runningServer = server.listen(PORT, () => {
+  console.log(`[SNS NEST Server]: Running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode.`);
+});
+
+// Handle Unhandled Rejections
+process.on('unhandledRejection', (err) => {
+  console.error(`UNHANDLED PROMISE REJECTION! Shutting down server gracefully...`);
+  console.error(err.stack || err.message);
+  runningServer.close(() => {
+    process.exit(1);
+  });
 });

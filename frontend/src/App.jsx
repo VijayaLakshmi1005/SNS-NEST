@@ -247,7 +247,7 @@ function App() {
         className="fixed top-[20px] right-4 md:top-[44px] md:right-12 z-35 flex items-center gap-4 sm:gap-6 bg-[#817773]/15 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-1.5 px-3 lg:p-0 rounded-full border border-white/5 lg:border-none shadow-sm lg:shadow-none transition-all duration-300 ease-in-out pointer-events-auto"
         style={{ color: navTextColor }}
       >
-        <Link to="/auth/register" className="block outline-none hover:opacity-80 transition-opacity duration-300 hover:scale-105 active:scale-95 transition-all">
+        <Link to="/auth/register" className="block outline-none hover:opacity-80 hover:scale-105 active:scale-95 transition-all duration-300">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
             <circle cx="12" cy="8" r="3.5" />
             <path d="M5 20c0-3.3 2.7-6 7-6s7 2.7 7 6" />
@@ -333,7 +333,7 @@ function App() {
           <div ref={horizontalTrackRef} className="flex flex-row items-center h-full will-change-transform relative z-10">
             
             {/* SLIDE 0: HERO BANNER SECTION (rising navy backdrop, then X-axis panel slides out) */}
-            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-screen h-screen shrink-0 relative overflow-hidden flex flex-col items-center justify-center">
               {/* Desktop Day Hero Image */}
               <img 
                 src={dayHeroImg} 
@@ -379,12 +379,12 @@ function App() {
               </div>
             </div>
 
-            {/* SLIDES 1, 2, 3: LUXURY CLIENT REVIEWS CARDS (Overlaps Slide 0 by -ml-[4px] to cure subpixel hairline gaps!) */}
-            <div className="flex flex-row items-center h-full px-[8vw] sm:px-[12vw] gap-[8vw] sm:gap-[12vw] flex-shrink-0 bg-[#0A0F1D] -ml-[4px] relative z-10">
+            {/* SLIDES 1, 2, 3: LUXURY CLIENT REVIEWS CARDS (Overlaps Slide 0 by ml-[-4px] to cure subpixel hairline gaps!) */}
+            <div className="flex flex-row items-center h-full px-[8vw] sm:px-[12vw] gap-[8vw] sm:gap-[12vw] shrink-0 bg-[#0A0F1D] ml-[-4px] relative z-10">
               {testimonials.map((testimonial, idx) => (
                 <div 
                   key={idx} 
-                  className="w-[85vw] sm:w-[50vw] md:w-[40vw] lg:w-[32vw] h-[55vh] sm:h-[58vh] bg-[#0E1626] border border-[#E3D5CA]/10 rounded-[32px] p-8 sm:p-12 flex flex-col justify-between shadow-[0_30px_70px_rgba(0,0,0,0.6)] flex-shrink-0 relative overflow-hidden transition-all duration-500 hover:border-[#E3D5CA]/25 hover:shadow-[0_40px_80px_rgba(0,0,0,0.8)] hover:-translate-y-1 group"
+                  className="w-[85vw] sm:w-[50vw] md:w-[40vw] lg:w-[32vw] h-[55vh] sm:h-[58vh] bg-[#0E1626] border border-[#E3D5CA]/10 rounded-[32px] p-8 sm:p-12 flex flex-col justify-between shadow-[0_30px_70px_rgba(0,0,0,0.6)] shrink-0 relative overflow-hidden transition-all duration-500 hover:border-[#E3D5CA]/25 hover:shadow-[0_40px_80px_rgba(0,0,0,0.8)] hover:-translate-y-1 group"
                 >
                   {/* Faint Amber Background light leak */}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-[#B89D7A]/5 blur-2xl rounded-full transition-all duration-500 group-hover:bg-[#B89D7A]/10 pointer-events-none" />
@@ -410,7 +410,7 @@ function App() {
 
                   {/* Signature Client Info (Neue Montreal!) */}
                   <div>
-                    <div className="w-8 h-[1px] bg-[#E3D5CA]/20 my-6 transition-all duration-500 group-hover:w-16 group-hover:bg-[#E3D5CA]/40" />
+                    <div className="w-8 h-px bg-[#E3D5CA]/20 my-6 transition-all duration-500 group-hover:w-16 group-hover:bg-[#E3D5CA]/40" />
                     <h4 className="font-neuemontreal text-[#E3D5CA] text-sm sm:text-base font-bold tracking-wider uppercase leading-none">
                       {testimonial.name}
                     </h4>
@@ -547,7 +547,7 @@ function App() {
           </a>
         </nav>
 
-        <div className="w-12 h-[1px] bg-[#E3D5CA]/20 my-6" />
+        <div className="w-12 h-px bg-[#E3D5CA]/20 my-6" />
 
         <div className="flex flex-col items-center gap-1 font-nav-style text-center">
           <span className="text-[8px] font-extrabold tracking-[0.2em] uppercase text-[#E3D5CA]/60">SNS NEST</span>
