@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import dayHeroImg from '../Assets/Dayhero.png'
 import nightHeroImg from '../Assets/Nighthero.png'
+import mobDayHeroImg from '../Assets/MOBday.png'
+import mobNightHeroImg from '../Assets/MOBnight.png'
 import logoImg from '../Assets/logo.png'
 
 function App() {
@@ -13,20 +15,40 @@ function App() {
 
   return (
     <div className="relative w-screen h-[100dvh] overflow-hidden bg-black select-none flex flex-col items-center py-12">
-      {/* Day Hero Image (Preserves aspect ratio on mobile viewports using object-cover) */}
+      {/* ========================================================================= */}
+      {/* DESKTOP BANNER VIEWPORTS (Visible only on lg:block, using original landscape images) */}
+      {/* ========================================================================= */}
+      {/* Desktop Day Hero Image (Static base, always fully opaque underneath) */}
       <img 
         src={dayHeroImg} 
         alt="SNS Nest Day Banner" 
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
-          isNight ? 'opacity-0' : 'opacity-100'
-        }`} 
+        className="absolute inset-0 w-full h-full object-cover hidden lg:block" 
       />
 
-      {/* Night Hero Image (Preserves aspect ratio on mobile viewports using object-cover) */}
+      {/* Desktop Night Hero Image (Dissolves smoothly on top of Day) */}
       <img 
         src={nightHeroImg} 
         alt="SNS Nest Night Banner" 
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out hidden lg:block ${
+          isNight ? 'opacity-100' : 'opacity-0'
+        }`} 
+      />
+
+      {/* ========================================================================= */}
+      {/* MOBILE/TABLET BANNER VIEWPORTS (Visible only on lg:hidden, using MOBday/MOBnight assets) */}
+      {/* ========================================================================= */}
+      {/* Mobile Day Hero Image (Static base, always fully opaque underneath) */}
+      <img 
+        src={mobDayHeroImg} 
+        alt="SNS Nest Mobile Day Banner" 
+        className="absolute inset-0 w-full h-full object-cover block lg:hidden" 
+      />
+
+      {/* Mobile Night Hero Image (Dissolves smoothly on top of Day) */}
+      <img 
+        src={mobNightHeroImg} 
+        alt="SNS Nest Mobile Night Banner" 
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out block lg:hidden ${
           isNight ? 'opacity-100' : 'opacity-0'
         }`} 
       />
@@ -66,28 +88,18 @@ function App() {
           </svg>
         </a>
 
-        {/* Mobile Menu Toggle Button (Visible only on lg:hidden) */}
+        {/* Mobile Menu Toggle Button (Visible only on lg:hidden, triggers overlay open) */}
         <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className={`lg:hidden block outline-none hover:opacity-80 transition-all hover:scale-105 active:scale-95 duration-300 relative z-55 ${
-            isMobileMenuOpen ? 'text-[#E3D5CA]' : ''
-          }`}
-          title={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="lg:hidden block outline-none hover:opacity-80 transition-all hover:scale-105 active:scale-95 duration-300"
+          title="Open Menu"
         >
-          {isMobileMenuOpen ? (
-            /* Close X Icon */
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          ) : (
-            /* Hamburger Menu Icon */
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
-              <line x1="4" y1="12" x2="20" y2="12" />
-              <line x1="4" y1="6" x2="20" y2="6" />
-              <line x1="4" y1="18" x2="20" y2="18" />
-            </svg>
-          )}
+          {/* Hamburger Menu Icon */}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="4" y1="18" x2="20" y2="18" />
+          </svg>
         </button>
       </div>
 
@@ -146,50 +158,73 @@ function App() {
         </button>
       </div>
 
-      {/* Premium Mobile Menu Overlay (Visible only on lg:hidden when active, utilizing high-contrast backdrop blur) */}
+      {/* Premium Mobile Menu Overlay (Visible only on lg:hidden when active, utilizing high-contrast backdrop blur and dedicated light-on-dark contrast) */}
       <div 
-        className={`fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 backdrop-blur-2xl bg-black/90 transition-all duration-500 ease-in-out lg:hidden ${
+        className={`fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-2xl bg-black/95 transition-all duration-500 ease-in-out lg:hidden ${
           isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
-        {/* Minimalist Mobile Navigation Links */}
-        <nav className={`flex flex-col items-center gap-8 font-nav-style text-2xl font-extrabold tracking-widest transition-colors duration-300 ease-in-out ${textColorClass}`}>
+        {/* Close X Button (Directly inside overlay to prevent stacking context bugs, positioned in exact top-right coordinates) */}
+        <button
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="absolute top-[20px] right-4 outline-none hover:opacity-80 transition-all hover:scale-105 active:scale-95 duration-300 text-[#E3D5CA] py-1.5 px-3 rounded-full border border-white/5 bg-[#817773]/15 shadow-sm backdrop-blur-md"
+          title="Close Menu"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        {/* Minimalist Mobile Navigation Links (Unnumbered, high-fashion styling) */}
+        <nav className="flex flex-col items-center gap-8 font-nav-style text-2xl font-extrabold tracking-widest">
           <a 
             href="#home" 
             onClick={() => setIsMobileMenuOpen(false)} 
-            className="hover:scale-110 active:scale-95 transition-all duration-300"
+            className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             HOME
           </a>
           <a 
             href="#reviews" 
             onClick={() => setIsMobileMenuOpen(false)} 
-            className="hover:scale-110 active:scale-95 transition-all duration-300"
+            className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             REVIEWS
           </a>
           <a 
             href="#portfolio" 
             onClick={() => setIsMobileMenuOpen(false)} 
-            className="hover:scale-110 active:scale-95 transition-all duration-300"
+            className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             PORTFOLIO
           </a>
           <a 
             href="#about" 
             onClick={() => setIsMobileMenuOpen(false)} 
-            className="hover:scale-110 active:scale-95 transition-all duration-300"
+            className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             ABOUT
           </a>
           <a 
             href="#contact" 
             onClick={() => setIsMobileMenuOpen(false)} 
-            className="hover:scale-110 active:scale-95 transition-all duration-300"
+            className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             CONTACT
           </a>
         </nav>
+
+        {/* Dynamic Structural Divider */}
+        <div className="w-12 h-[1px] bg-[#E3D5CA]/20 my-6" />
+
+        {/* Symmetrical Mini Footer Tagline */}
+        <div className="flex flex-col items-center gap-1 font-nav-style text-center">
+          <span className="text-[8px] font-extrabold tracking-[0.2em] uppercase text-[#E3D5CA]/60">SNS NEST</span>
+          <span className="text-[6px] font-normal tracking-[0.15em] uppercase text-[#E3D5CA]/40 mt-[1px]">
+            Find & Design Solutions
+          </span>
+        </div>
       </div>
     </div>
   )
