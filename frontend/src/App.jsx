@@ -31,19 +31,19 @@ function App() {
         }`} 
       />
 
-      {/* Top Left Logo & Company Name (Perfect baseline alignment with Navigation Bar, Neue Montreal font) */}
-      <div className="absolute top-[27px] left-6 md:top-[44px] md:left-12 z-25">
-        <a href="#home" className="flex items-start gap-2 sm:gap-2.5 outline-none hover:opacity-80 transition-opacity duration-300">
+      {/* Top Left Logo & Company Name (Optically centered on mobile, structured baseline on desktop) */}
+      <div className="absolute top-[20px] left-4 md:top-[44px] md:left-12 z-25">
+        <a href="#home" className="flex items-center lg:items-start gap-2 sm:gap-2.5 outline-none hover:opacity-80 transition-opacity duration-300">
           {/* Logo Image (Inverts in Night Mode for perfect visual contrast) */}
           <img 
             src={logoImg} 
             alt="SNS Nest Logo" 
-            className={`h-8 sm:h-10 md:h-12 w-auto object-contain transition-all duration-300 mt-[2px] ${
+            className={`h-8 sm:h-10 md:h-12 w-auto object-contain transition-all duration-300 mt-0 lg:mt-[2px] ${
               isNight ? 'invert brightness-150' : ''
             }`}
           />
-          {/* Company Name & Subtitle Stack (Offset down by 4px/2mm for perfect baseline balance) */}
-          <div className={`font-nav-style leading-none flex flex-col items-start mt-[4px] transition-colors duration-300 ease-in-out ${textColorClass}`}>
+          {/* Company Name & Subtitle Stack */}
+          <div className={`font-nav-style leading-none flex flex-col items-start mt-0 lg:mt-[4px] transition-colors duration-300 ease-in-out ${textColorClass}`}>
             <span className="text-sm sm:text-base font-extrabold tracking-wider">SNS NEST</span>
             <span className="text-[5px] sm:text-[6.5px] font-normal tracking-[0.05em] opacity-80 uppercase mt-[1px]">
               Find & Design Solutions
@@ -52,11 +52,11 @@ function App() {
         </a>
       </div>
 
-      {/* Top Right Header Actions Panel (Profile + Mobile Menu Toggle, Symmetrical baseline alignment with Logo & Navigation Bar) */}
-      <div className={`absolute top-[27px] right-6 md:top-[44px] md:right-12 z-30 flex items-center gap-4 sm:gap-6 transition-colors duration-300 ease-in-out ${textColorClass}`}>
+      {/* Top Right Header Actions Panel (Optically centered glassmorphic capsule on mobile, borderless on desktop) */}
+      <div className={`absolute top-[20px] right-4 md:top-[44px] md:right-12 z-30 flex items-center gap-4 sm:gap-6 bg-[#817773]/15 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-1.5 px-3 lg:p-0 rounded-full border border-white/5 lg:border-none shadow-sm lg:shadow-none transition-all duration-300 ease-in-out ${textColorClass}`}>
         {/* Profile Icon Link */}
         <a href="#profile" className="block outline-none hover:opacity-80 transition-opacity duration-300 hover:scale-105 active:scale-95 transition-all">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-[22px] h-[22px] sm:w-[26px] sm:h-[26px]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
             {/* Floating Head */}
             <circle cx="12" cy="8" r="3.5" />
             {/* Sleek Dressed Shoulder Line */}
@@ -76,13 +76,13 @@ function App() {
         >
           {isMobileMenuOpen ? (
             /* Close X Icon */
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="w-[22px] h-[22px] sm:w-[26px] sm:h-[26px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           ) : (
             /* Hamburger Menu Icon */
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="w-[22px] h-[22px] sm:w-[26px] sm:h-[26px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
               <line x1="4" y1="12" x2="20" y2="12" />
               <line x1="4" y1="6" x2="20" y2="6" />
               <line x1="4" y1="18" x2="20" y2="18" />
