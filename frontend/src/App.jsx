@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import { useThemeStore } from './client/store/themeStore'
 import dayHeroImg from '../Assets/Dayhero.png'
 import nightHeroImg from '../Assets/Nighthero.png'
 import mobDayHeroImg from '../Assets/MOBday.png'
@@ -87,7 +89,7 @@ const scrambleText = (startStr, endStr, progress) => {
 };
 
 function App() {
-  const [isNight, setIsNight] = useState(false)
+  const { isNight, setNightMode } = useThemeStore()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
 
@@ -215,7 +217,6 @@ function App() {
 
   return (
     <div className="relative w-full min-h-screen bg-[#0A0F1D] overflow-x-hidden select-none flex flex-col items-center">
-      
       {/* ========================================================================= */}
       {/* GLOBAL FIXED NAVIGATION HEADERS (Adapts organically on scroll) */}
       {/* ========================================================================= */}
@@ -234,7 +235,7 @@ function App() {
             style={{ color: navTextColor }}
           >
             <span className="text-sm sm:text-base font-extrabold tracking-wider">SNS NEST</span>
-            <span className="text-[5px] sm:text-[6.5px] font-normal tracking-[0.05em] opacity-80 uppercase mt-[1px]">
+            <span className="text-[5px] sm:text-[6.5px] font-normal tracking-wider opacity-80 uppercase mt-px">
               Find & Design Solutions
             </span>
           </div>
@@ -246,13 +247,13 @@ function App() {
         className="fixed top-[20px] right-4 md:top-[44px] md:right-12 z-35 flex items-center gap-4 sm:gap-6 bg-[#817773]/15 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-1.5 px-3 lg:p-0 rounded-full border border-white/5 lg:border-none shadow-sm lg:shadow-none transition-all duration-300 ease-in-out pointer-events-auto"
         style={{ color: navTextColor }}
       >
-        <a href="#profile" className="block outline-none hover:opacity-80 transition-opacity duration-300 hover:scale-105 active:scale-95 transition-all">
+        <Link to="/auth/register" className="block outline-none hover:opacity-80 transition-opacity duration-300 hover:scale-105 active:scale-95 transition-all">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
             <circle cx="12" cy="8" r="3.5" />
             <path d="M5 20c0-3.3 2.7-6 7-6s7 2.7 7 6" />
             <path d="M9.5 14l2.5 3 2.5-3" />
           </svg>
-        </a>
+        </Link>
 
         <button
           onClick={() => setIsMobileMenuOpen(true)}
@@ -293,10 +294,9 @@ function App() {
           }`}
         />
         <button
-          onClick={() => setIsNight(false)}
-          className={`w-12 h-7 flex items-center justify-center transition-colors duration-300 cursor-pointer uppercase outline-none relative z-20 ${
-            !isNight ? 'text-[#4A4340]' : 'text-[#E3D5CA]/60 hover:text-[#E3D5CA]'
-          }`}
+          onClick={() => setNightMode(false)}
+          className={`w-12 h-7 flex items-center justify-center transition-colors duration-300 cursor-pointer uppercase outline-none relative z-20 ${!isNight ? 'text-[#4A4340]' : 'text-[#E3D5CA]/60 hover:text-[#E3D5CA]'
+            }`}
           title="Circuit Open (Off / Day)"
         >
           <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
@@ -305,11 +305,11 @@ function App() {
             <line x1="6" y1="12" x2="16" y2="6" />
           </svg>
         </button>
+
         <button
-          onClick={() => setIsNight(true)}
-          className={`w-12 h-7 flex items-center justify-center transition-colors duration-300 cursor-pointer uppercase outline-none relative z-20 ${
-            isNight ? 'text-[#4A4340]' : 'text-[#E3D5CA]/60 hover:text-[#E3D5CA]'
-          }`}
+          onClick={() => setNightMode(true)}
+          className={`w-12 h-7 flex items-center justify-center transition-colors duration-300 cursor-pointer uppercase outline-none relative z-20 ${isNight ? 'text-[#4A4340]' : 'text-[#E3D5CA]/60 hover:text-[#E3D5CA]'
+            }`}
           title="Circuit Closed (On / Night)"
         >
           <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
@@ -510,37 +510,37 @@ function App() {
         </button>
 
         <nav className="flex flex-col items-center gap-8 font-nav-style text-2xl font-extrabold tracking-widest">
-          <a 
-            href="#home" 
-            onClick={() => setIsMobileMenuOpen(false)} 
+          <a
+            href="#home"
+            onClick={() => setIsMobileMenuOpen(false)}
             className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             HOME
           </a>
-          <a 
-            href="#reviews" 
-            onClick={() => setIsMobileMenuOpen(false)} 
+          <a
+            href="#reviews"
+            onClick={() => setIsMobileMenuOpen(false)}
             className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             REVIEWS
           </a>
-          <a 
-            href="#portfolio" 
-            onClick={() => setIsMobileMenuOpen(false)} 
+          <a
+            href="#portfolio"
+            onClick={() => setIsMobileMenuOpen(false)}
             className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             PORTFOLIO
           </a>
-          <a 
-            href="#about" 
-            onClick={() => setIsMobileMenuOpen(false)} 
+          <a
+            href="#about"
+            onClick={() => setIsMobileMenuOpen(false)}
             className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             ABOUT
           </a>
-          <a 
-            href="#contact" 
-            onClick={() => setIsMobileMenuOpen(false)} 
+          <a
+            href="#contact"
+            onClick={() => setIsMobileMenuOpen(false)}
             className="block text-[#E3D5CA]/70 hover:text-[#F5EBE0] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             CONTACT
@@ -551,7 +551,7 @@ function App() {
 
         <div className="flex flex-col items-center gap-1 font-nav-style text-center">
           <span className="text-[8px] font-extrabold tracking-[0.2em] uppercase text-[#E3D5CA]/60">SNS NEST</span>
-          <span className="text-[6px] font-normal tracking-[0.15em] uppercase text-[#E3D5CA]/40 mt-[1px]">
+          <span className="text-[6px] font-normal tracking-[0.15em] uppercase text-[#E3D5CA]/40 mt-px">
             Find & Design Solutions
           </span>
         </div>
