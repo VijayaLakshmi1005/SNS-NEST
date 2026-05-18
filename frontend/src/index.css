@@ -1,3 +1,6 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@700;800&family=Inter:wght@700;800;900&display=swap');
 @import "tailwindcss";
 
 body {
@@ -8,3 +11,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.font-nav-style {
+  font-family: 'Neue Montreal', 'PP Neue Montreal', 'Instrument Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+
+
+
+
+
