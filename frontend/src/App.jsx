@@ -62,11 +62,11 @@ function App() {
           }`}>
             YOUR VISION,
           </span>
-          {/* "sculpted" in TT Berlinerins Script style (Upscaled size to highlight and make it the focal hero, centered directly underneath on mobile) */}
+          {/* "sculpted" in TT Berlinerins Script style (Upscaled size to highlight and make it the focal hero, centered directly underneath on mobile, glowing in Day) */}
           <span className={`font-berlinerins text-[70px] xs:text-[76px] sm:text-[52px] md:text-[68px] lg:text-[86px] xl:text-[98px] font-medium lowercase tracking-wide transition-all duration-1000 ${
             isNight 
-              ? 'text-[#1A120F] drop-shadow-none' 
-              : 'text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.7)]'
+              ? 'text-[#1A120F]' 
+              : 'text-white day-glow'
           }`}>
             sculpted
           </span>
