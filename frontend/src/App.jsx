@@ -56,14 +56,14 @@ function App() {
       {/* High-End Architectural Slogan Header (Geometric center of the banner, dynamically adapts color shades) */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 px-4">
         <h1 className="flex flex-col sm:flex-row items-center sm:items-baseline justify-center gap-y-1 sm:gap-y-0 gap-x-0 sm:gap-x-4 md:gap-x-5 text-center leading-none">
-          {/* "YOUR VISION," in Clash Display Bold style (Reduced size for visual hierarchy, stacked on mobile, inline on desktop) */}
-          <span className={`font-clash text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px] font-bold tracking-tight uppercase transition-colors duration-1000 ${
+          {/* "YOUR VISION," in Clash Display Bold style (Reduced size for visual hierarchy, stacked on mobile, inline on desktop, smooth fade-in-up) */}
+          <span className={`font-clash text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px] font-bold tracking-tight uppercase transition-colors duration-1000 animate-vision-reveal ${
             isNight ? 'text-[#E3D5CA]' : 'text-[#1F130E]'
           }`}>
             YOUR VISION,
           </span>
-          {/* "sculpted" in TT Berlinerins Script style (Upscaled size to highlight and make it the focal hero, centered directly underneath on mobile, glowing in Day) */}
-          <span className={`font-berlinerins text-[70px] xs:text-[76px] sm:text-[52px] md:text-[68px] lg:text-[86px] xl:text-[98px] font-medium lowercase tracking-wide transition-all duration-1000 ${
+          {/* "sculpted" in TT Berlinerins Script style (Upscaled size to highlight and make it the focal hero, centered directly underneath on mobile, glowing in Day, slow delayed reveal) */}
+          <span className={`font-berlinerins text-[70px] xs:text-[76px] sm:text-[52px] md:text-[68px] lg:text-[86px] xl:text-[98px] font-medium lowercase tracking-wide transition-all duration-1000 animate-sculpted-reveal ${
             isNight 
               ? 'text-[#1A120F]' 
               : 'text-white day-glow'
