@@ -12,7 +12,7 @@ function App() {
   const separatorColorClass = isNight ? 'text-[#E3D5CA]/40' : 'text-[#1A1210]/30'
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-black select-none flex flex-col justify-between items-center py-12">
+    <div className="relative w-screen h-[100dvh] overflow-hidden bg-black select-none flex flex-col items-center py-12">
       {/* Day Hero Image (Preserves aspect ratio on mobile viewports using object-cover) */}
       <img 
         src={dayHeroImg} 
@@ -100,8 +100,8 @@ function App() {
         <a href="#contact" className="hover:scale-105 transition-all duration-300">CONTACT</a>
       </nav>
 
-      {/* Unique & Highly Aesthetic Mode Selector (Ultra-compact SVG Sun & Moon icons) */}
-      <div className="relative z-20 flex items-center bg-[#817773]/40 backdrop-blur-md p-1 rounded-full border border-[#D5BDAF]/20 shadow-2xl select-none w-[104px] h-9">
+      {/* Unique & Highly Aesthetic Mode Selector (Floats elegantly in absolute bottom-center across all devices) */}
+      <div className="absolute bottom-8 lg:bottom-12 left-1/2 -translate-x-1/2 z-20 flex items-center bg-[#817773]/40 backdrop-blur-md p-1 rounded-full border border-[#D5BDAF]/20 shadow-2xl select-none w-[104px] h-9">
         {/* Smooth Sliding Pill Backdrop (Linen tone #F5EBE0) */}
         <div 
           className={`absolute top-1 bottom-1 left-1 w-12 rounded-full bg-[#F5EBE0] shadow-md transition-transform duration-300 ease-in-out z-10 ${
