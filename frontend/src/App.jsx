@@ -1,91 +1,238 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import dayHeroImg from '../Assets/Dayhero.png'
 import nightHeroImg from '../Assets/Nighthero.png'
 import mobDayHeroImg from '../Assets/MOBday.png'
 import mobNightHeroImg from '../Assets/MOBnight.png'
 import logoImg from '../Assets/logo.png'
+import Lenis from '@studio-freight/lenis'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+const testimonials = [
+  {
+    name: "Aarav Mehta",
+    role: "Luxury Apartment Renovation",
+    review:
+      "The transformation exceeded everything we imagined. Every detail felt intentional and premium.",
+    rating: 5,
+  },
+  {
+    name: "Priya Sharma",
+    role: "Modern Villa Interior",
+    review:
+      "From concept to execution, the experience felt seamless and deeply personalized.",
+    rating: 5,
+  },
+  {
+    name: "Rohan Kapoor",
+    role: "Workspace Redesign",
+    review:
+      "Elegant, sophisticated, and functional. Guests still ask who designed our interiors.",
+    rating: 5,
+  },
+];
+
+// Precision color interpolator for navigation transition on scroll
+const interpolateColor = (color1, color2, factor) => {
+  const r1 = parseInt(color1.substring(1, 3), 16);
+  const g1 = parseInt(color1.substring(3, 5), 16);
+  const b1 = parseInt(color1.substring(5, 7), 16);
+
+  const r2 = parseInt(color2.substring(1, 3), 16);
+  const g2 = parseInt(color2.substring(3, 5), 16);
+  const b2 = parseInt(color2.substring(5, 7), 16);
+
+  const r = Math.round(r1 + (r2 - r1) * factor);
+  const g = Math.round(g1 + (g2 - g1) * factor);
+  const b = Math.round(b1 + (b2 - b1) * factor);
+
+  const rh = r.toString(16).padStart(2, '0');
+  const gh = g.toString(16).padStart(2, '0');
+  const bh = b.toString(16).padStart(2, '0');
+
+  return `#${rh}${gh}${bh}`;
+};
+
+// High-end staggered text-scramble morph (Starts instantly on progress > 0)
+const scrambleText = (startStr, endStr, progress) => {
+  if (progress <= 0) return startStr;
+  if (progress >= 1) return endStr;
+
+  const glyphs = 'ABCDEGHIKLMNOPRSTUVWXYZZΘΦΨΩ┼';
+  const start = startStr.split('');
+  const end = endStr.split('');
+  const maxLen = Math.max(start.length, end.length);
+  let result = '';
+
+  for (let i = 0; i < maxLen; i++) {
+    const stagger = (i / maxLen) * 0.3;
+    const startThreshold = stagger * 0.4; // Zero-delay: starts scrambling instantly at scroll progress > 0!
+    const endThreshold = 0.5 + stagger;
+
+    if (progress < startThreshold) {
+      result += start[i] || '';
+    } else if (progress > endThreshold) {
+      result += end[i] || '';
+    } else {
+      if (Math.random() > 0.3) {
+        result += glyphs[Math.floor(Math.random() * glyphs.length)];
+      } else {
+        result += end[i] || start[i] || '';
+      }
+    }
+  }
+  return result;
+};
 
 function App() {
   const [isNight, setIsNight] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
 
-  // Dynamic styling classes that smoothly adapt to the active Day/Night banner (Optimized for rich premium contrast)
-  const textColorClass = isNight ? 'text-[#E3D5CA]' : 'text-[#1A1210]'
-  const separatorColorClass = isNight ? 'text-[#E3D5CA]/40' : 'text-[#1A1210]/30'
+  const mainSectionRef = useRef(null)
+  const horizontalTrackRef = useRef(null)
+  const sloganRef = useRef(null)
+
+  useEffect(() => {
+    // Initialize Lenis smooth scroll with enhanced touch support
+    const lenis = new Lenis({
+      duration: 1.4,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.5,
+      syncTouch: true, // Smooth scrolling on mobile touch events
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Synchronize Lenis with GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+
+    // TIMELINE: Pinned Viewport & Horizontal Translate Panel Scroll
+    const track = horizontalTrackRef.current;
+    const section = mainSectionRef.current;
+    const slogan = sloganRef.current;
+    
+    let mainTimeline;
+
+    const initTimeline = () => {
+      if (!track || !section || !slogan) return;
+      
+      mainTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          pin: true,
+          scrub: 1.2, // Butter-smooth momentum vertical-to-horizontal scrub
+          start: "top top",
+          end: "bottom bottom",
+          invalidateOnRefresh: true // Re-evaluates all values dynamically on resize/orientation changes!
+        },
+        onUpdate: () => {
+          // Dynamically read playhead progress (scrub-smoothed & lag-compensated!)
+          if (mainTimeline) {
+            setScrollProgress(mainTimeline.progress());
+          }
+        }
+      });
+
+      // 1. Animate horizontal track translation using function-based values for 100% mobile responsiveness
+      mainTimeline.to(track, {
+        x: () => -(track.scrollWidth - window.innerWidth),
+        ease: "none",
+      }, 0.35);
+
+      // 2. Animate slogan translation in absolute lockstep using matched function-based values
+      mainTimeline.to(slogan, {
+        x: () => -(track.scrollWidth - window.innerWidth),
+        ease: "none",
+      }, 0.35);
+    };
+
+    const timer = setTimeout(initTimeline, 100);
+
+    return () => {
+      lenis.destroy();
+      gsap.ticker.remove(lenis.raf);
+      if (mainTimeline) mainTimeline.scrollTrigger.kill();
+      clearTimeout(timer);
+    };
+  }, []);
+
+  // Synchronized: Ensure morphProgress is strictly active up until the horizontal scroll triggers (at exactly 0.35 progress)
+  const morphProgress = scrollProgress < 0.008
+    ? 0
+    : Math.min(1, (scrollProgress - 0.008) / 0.342);
+
+  // Drive premium dynamic color play for fixed header navigation based on ScrollProgress
+  const colorProgress = isNight ? 1 : morphProgress;
+  const navTextColor = interpolateColor('#1A1210', '#E3D5CA', colorProgress);
+  const shouldInvertLogo = isNight || scrollProgress > 0.15;
+
+  // Single-Layer Scrambles: Scramble directly from start to finish
+  const line1Text = scrambleText("YOUR VISION,", "OUR", morphProgress);
+  const line2Text = scrambleText("sculpted", "TESTIMONY", morphProgress);
+
+  // Subtext Fade In
+  const subtextOpacity = Math.max(0, (morphProgress - 0.5) * 2);
+
+  // Slogan original shadow calculations for Day Mode (dissolves to glowing light backlight on navy background)
+  const sloganShadow = isNight 
+    ? 'none' 
+    : `0 0 15px rgba(255, 255, 255, 0.95), 0 0 30px rgba(255, 255, 255, ${0.6 * (1 - morphProgress)}), 1px 2px 4px rgba(10, 8, 7, ${0.8 * (1 - morphProgress)}), 2px 4px 10px rgba(10, 8, 7, ${0.65 * (1 - morphProgress)})`;
+
+  // Determine if we should swap to the uniform Neue Montreal style mid-scramble
+  const isUniformStyle = scrollProgress > 0.15;
+
+  // Rich Champagne-Beige Color: Smooth subpixel interpolation transitions
+  const activeBeigeColor = '#E3D5CA';
+
+  // Line 1: Smoothly transition from charcoal (#1A1210) to champagne beige (#E3D5CA) during the morph
+  const currentLine1Color = isNight
+    ? activeBeigeColor
+    : interpolateColor('#1A1210', activeBeigeColor, morphProgress);
+
+  // Line 2 (sculpted): Shifts colors adaptively based on theme (white on Day, dark charcoal on Night) on page load, blending to beige on scroll!
+  const currentLine2Color = isNight
+    ? interpolateColor('#1A120F', activeBeigeColor, morphProgress) // Charcoal -> Beige in Night Mode
+    : interpolateColor('#FFFFFF', activeBeigeColor, morphProgress); // White -> Beige in Day Mode
+
+  // Matte styling post-morph: remove all glowing outlines and backlights completely when progress > 0.15
+  const line2Shadow = scrollProgress > 0.15
+    ? 'none'
+    : (isNight
+        ? `0 0 25px rgba(227, 213, 202, ${0.5 * morphProgress})` // Warm glowing transition in Night Mode
+        : sloganShadow);
 
   return (
-    <div className="relative w-screen h-[100dvh] overflow-hidden bg-black select-none flex flex-col items-center py-12">
+    <div className="relative w-full min-h-screen bg-[#0A0F1D] overflow-x-hidden select-none flex flex-col items-center">
+      
       {/* ========================================================================= */}
-      {/* DESKTOP BANNER VIEWPORTS (Visible only on lg:block, using original landscape images) */}
+      {/* GLOBAL FIXED NAVIGATION HEADERS (Adapts organically on scroll) */}
       {/* ========================================================================= */}
-      {/* Desktop Day Hero Image (Static base, always fully opaque underneath) */}
-      <img 
-        src={dayHeroImg} 
-        alt="SNS Nest Day Banner" 
-        className="absolute inset-0 w-full h-full object-cover hidden lg:block" 
-      />
-
-      {/* Desktop Night Hero Image (Dissolves smoothly on top of Day) */}
-      <img 
-        src={nightHeroImg} 
-        alt="SNS Nest Night Banner" 
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out hidden lg:block ${
-          isNight ? 'opacity-100' : 'opacity-0'
-        }`} 
-      />
-
-      {/* ========================================================================= */}
-      {/* MOBILE/TABLET BANNER VIEWPORTS (Visible only on lg:hidden, using MOBday/MOBnight assets) */}
-      {/* ========================================================================= */}
-      {/* Mobile Day Hero Image (Static base, always fully opaque underneath) */}
-      <img 
-        src={mobDayHeroImg} 
-        alt="SNS Nest Mobile Day Banner" 
-        className="absolute inset-0 w-full h-full object-cover block lg:hidden" 
-      />
-
-      {/* Mobile Night Hero Image (Dissolves smoothly on top of Day) */}
-      <img 
-        src={mobNightHeroImg} 
-        alt="SNS Nest Mobile Night Banner" 
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out block lg:hidden ${
-          isNight ? 'opacity-100' : 'opacity-0'
-        }`} 
-      />
-
-      {/* High-End Architectural Slogan Header (Geometric center of the banner, dynamically adapts color shades) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 px-4">
-        <h1 className="flex flex-col sm:flex-row items-center sm:items-baseline justify-center gap-y-1 sm:gap-y-0 gap-x-0 sm:gap-x-4 md:gap-x-5 text-center leading-none">
-          {/* "YOUR VISION," in Clash Display Bold style (Reduced size for visual hierarchy, stacked on mobile, inline on desktop, smooth fade-in-up) */}
-          <span className={`font-clash text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px] font-bold tracking-tight uppercase transition-colors duration-1000 animate-vision-reveal ${
-            isNight ? 'text-[#E3D5CA]' : 'text-[#1F130E]'
-          }`}>
-            YOUR VISION,
-          </span>
-          {/* "sculpted" in TT Berlinerins Script style (Upscaled size to highlight and make it the focal hero, centered directly underneath on mobile, glowing in Day, slow delayed reveal) */}
-          <span className={`font-berlinerins text-[70px] xs:text-[76px] sm:text-[52px] md:text-[68px] lg:text-[86px] xl:text-[98px] font-medium lowercase tracking-wide transition-all duration-1000 animate-sculpted-reveal ${
-            isNight 
-              ? 'text-[#1A120F]' 
-              : 'text-white day-glow'
-          }`}>
-            sculpted
-          </span>
-        </h1>
-      </div>
-
-      {/* Top Left Logo & Company Name (Optically centered on mobile, structured baseline on desktop) */}
-      <div className="absolute top-[20px] left-4 md:top-[44px] md:left-12 z-25">
+      {/* Top Left Logo & Company Name */}
+      <div className="fixed top-[20px] left-4 md:top-[44px] md:left-12 z-35 pointer-events-auto">
         <a href="#home" className="flex items-center lg:items-start gap-2 sm:gap-2.5 outline-none hover:opacity-80 transition-opacity duration-300">
-          {/* Logo Image (Inverts in Night Mode for perfect visual contrast) */}
           <img 
             src={logoImg} 
             alt="SNS Nest Logo" 
             className={`h-8 sm:h-10 md:h-12 w-auto object-contain transition-all duration-300 mt-0 lg:mt-[2px] ${
-              isNight ? 'invert brightness-150' : ''
+              shouldInvertLogo ? 'invert brightness-150' : ''
             }`}
           />
-          {/* Company Name & Subtitle Stack */}
-          <div className={`font-nav-style leading-none flex flex-col items-start mt-0 lg:mt-[4px] transition-colors duration-300 ease-in-out ${textColorClass}`}>
+          <div 
+            className="font-nav-style leading-none flex flex-col items-start mt-0 lg:mt-[4px] transition-colors duration-300 ease-in-out"
+            style={{ color: navTextColor }}
+          >
             <span className="text-sm sm:text-base font-extrabold tracking-wider">SNS NEST</span>
             <span className="text-[5px] sm:text-[6.5px] font-normal tracking-[0.05em] opacity-80 uppercase mt-[1px]">
               Find & Design Solutions
@@ -94,27 +241,24 @@ function App() {
         </a>
       </div>
 
-      {/* Top Right Header Actions Panel (Optically centered glassmorphic capsule on mobile, borderless on desktop) */}
-      <div className={`absolute top-[20px] right-4 md:top-[44px] md:right-12 z-30 flex items-center gap-4 sm:gap-6 bg-[#817773]/15 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-1.5 px-3 lg:p-0 rounded-full border border-white/5 lg:border-none shadow-sm lg:shadow-none transition-all duration-300 ease-in-out ${textColorClass}`}>
-        {/* Profile Icon Link */}
+      {/* Top Right Header Actions Panel */}
+      <div 
+        className="fixed top-[20px] right-4 md:top-[44px] md:right-12 z-35 flex items-center gap-4 sm:gap-6 bg-[#817773]/15 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-1.5 px-3 lg:p-0 rounded-full border border-white/5 lg:border-none shadow-sm lg:shadow-none transition-all duration-300 ease-in-out pointer-events-auto"
+        style={{ color: navTextColor }}
+      >
         <a href="#profile" className="block outline-none hover:opacity-80 transition-opacity duration-300 hover:scale-105 active:scale-95 transition-all">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
-            {/* Floating Head */}
             <circle cx="12" cy="8" r="3.5" />
-            {/* Sleek Dressed Shoulder Line */}
             <path d="M5 20c0-3.3 2.7-6 7-6s7 2.7 7 6" />
-            {/* Minimalist V-Neck Designer Collar Cut */}
             <path d="M9.5 14l2.5 3 2.5-3" />
           </svg>
         </a>
 
-        {/* Mobile Menu Toggle Button (Visible only on lg:hidden, triggers overlay open) */}
         <button
           onClick={() => setIsMobileMenuOpen(true)}
           className="lg:hidden block outline-none hover:opacity-80 transition-all hover:scale-105 active:scale-95 duration-300"
           title="Open Menu"
         >
-          {/* Hamburger Menu Icon */}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
             <line x1="4" y1="12" x2="20" y2="12" />
             <line x1="4" y1="6" x2="20" y2="6" />
@@ -123,8 +267,11 @@ function App() {
         </button>
       </div>
 
-      {/* Centered, Perfectly Spaced Top Navigation Bar (Hidden on mobile/tablet, fully visible on desktop) */}
-      <nav className={`relative z-20 hidden lg:flex items-center justify-center gap-10 font-nav-style text-sm md:text-base font-extrabold tracking-wider whitespace-nowrap transition-colors duration-300 ease-in-out ${textColorClass}`}>
+      {/* Centered, Perfectly Spaced Top Navigation Bar */}
+      <nav 
+        className="fixed top-8 md:top-12 left-1/2 -translate-x-1/2 z-35 hidden lg:flex items-center justify-center gap-10 font-nav-style text-sm md:text-base font-extrabold tracking-wider whitespace-nowrap transition-colors duration-300 ease-in-out pointer-events-auto"
+        style={{ color: navTextColor }}
+      >
         <a href="#home" className="hover:scale-105 transition-all duration-300">HOME</a>
         <a href="#reviews" className="hover:scale-105 transition-all duration-300">REVIEWS</a>
         <a href="#portfolio" className="hover:scale-105 transition-all duration-300">PORTFOLIO</a>
@@ -132,16 +279,19 @@ function App() {
         <a href="#contact" className="hover:scale-105 transition-all duration-300">CONTACT</a>
       </nav>
 
-      {/* Unique & Highly Aesthetic Mode Selector (Floats elegantly in absolute bottom-center across all devices) */}
-      <div className="absolute bottom-8 lg:bottom-12 left-1/2 -translate-x-1/2 z-20 flex items-center bg-[#817773]/40 backdrop-blur-md p-1 rounded-full border border-[#D5BDAF]/20 shadow-2xl select-none w-[104px] h-9">
-        {/* Smooth Sliding Pill Backdrop (Linen tone #F5EBE0) */}
+      {/* Unique & Highly Aesthetic Mode Selector Switch */}
+      <div 
+        className="fixed bottom-8 lg:bottom-12 left-1/2 -translate-x-1/2 z-25 flex items-center bg-[#817773]/40 backdrop-blur-md p-1 rounded-full border border-[#D5BDAF]/20 shadow-2xl select-none w-[104px] h-9 pointer-events-auto transition-opacity duration-500"
+        style={{ 
+          opacity: Math.max(0, 1 - scrollProgress * 5), 
+          pointerEvents: scrollProgress > 0.18 ? 'none' : 'auto' 
+        }}
+      >
         <div 
           className={`absolute top-1 bottom-1 left-1 w-12 rounded-full bg-[#F5EBE0] shadow-md transition-transform duration-300 ease-in-out z-10 ${
             isNight ? 'translate-x-12' : 'translate-x-0'
           }`}
         />
-        
-        {/* Off Button (Physics Open Circuit Switch / Day Mode) */}
         <button
           onClick={() => setIsNight(false)}
           className={`w-12 h-7 flex items-center justify-center transition-colors duration-300 cursor-pointer uppercase outline-none relative z-20 ${
@@ -150,16 +300,11 @@ function App() {
           title="Circuit Open (Off / Day)"
         >
           <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
-            {/* Left Terminal */}
             <circle cx="6" cy="12" r="2.2" fill="currentColor" />
-            {/* Right Terminal */}
             <circle cx="18" cy="12" r="2.2" fill="currentColor" />
-            {/* Open Lever Switch */}
             <line x1="6" y1="12" x2="16" y2="6" />
           </svg>
         </button>
-        
-        {/* On Button (Physics Closed Circuit Switch / Night Mode) */}
         <button
           onClick={() => setIsNight(true)}
           className={`w-12 h-7 flex items-center justify-center transition-colors duration-300 cursor-pointer uppercase outline-none relative z-20 ${
@@ -168,23 +313,191 @@ function App() {
           title="Circuit Closed (On / Night)"
         >
           <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
-            {/* Left Terminal */}
             <circle cx="6" cy="12" r="2.2" fill="currentColor" />
-            {/* Right Terminal */}
             <circle cx="18" cy="12" r="2.2" fill="currentColor" />
-            {/* Closed Connecting Lever */}
             <line x1="6" y1="12" x2="18" y2="12" />
           </svg>
         </button>
       </div>
 
-      {/* Premium Mobile Menu Overlay (Visible only on lg:hidden when active, utilizing high-contrast backdrop blur and dedicated light-on-dark contrast) */}
+      {/* ========================================================================= */}
+      {/* UNIFIED SCROLLING STORYTELLING SHOWCASE (h-[350vh] for smooth linear translate) */}
+      {/* ========================================================================= */}
+      <div ref={mainSectionRef} className="relative w-full h-[350vh] bg-black">
+        {/* Pinned Viewport Container (Natively locked via GSAP ScrollTrigger) */}
+        <div className="sticky top-0 left-0 w-full h-screen overflow-hidden">
+
+          {/* ========================================================================= */}
+          {/* INTERACTION LAYER 1: The sliding horizontal track panels (z-10) */}
+          {/* ========================================================================= */}
+          <div ref={horizontalTrackRef} className="flex flex-row items-center h-full will-change-transform relative z-10">
+            
+            {/* SLIDE 0: HERO BANNER SECTION (rising navy backdrop, then X-axis panel slides out) */}
+            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden flex flex-col items-center justify-center">
+              {/* Desktop Day Hero Image */}
+              <img 
+                src={dayHeroImg} 
+                alt="SNS Nest Day Banner" 
+                className="absolute inset-0 w-full h-full object-cover hidden lg:block z-0"
+              />
+
+              {/* Desktop Night Hero Image */}
+              <img 
+                src={nightHeroImg} 
+                alt="SNS Nest Night Banner" 
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out hidden lg:block z-0 ${
+                  isNight ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+
+              {/* Mobile Day Hero Image */}
+              <img 
+                src={mobDayHeroImg} 
+                alt="SNS Nest Mobile Day Banner" 
+                className="absolute inset-0 w-full h-full object-cover block lg:hidden z-0"
+              />
+
+              {/* Mobile Night Hero Image */}
+              <img 
+                src={mobNightHeroImg} 
+                alt="SNS Nest Mobile Night Banner" 
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out block lg:hidden z-0 ${
+                  isNight ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+
+              {/* Deep Navy Rising Backdrop (Slides bottom-to-top behind text) */}
+              <div 
+                className="absolute inset-0 bg-[#0A0F1D] z-5 will-change-transform"
+                style={{
+                  transform: `translateY(${Math.max(0, (1 - scrollProgress * 3.33) * 100)}%)`
+                }}
+              >
+                {/* Ambient Testimonial Light Leaks (Faded/rises in tandem inside the panel) */}
+                <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-[#B89D7A]/5 blur-[150px] pointer-events-none" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[#11192E]/35 blur-[150px] pointer-events-none" />
+              </div>
+            </div>
+
+            {/* SLIDES 1, 2, 3: LUXURY CLIENT REVIEWS CARDS (Overlaps Slide 0 by -ml-[4px] to cure subpixel hairline gaps!) */}
+            <div className="flex flex-row items-center h-full px-[8vw] sm:px-[12vw] gap-[8vw] sm:gap-[12vw] flex-shrink-0 bg-[#0A0F1D] -ml-[4px] relative z-10">
+              {testimonials.map((testimonial, idx) => (
+                <div 
+                  key={idx} 
+                  className="w-[85vw] sm:w-[50vw] md:w-[40vw] lg:w-[32vw] h-[55vh] sm:h-[58vh] bg-[#0E1626] border border-[#E3D5CA]/10 rounded-[32px] p-8 sm:p-12 flex flex-col justify-between shadow-[0_30px_70px_rgba(0,0,0,0.6)] flex-shrink-0 relative overflow-hidden transition-all duration-500 hover:border-[#E3D5CA]/25 hover:shadow-[0_40px_80px_rgba(0,0,0,0.8)] hover:-translate-y-1 group"
+                >
+                  {/* Faint Amber Background light leak */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#B89D7A]/5 blur-2xl rounded-full transition-all duration-500 group-hover:bg-[#B89D7A]/10 pointer-events-none" />
+                  
+                  {/* Sleek quotation mark background in Neue Montreal */}
+                  <span className="font-neuemontreal text-[120px] leading-none text-[#E3D5CA]/5 absolute top-0 right-6 select-none pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
+                    “
+                  </span>
+
+                  {/* Stars and Review Text (Neue Montreal!) */}
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-6">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <svg key={i} viewBox="0 0 24 24" fill="#B89D7A" className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#B89D7A] filter drop-shadow-[0_0_2px_rgba(184,157,122,0.3)]">
+                          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <p className="font-neuemontreal text-white/90 text-base sm:text-lg md:text-[19px] leading-relaxed font-light relative z-10 transition-colors duration-300 group-hover:text-white">
+                      "{testimonial.review}"
+                    </p>
+                  </div>
+
+                  {/* Signature Client Info (Neue Montreal!) */}
+                  <div>
+                    <div className="w-8 h-[1px] bg-[#E3D5CA]/20 my-6 transition-all duration-500 group-hover:w-16 group-hover:bg-[#E3D5CA]/40" />
+                    <h4 className="font-neuemontreal text-[#E3D5CA] text-sm sm:text-base font-bold tracking-wider uppercase leading-none">
+                      {testimonial.name}
+                    </h4>
+                    <p className="font-neuemontreal text-white/45 text-[10px] sm:text-xs font-medium uppercase tracking-[0.15em] mt-1.5 transition-colors duration-300 group-hover:text-white/60">
+                      {testimonial.role}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+
+          {/* ========================================================================= */}
+          {/* INTERACTION LAYER 2: Perfectly Pinned Floating Slogan Overlay (z-20)      */}
+          {/* ========================================================================= */}
+          <div 
+            ref={sloganRef}
+            className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 px-4 will-change-transform"
+            style={{
+              opacity: 1 // Strictly 100% opaque - no disappearing!
+            }}
+          >
+            <div className="text-center flex flex-col items-center justify-center leading-none">
+              
+              {/* Single-layer heading: strictly 100% solid opacity throughout scramble phase! */}
+              <h1 className="flex flex-col sm:flex-row items-center sm:items-baseline justify-center gap-y-1 sm:gap-y-0 gap-x-0 sm:gap-x-4 md:gap-x-5 text-center leading-none">
+                
+                {/* Line 1: YOUR VISION, -> OUR (Beautiful beige when scrambling/settled on navy!) */}
+                <span 
+                  className={`text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px] font-bold tracking-tight uppercase transition-all duration-300 ${
+                    isUniformStyle ? 'font-neuemontreal' : 'font-clash'
+                  }`}
+                  style={{ color: currentLine1Color }}
+                >
+                  {line1Text}
+                </span>
+                
+                {/* Line 2: sculpted -> TESTIMONY (Beautiful beige when scrambling/settled on navy, zero glow!) */}
+                <span 
+                  className={`${
+                    isUniformStyle 
+                      ? 'font-neuemontreal font-bold uppercase text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px]' 
+                      : 'font-berlinerins font-medium lowercase text-[70px] xs:text-[76px] sm:text-[52px] md:text-[68px] lg:text-[86px] xl:text-[98px]'
+                  } tracking-tight transition-all duration-300`}
+                  style={{
+                    color: currentLine2Color,
+                    textShadow: line2Shadow
+                  }}
+                >
+                  {line2Text}
+                </span>
+
+              </h1>
+
+              {/* Subtext: Designed spaces. Delighted lives. (Permanently in DOM layout to prevent physical vertical jumps!) */}
+              <div 
+                className="font-neuemontreal text-white/70 text-lg sm:text-[24px] mt-6 font-light leading-normal max-w-xl mx-auto transition-all duration-500"
+                style={{
+                  opacity: subtextOpacity,
+                  filter: `blur(${Math.max(0, (1 - subtextOpacity) * 8)}px)`,
+                  transform: `translateY(${Math.max(0, (1 - subtextOpacity) * 20)}px)`,
+                  pointerEvents: subtextOpacity > 0.1 ? 'auto' : 'none'
+                }}
+              >
+                Designed spaces. Delighted lives.
+              </div>
+            </div>
+          </div>
+
+          {/* Scroll explore indicator inside Hero banner */}
+          <span 
+            className="text-[9px] sm:text-[10px] font-nav-style tracking-[0.25em] text-[#E3D5CA]/40 uppercase absolute bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-2 transition-opacity duration-500 z-10 pointer-events-none"
+            style={{ opacity: Math.max(0, 1 - scrollProgress * 5) }}
+          >
+            SCROLL TO EXPLORE <span className="animate-pulse">→</span>
+          </span>
+
+        </div>
+      </div>
+
+      {/* Premium Mobile Menu Overlay */}
       <div 
         className={`fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-2xl bg-black/95 transition-all duration-500 ease-in-out lg:hidden ${
           isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
-        {/* Close X Button (Directly inside overlay to prevent stacking context bugs, positioned in exact top-right coordinates) */}
         <button
           onClick={() => setIsMobileMenuOpen(false)}
           className="absolute top-[20px] right-4 outline-none hover:opacity-80 transition-all hover:scale-105 active:scale-95 duration-300 text-[#E3D5CA] py-1.5 px-3 rounded-full border border-white/5 bg-[#817773]/15 shadow-sm backdrop-blur-md"
@@ -196,7 +509,6 @@ function App() {
           </svg>
         </button>
 
-        {/* Minimalist Mobile Navigation Links (Unnumbered, high-fashion styling) */}
         <nav className="flex flex-col items-center gap-8 font-nav-style text-2xl font-extrabold tracking-widest">
           <a 
             href="#home" 
@@ -235,10 +547,8 @@ function App() {
           </a>
         </nav>
 
-        {/* Dynamic Structural Divider */}
         <div className="w-12 h-[1px] bg-[#E3D5CA]/20 my-6" />
 
-        {/* Symmetrical Mini Footer Tagline */}
         <div className="flex flex-col items-center gap-1 font-nav-style text-center">
           <span className="text-[8px] font-extrabold tracking-[0.2em] uppercase text-[#E3D5CA]/60">SNS NEST</span>
           <span className="text-[6px] font-normal tracking-[0.15em] uppercase text-[#E3D5CA]/40 mt-[1px]">
@@ -246,19 +556,9 @@ function App() {
           </span>
         </div>
       </div>
+
     </div>
   )
 }
 
 export default App
-
-
-
-
-
-
-
-
-
-
-

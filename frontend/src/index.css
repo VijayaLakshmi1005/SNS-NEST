@@ -1,7 +1,7 @@
 
 
 @import url('https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@700;800&family=Inter:wght@700;800;900&family=WindSong:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Instrument+Sans:wght@700;800&family=Inter:wght@700;800;900&family=WindSong:wght@400;500&display=swap');
 @import "tailwindcss";
 
 body {
@@ -68,6 +68,18 @@ body {
   opacity: 0;
   animation: revealClassy 1.4s ease-in-out 0.4s forwards;
   will-change: transform, opacity, filter;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-cormorant {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.font-neuemontreal {
+  font-family: 'Neue Montreal', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 
