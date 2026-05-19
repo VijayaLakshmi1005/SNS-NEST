@@ -58,6 +58,8 @@ app.use(helmet());
 // CORS Enablement
 const allowedOrigins = [
   process.env.CORS_ORIGIN,
+  'https://sns-nest.onrender.com',
+  'https://sns-nest-backend.onrender.com',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
@@ -68,7 +70,11 @@ const allowedOrigins = [
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || /^http:\/\/localhost(:\d+)?$/.test(origin)) {
+    if (
+      allowedOrigins.indexOf(origin) !== -1 || 
+      /^http:\/\/localhost(:\d+)?$/.test(origin) ||
+      /\.onrender\.com$/.test(origin)
+    ) {
       return callback(null, true);
     }
     return callback(new Error('Not allowed by CORS'));
