@@ -11,6 +11,8 @@ import Booking from './booking/Booking'
 import Estimate from './estimate/Estimate'
 import Tracking from './tracking/Tracking'
 import AiRoom from './ai-room/AiRoom'
+import Chat from './chat/Chat'
+import Wishlist from './wishlist/Wishlist'
 
 // Temporary placeholders for remaining modules to ensure routing works
 const Placeholder = ({ name }) => (
@@ -34,8 +36,8 @@ export const router = createBrowserRouter([
       { path: 'estimate', element: <Estimate /> },
       { path: 'tracking', element: <Tracking /> },
       { path: 'ai-room', element: <AiRoom /> },
-      { path: 'chat', element: <Placeholder name="Chat & Messaging" /> },
-      { path: 'wishlist', element: <Placeholder name="Wishlist" /> },
+      { path: 'chat', element: <Chat /> },
+      { path: 'wishlist', element: <Wishlist /> },
       { path: 'payment', element: <Placeholder name="Payments" /> },
       { path: 'profile', element: <Placeholder name="User Profile" /> },
     ]
