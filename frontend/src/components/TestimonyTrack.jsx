@@ -68,7 +68,7 @@ const TestimonyTrack = forwardRef(({
       {/* REVIEW 1: Floating typography, aligned top-left */}
       <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start pl-[8vw] pr-[6vw] lg:pr-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         {/* Desktop Architectural Pin */}
-        <div className="absolute lg:top-[24.5vh] top-1/2 lg:translate-y-0 -translate-y-1/2 left-[calc(3vw-24px)] flex items-center select-none pointer-events-none z-20">
+        <div className="absolute lg:top-[24.5vh] top-1/2 lg:translate-y-0 -translate-y-1/2 left-[calc(3vw-24px)] flex items-center select-none pointer-events-none z-20 lg:hidden">
           <div className="relative flex items-center justify-center w-6 h-6">
             <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
             <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
@@ -78,7 +78,21 @@ const TestimonyTrack = forwardRef(({
         </div>
 
         {/* Text block with left border */}
-        <div className="border-l border-[#E3D5CA]/20 pl-6 sm:pl-8 py-2 relative z-10 max-w-[85vw] lg:max-w-lg">
+        <div className="border-l lg:border-l-0 border-[#E3D5CA]/20 pl-6 sm:pl-8 lg:pl-10 py-2 lg:py-0 lg:pt-8 lg:pb-12 relative z-10 max-w-[85vw] lg:max-w-lg">
+          {/* Desktop Architectural Pin & Lines (Desktop only) */}
+          <div className="hidden lg:block absolute right-full top-0 w-[5vw] pointer-events-none select-none z-20">
+            {/* Concentric Circle Pin */}
+            <div className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6">
+              <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+              <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+            </div>
+            {/* Horizontal Line extending past vertical line to form a cross */}
+            <div className="absolute left-0 right-[-24px] top-0 h-[1px] bg-[#E3D5CA]/25" />
+          </div>
+
+          {/* Desktop Vertical Line extending above and below horizontal line to form a cross (Desktop only) */}
+          <div className="hidden lg:block absolute left-0 top-[-24px] bottom-[-24px] w-[1px] bg-[#E3D5CA]/25 pointer-events-none select-none z-20" />
 
           <p className="font-cormorant italic text-[17px] sm:text-[22px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light mb-3 sm:mb-4">
             "{reviews[0].quote}"
@@ -105,7 +119,7 @@ const TestimonyTrack = forwardRef(({
       {/* REVIEW 2: Floating typography, aligned bottom-right */}
       <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-end pr-[8vw] pl-[6vw] lg:pl-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         {/* Desktop Architectural Pin */}
-        <div className="absolute lg:bottom-[26.5vh] lg:top-auto top-1/2 lg:translate-y-0 -translate-y-1/2 right-[calc(3vw-24px)] flex flex-row-reverse items-center select-none pointer-events-none z-20">
+        <div className="absolute lg:bottom-[26.5vh] lg:top-auto top-1/2 lg:translate-y-0 -translate-y-1/2 right-[calc(3vw-24px)] flex flex-row-reverse items-center select-none pointer-events-none z-20 lg:hidden">
           <div className="relative flex items-center justify-center w-6 h-6">
             <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
             <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
@@ -115,7 +129,21 @@ const TestimonyTrack = forwardRef(({
         </div>
 
         {/* Text block with right border */}
-        <div className="border-r border-[#E3D5CA]/20 pr-6 sm:pr-8 py-2 text-right relative z-10 max-w-[85vw] lg:max-w-lg">
+        <div className="border-r lg:border-r-0 border-[#E3D5CA]/20 pr-6 sm:pr-8 lg:pr-10 py-2 lg:py-0 lg:pt-8 lg:pb-12 text-right relative z-10 max-w-[85vw] lg:max-w-lg">
+          {/* Desktop Architectural Pin & Lines (Desktop only) */}
+          <div className="hidden lg:block absolute left-full top-0 w-[5vw] pointer-events-none select-none z-20">
+            {/* Concentric Circle Pin */}
+            <div className="absolute right-0 top-0 translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6">
+              <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+              <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+            </div>
+            {/* Horizontal Line extending past vertical line to form a cross */}
+            <div className="absolute left-[-24px] right-0 top-0 h-[1px] bg-[#E3D5CA]/25" />
+          </div>
+
+          {/* Desktop Vertical Line extending above and below horizontal line to form a cross (Desktop only) */}
+          <div className="hidden lg:block absolute right-0 top-[-24px] bottom-[-24px] w-[1px] bg-[#E3D5CA]/25 pointer-events-none select-none z-20" />
 
           <p className="font-cormorant italic text-[17px] sm:text-[22px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light mb-3 sm:mb-4">
             "{reviews[1].quote}"
@@ -142,7 +170,7 @@ const TestimonyTrack = forwardRef(({
       {/* REVIEW 3: Floating typography, aligned top-right */}
       <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-end pr-[8vw] pl-[6vw] lg:pl-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         {/* Desktop Architectural Pin */}
-        <div className="absolute lg:top-[24.5vh] top-1/2 lg:translate-y-0 -translate-y-1/2 right-[calc(3vw-24px)] flex flex-row-reverse items-center select-none pointer-events-none z-20">
+        <div className="absolute lg:top-[24.5vh] top-1/2 lg:translate-y-0 -translate-y-1/2 right-[calc(3vw-24px)] flex flex-row-reverse items-center select-none pointer-events-none z-20 lg:hidden">
           <div className="relative flex items-center justify-center w-6 h-6">
             <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
             <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
@@ -152,7 +180,21 @@ const TestimonyTrack = forwardRef(({
         </div>
 
         {/* Text block with right border */}
-        <div className="border-r border-[#E3D5CA]/20 pr-6 sm:pr-8 py-2 text-right relative z-10 max-w-[85vw] lg:max-w-lg">
+        <div className="border-r lg:border-r-0 border-[#E3D5CA]/20 pr-6 sm:pr-8 lg:pr-10 py-2 lg:py-0 lg:pt-8 lg:pb-12 text-right relative z-10 max-w-[85vw] lg:max-w-lg">
+          {/* Desktop Architectural Pin & Lines (Desktop only) */}
+          <div className="hidden lg:block absolute left-full top-0 w-[5vw] pointer-events-none select-none z-20">
+            {/* Concentric Circle Pin */}
+            <div className="absolute right-0 top-0 translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6">
+              <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+              <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+            </div>
+            {/* Horizontal Line extending past vertical line to form a cross */}
+            <div className="absolute left-[-24px] right-0 top-0 h-[1px] bg-[#E3D5CA]/25" />
+          </div>
+
+          {/* Desktop Vertical Line extending above and below horizontal line to form a cross (Desktop only) */}
+          <div className="hidden lg:block absolute right-0 top-[-24px] bottom-[-24px] w-[1px] bg-[#E3D5CA]/25 pointer-events-none select-none z-20" />
 
           <p className="font-cormorant italic text-[17px] sm:text-[22px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light mb-3 sm:mb-4">
             "{reviews[2].quote}"
@@ -179,7 +221,7 @@ const TestimonyTrack = forwardRef(({
       {/* REVIEW 4: Floating typography, aligned bottom-left */}
       <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start pl-[8vw] pr-[6vw] lg:pr-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         {/* Desktop Architectural Pin */}
-        <div className="absolute lg:bottom-[22vh] lg:top-auto top-1/2 lg:translate-y-0 -translate-y-1/2 left-[calc(3vw-24px)] flex items-center select-none pointer-events-none z-20">
+        <div className="absolute lg:bottom-[22vh] lg:top-auto top-1/2 lg:translate-y-0 -translate-y-1/2 left-[calc(3vw-24px)] flex items-center select-none pointer-events-none z-20 lg:hidden">
           <div className="relative flex items-center justify-center w-6 h-6">
             <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
             <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
@@ -189,7 +231,21 @@ const TestimonyTrack = forwardRef(({
         </div>
 
         {/* Text block with left border */}
-        <div className="border-l border-[#E3D5CA]/20 pl-6 sm:pl-8 py-2 relative z-10 max-w-[85vw] lg:max-w-lg">
+        <div className="border-l lg:border-l-0 border-[#E3D5CA]/20 pl-6 sm:pl-8 lg:pl-10 py-2 lg:py-0 lg:pt-8 lg:pb-12 relative z-10 max-w-[85vw] lg:max-w-lg">
+          {/* Desktop Architectural Pin & Lines (Desktop only) */}
+          <div className="hidden lg:block absolute right-full top-0 w-[5vw] pointer-events-none select-none z-20">
+            {/* Concentric Circle Pin */}
+            <div className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6">
+              <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+              <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+            </div>
+            {/* Horizontal Line extending past vertical line to form a cross */}
+            <div className="absolute left-0 right-[-24px] top-0 h-[1px] bg-[#E3D5CA]/25" />
+          </div>
+
+          {/* Desktop Vertical Line extending above and below horizontal line to form a cross (Desktop only) */}
+          <div className="hidden lg:block absolute left-0 top-[-24px] bottom-[-24px] w-[1px] bg-[#E3D5CA]/25 pointer-events-none select-none z-20" />
 
           <p className="font-cormorant italic text-[17px] sm:text-[22px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light mb-3 sm:mb-4">
             "{reviews[3].quote}"
@@ -215,9 +271,9 @@ const TestimonyTrack = forwardRef(({
 
       {/* REVIEW 5: Floating typography, aligned center but styled like other left-aligned slides */}
       <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start pl-[8vw] pr-[6vw] lg:pr-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
-        <div className="flex flex-col items-start text-left max-w-lg lg:-translate-x-[8vw] relative border-l border-[#E3D5CA]/20 pl-6 sm:pl-8 py-2">
+        <div className="flex flex-col items-start text-left max-w-lg lg:-translate-x-[8vw] relative border-l lg:border-l-0 border-[#E3D5CA]/20 pl-6 sm:pl-8 lg:pl-10 py-2 lg:py-0 lg:pt-8 lg:pb-12">
           {/* Desktop Architectural Pin */}
-          <div className="absolute lg:top-[4.5vh] top-1/2 lg:translate-y-0 -translate-y-1/2 -left-[calc(5vw+24px)] flex items-center select-none pointer-events-none z-20">
+          <div className="absolute lg:top-[4.5vh] top-1/2 lg:translate-y-0 -translate-y-1/2 -left-[calc(5vw+24px)] flex items-center select-none pointer-events-none z-20 lg:hidden">
             <div className="relative flex items-center justify-center w-6 h-6">
               <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
               <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
@@ -227,6 +283,20 @@ const TestimonyTrack = forwardRef(({
             <div className="w-[5vw] h-[1px] bg-[#E3D5CA]/25" />
           </div>
 
+          {/* Desktop Architectural Pin & Lines (Desktop only) */}
+          <div className="hidden lg:block absolute right-full top-0 w-[5vw] pointer-events-none select-none z-20">
+            {/* Concentric Circle Pin */}
+            <div className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6">
+              <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+              <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+            </div>
+            {/* Horizontal Line extending past vertical line to form a cross */}
+            <div className="absolute left-0 right-[-24px] top-0 h-[1px] bg-[#E3D5CA]/25" />
+          </div>
+
+          {/* Desktop Vertical Line extending above and below horizontal line to form a cross (Desktop only) */}
+          <div className="hidden lg:block absolute left-0 top-[-24px] bottom-[-24px] w-[1px] bg-[#E3D5CA]/25 pointer-events-none select-none z-20" />
 
           <p className="font-cormorant italic text-[17px] sm:text-[22px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light mb-3 sm:mb-4">
             "{reviews[4].quote}"
