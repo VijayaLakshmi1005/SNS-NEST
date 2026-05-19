@@ -82,6 +82,17 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
+// Express 5 query getter workaround for express-mongo-sanitize
+app.use((req, res, next) => {
+  Object.defineProperty(req, 'query', {
+    value: { ...req.query },
+    writable: true,
+    configurable: true,
+    enumerable: true
+  });
+  next();
+});
+
 // Data Sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
