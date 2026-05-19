@@ -9,10 +9,13 @@ export const validate = (schema) => (req, res, next) => {
     });
     next();
   } catch (error) {
-    const errorMessages = error.errors.map((err) => ({
-      field: err.path.join('.'),
-      message: err.message,
-    }));
-    next(new ApiError(400, 'Validation Error', errorMessages));
+    const issues = error.errors || error.issues || [];
+    const errorMessages = Array.isArray(issues)
+      ? issues.map((err) => ({
+          field: err.path ? err.path.join('.') : '',
+          message: err.message,
+        }))
+      : [];
+    next(new ApiError(400, error.message || 'Validation Error', errorMessages));
   }
 };

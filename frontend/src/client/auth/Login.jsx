@@ -23,25 +23,35 @@ const THEME = {
   }
 }
 
+import { apiRequest } from '../utils/api'
+
 export default function Login() {
   const { isNight } = useThemeStore()
   const theme = isNight ? THEME.dark : THEME.light
   const navigate = useNavigate()
-  
+
   const [showPassword, setShowPassword] = useState(false)
-  const [email, setEmail] = useState('vj@123')
-  const [password, setPassword] = useState('vj123')
+  const [email, setEmail] = useState('vj@123.com')
+  const [password, setPassword] = useState('vj1234')
   const [error, setError] = useState('')
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     setError('')
-    
-    // Mock Authentication Logic - to be replaced with actual backend call
-    if (email === 'vj@123' && password === 'vj123') {
-      navigate('/client/dashboard')
-    } else {
-      setError('Invalid email or password. Please try again.')
+
+    try {
+      const res = await apiRequest('/auth/login', {
+        method: 'POST',
+        data: { email, password }
+      });
+      if (res && res.data && res.data.accessToken) {
+        localStorage.setItem('token', res.data.accessToken);
+        navigate('/client/dashboard');
+      } else {
+        setError('Login failed: Invalid server response.');
+      }
+    } catch (err) {
+      setError(err.message || 'Invalid email or password. Please try again.');
     }
   }
 
@@ -50,8 +60,8 @@ export default function Login() {
       {/* Left side - Image */}
       <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20 z-10" />
-        <img 
-          src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1200" 
+        <img
+          src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1200"
           alt="Luxury Interior"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -63,7 +73,7 @@ export default function Login() {
 
       {/* Right side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -80,7 +90,7 @@ export default function Login() {
           </div>
 
           <form className="space-y-6" onSubmit={handleLogin} noValidate>
-            
+
             {error && (
               <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-semibold text-center">
                 {error}
@@ -89,29 +99,29 @@ export default function Login() {
 
             <div className="space-y-2">
               <label className={`text-xs uppercase tracking-widest font-semibold ${theme.textMuted}`}>Email</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="client@snsnest.com"
                 className={`w-full px-5 py-4 rounded-xl border ${theme.input} text-sm transition-colors outline-none`}
               />
             </div>
-            
+
             <div className="space-y-2 relative">
               <div className="flex justify-between items-center">
                 <label className={`text-xs uppercase tracking-widest font-semibold ${theme.textMuted}`}>Password</label>
                 <Link to="/auth/forgot" className={`text-xs font-semibold hover:underline ${theme.textMuted}`}>Forgot?</Link>
               </div>
               <div className="relative">
-                <input 
-                  type={showPassword ? "text" : "password"} 
+                <input
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className={`w-full px-5 py-4 rounded-xl border ${theme.input} text-sm transition-colors outline-none`}
                 />
-                <button 
+                <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className={`absolute right-4 top-1/2 -translate-y-1/2 ${theme.textMuted} hover:opacity-80`}
@@ -121,7 +131,7 @@ export default function Login() {
               </div>
             </div>
 
-            <button 
+            <button
               type="submit"
               className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 ${theme.button}`}
             >

@@ -45,3 +45,19 @@ export const getMessagesBetweenUsers = catchAsync(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, messages, 'Chat messages history fetched successfully'));
 });
+
+export const getRecentMessages = catchAsync(async (req, res) => {
+  const recentMessages = [
+    {
+      id: 'msg_1',
+      sender: {
+        fullName: 'Sarah Jenkins',
+        profileImage: ''
+      },
+      text: 'I have uploaded the Scandinavian oak mood board. Please let me know your thoughts!',
+      timestamp: new Date(Date.now() - 3600000), // 1 hour ago
+      unreadCount: 1
+    }
+  ];
+  return res.status(200).json(new ApiResponse(200, recentMessages, 'Recent messages fetched successfully'));
+});

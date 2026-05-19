@@ -19,7 +19,7 @@ export const sendMail = async ({ to, subject, html }) => {
     });
     return info;
   } catch (error) {
-    console.error(`Mailer Error: ${error.message}`);
-    throw error;
+    console.error(`Mailer Error: ${error.message}. Continuing execution without failing.`);
+    return null;
   }
 };

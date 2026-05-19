@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useThemeStore } from '../store/themeStore'
+import { apiRequest } from '../utils/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
@@ -59,11 +60,26 @@ export default function ClientLayout() {
   const { isNight, toggleTheme } = useThemeStore()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const location = useLocation()
-  
+
   const currentTheme = isNight ? THEME.dark : THEME.light
+  const navigate = useNavigate()
+  const [userProfile, setUserProfile] = useState(null)
 
   // Don't show sidebar for auth pages
   const isAuthPage = location.pathname.includes('/auth')
+
+  useEffect(() => {
+    if (isAuthPage) return;
+    const fetchMe = async () => {
+      try {
+        const res = await apiRequest('/auth/me')
+        setUserProfile(res.data)
+      } catch (err) {
+        console.error('Error fetching user info:', err)
+      }
+    }
+    fetchMe()
+  }, [location.pathname, isAuthPage])
 
   if (isAuthPage) {
     return (
@@ -75,7 +91,7 @@ export default function ClientLayout() {
 
   return (
     <div className={`flex min-h-screen w-full overflow-hidden transition-colors duration-700 ease-in-out ${currentTheme.bg} ${currentTheme.text} font-nav-style`}>
-      
+
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -94,9 +110,9 @@ export default function ClientLayout() {
         className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-72 shrink-0 flex flex-col transform transition-transform duration-500 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className={`h-[calc(100vh-2rem)] m-4 rounded-3xl ${currentTheme.card} ${currentTheme.border} border ${currentTheme.shadow} flex flex-col relative overflow-hidden`}>
-          
+
           {/* Subtle noise texture overlay for premium feel */}
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay noise-bg"></div>
 
           {/* Logo / Brand */}
           <div className="p-8 flex items-center justify-between z-10">
@@ -118,11 +134,10 @@ export default function ClientLayout() {
                 <Link
                   key={link.name}
                   to={link.path}
-                  className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 ${
-                    isActive 
-                      ? `${currentTheme.active} ${currentTheme.shadow} font-semibold scale-[1.02]` 
+                  className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 ${isActive
+                      ? `${currentTheme.active} ${currentTheme.shadow} font-semibold scale-[1.02]`
                       : `${currentTheme.hover} ${currentTheme.textMuted} hover:text-current`
-                  }`}
+                    }`}
                 >
                   <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 1.5} />
                   <span className="text-sm tracking-wide">{link.name}</span>
@@ -140,7 +155,7 @@ export default function ClientLayout() {
                 onClick={toggleTheme}
                 className="relative w-12 h-6 flex items-center rounded-full bg-black/10 transition-colors"
               >
-                <motion.div 
+                <motion.div
                   className={`absolute left-1 w-4 h-4 rounded-full ${isNight ? 'bg-[#F5EBE0]' : 'bg-[#2B2B2B]'}`}
                   animate={{ x: isNight ? 24 : 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -148,22 +163,39 @@ export default function ClientLayout() {
               </button>
             </div>
 
-            <Link to="/client/profile" className={`flex items-center gap-4 px-4 py-3 rounded-2xl ${currentTheme.hover} transition-colors`}>
-              <div className="w-8 h-8 rounded-full bg-linear-to-tr from-[#D6CCC2] to-[#817773] flex items-center justify-center overflow-hidden">
-                <User className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold">Alex Designer</span>
-                <span className={`text-[10px] uppercase tracking-wider ${currentTheme.textMuted}`}>Premium User</span>
-              </div>
-            </Link>
+            <div className="flex items-center justify-between gap-2">
+              <Link to="/client/profile" className={`flex items-center gap-3 px-3 py-2 rounded-2xl ${currentTheme.hover} transition-colors flex-1 min-w-0`}>
+                <div className="w-8 h-8 rounded-full bg-linear-to-tr from-[#D6CCC2] to-[#817773] flex items-center justify-center overflow-hidden shrink-0">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-semibold truncate">{userProfile?.fullName || 'Client User'}</span>
+                  <span className={`text-[10px] uppercase tracking-wider ${currentTheme.textMuted} truncate`}>{userProfile?.role || 'Client'}</span>
+                </div>
+              </Link>
+              <button 
+                onClick={async () => {
+                  try {
+                    await apiRequest('/auth/logout', { method: 'POST' });
+                  } catch (e) {
+                    console.error('Logout request failed', e);
+                  }
+                  localStorage.removeItem('token');
+                  navigate('/auth/login');
+                }}
+                className={`p-3 rounded-2xl ${currentTheme.hover} transition-colors text-red-500/80 hover:text-red-500 hover:bg-red-500/10`}
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </motion.aside>
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-h-screen relative z-10 overflow-x-hidden">
-        
+
         {/* Mobile Header */}
         <header className={`lg:hidden flex items-center justify-between p-4 sticky top-0 z-30 ${currentTheme.bg}/80 backdrop-blur-xl border-b ${currentTheme.border}`}>
           <div className="flex flex-col">
@@ -190,7 +222,7 @@ export default function ClientLayout() {
           </AnimatePresence>
         </div>
       </main>
-      
+
     </div>
   )
 }

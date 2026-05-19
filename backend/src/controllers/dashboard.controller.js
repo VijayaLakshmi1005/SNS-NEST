@@ -41,3 +41,49 @@ export const getDashboardNotifications = catchAsync(async (req, res) => {
   const notifications = await Notification.find({ recipient: req.user._id }).sort({ createdAt: -1 });
   return res.status(200).json(new ApiResponse(200, notifications, 'Notifications fetched successfully'));
 });
+
+export const getDashboardHeader = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const project = await Project.findOne({ client: userId }).sort({ updatedAt: -1 });
+
+  let currentPhase = 'Material Procurement';
+  if (project) {
+    if (project.timeline && project.timeline.length > 0) {
+      const incompleteMilestone = project.timeline.find(item => !item.completed);
+      if (incompleteMilestone) {
+        currentPhase = incompleteMilestone.status;
+      } else {
+        currentPhase = project.timeline[project.timeline.length - 1].status;
+      }
+    } else {
+      currentPhase = project.status;
+    }
+  }
+
+  const headerInfo = {
+    name: req.user.fullName || req.user.email.split('@')[0],
+    projectName: project ? project.title : 'Scandinavian Villa',
+    currentPhase: currentPhase
+  };
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, headerInfo, 'Dashboard header data fetched successfully'));
+});
+
+export const getDashboardActivity = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const notifications = await Notification.find({ recipient: userId }).sort({ createdAt: -1 }).limit(10);
+  
+  const activities = notifications.map(notif => ({
+    id: notif._id,
+    type: notif.type || 'notification',
+    message: notif.message,
+    createdAt: notif.createdAt
+  }));
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, activities, 'Dashboard activity data fetched successfully'));
+});
+

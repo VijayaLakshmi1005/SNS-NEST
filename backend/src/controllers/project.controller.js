@@ -57,7 +57,7 @@ export const uploadSitePhotos = catchAsync(async (req, res) => {
   }
 
   const uploadResult = await uploadToCloudinary(req.file.buffer, 'project-site-photos');
-  
+
   project.sitePhotos.push({
     url: uploadResult.secure_url,
     caption: caption || 'Site progress update',
@@ -68,3 +68,26 @@ export const uploadSitePhotos = catchAsync(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, project, 'Site photo uploaded successfully'));
 });
+
+export const getCurrentProject = catchAsync(async (req, res) => {
+  const project = await Project.findOne({ client: req.user._id })
+    .populate('designer', 'fullName email mobile profileImage')
+    .sort({ updatedAt: -1 });
+
+  if (!project) {
+    throw new ApiError(404, 'No active project found for this user');
+  }
+
+  return res.status(200).json(new ApiResponse(200, project, 'Current project fetched successfully'));
+});
+
+export const getProjectMilestones = catchAsync(async (req, res) => {
+  const project = await Project.findOne({ _id: req.params.id, client: req.user._id });
+
+  if (!project) {
+    throw new ApiError(404, 'Project not found');
+  }
+
+  return res.status(200).json(new ApiResponse(200, project.timeline, 'Project milestones fetched successfully'));
+});
+
