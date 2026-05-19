@@ -79,3 +79,16 @@ body {
 .font-neuemontreal {
   font-family: 'Neue Montreal', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
+
+/* ===== MOBILE-ONLY: Fix hero banner viewport height gap ===== */
+/* On mobile browsers, 100vh includes the area behind the URL bar, causing
+   a gap at the bottom. 100dvh (dynamic viewport height) matches the actual
+   visible area. Desktop is completely unaffected by this media query. */
+@media (max-width: 1023px) {
+  .mobile-dvh {
+    height: 100dvh !important;
+    height: -webkit-fill-available; /* Fallback for older iOS Safari */
+    min-height: 100dvh !important;
+    min-height: -webkit-fill-available;
+  }
+}
