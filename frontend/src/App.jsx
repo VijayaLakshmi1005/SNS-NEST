@@ -652,9 +652,9 @@ function App() {
                 {/* Line 2: sculpted -> TESTIMONY (Beautiful beige when scrambling/settled on navy, zero glow!) */}
                 <span
                   className={`${isUniformStyle
-                      ? 'font-neuemontreal font-bold uppercase'
-                      : 'font-berlinerins font-medium lowercase'
-                    } text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px] tracking-tight transition-all duration-300`}
+                      ? 'font-neuemontreal font-bold uppercase text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px]'
+                      : 'font-berlinerins font-medium lowercase text-[58px] xs:text-[64px] sm:text-[46px] md:text-[60px] lg:text-[76px] xl:text-[88px]'
+                    } tracking-tight transition-all duration-300`}
                   style={{
                     color: currentLine2Color,
                     textShadow: line2Shadow
