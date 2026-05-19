@@ -19,7 +19,7 @@ const TestimonyTrack = forwardRef(({
     <div ref={ref} className="flex flex-row items-center h-full will-change-transform relative z-10">
 
       {/* SLIDE 0: HERO BANNER SECTION (rising navy backdrop, then X-axis panel slides out) */}
-      <div className="w-screen h-screen mobile-dvh flex-shrink-0 relative overflow-hidden flex flex-col items-center justify-center">
+      <div className="w-screen h-screen mobile-dvh flex-shrink-0 relative z-20 flex flex-col items-center justify-center" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         {/* Desktop Day Hero Image */}
         <img
           src={dayHeroImg}
@@ -38,14 +38,14 @@ const TestimonyTrack = forwardRef(({
         <img
           src={mobDayHeroImg}
           alt="SNS Nest Mobile Day Banner"
-          className="absolute inset-y-0 left-0 w-[calc(100%+12px)] h-full object-cover translate-x-[4px] block lg:hidden z-0"
+          className="absolute inset-0 w-full h-full object-cover scale-[1.02] block lg:hidden z-0"
         />
 
         {/* Mobile Night Hero Image */}
         <img
           src={mobNightHeroImg}
           alt="SNS Nest Mobile Night Banner"
-          className={`absolute inset-y-0 left-0 w-[calc(100%+12px)] h-full object-cover translate-x-[4px] transition-opacity duration-1000 ease-in-out block lg:hidden z-0 ${isNight ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 w-full h-full object-cover scale-[1.02] transition-opacity duration-1000 ease-in-out block lg:hidden z-0 ${isNight ? 'opacity-100' : 'opacity-0'}`}
         />
 
         {/* Deep Sage Rising Backdrop (Slides bottom-to-top behind text) */}
@@ -53,7 +53,8 @@ const TestimonyTrack = forwardRef(({
           className="absolute inset-y-0 left-0 w-[calc(100%+8px)] z-5 will-change-transform overflow-hidden"
           style={{
             backgroundColor: testimonyBgColor,
-            transform: `translateY(${Math.max(0, (1 - scrollProgress * 3.33) * 100)}%)`
+            transform: `translateY(${Math.max(0, (1 - scrollProgress * 3.33) * 100)}%)`,
+            transition: 'background-color 0.1s linear'
           }}
         >
           <img
@@ -65,9 +66,9 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* REVIEW 1: Floating typography, aligned top-left */}
-      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start pl-[16vw] pr-[6vw] lg:pl-[8vw] lg:pr-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start pl-[8vw] pr-[6vw] lg:pr-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         {/* Desktop Architectural Pin */}
-        <div className="absolute top-[24.5vh] left-[3vw] flex items-center select-none pointer-events-none z-20">
+        <div className="absolute lg:top-[24.5vh] top-1/2 lg:translate-y-0 -translate-y-1/2 left-[calc(3vw-24px)] flex items-center select-none pointer-events-none z-20">
           <div className="relative flex items-center justify-center w-6 h-6">
             <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
             <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
@@ -93,7 +94,7 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* SLIDE 1: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 2 */}
-      <div className="w-screen h-screen flex-shrink-0 flex items-center justify-center relative overflow-hidden z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+      <div className="w-screen h-screen flex-shrink-0 flex items-center justify-center relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         <img
           src={testimonySlide2Img}
           alt="Testimony Slide 2"
@@ -102,9 +103,9 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* REVIEW 2: Floating typography, aligned bottom-right */}
-      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-end pr-[16vw] pl-[6vw] lg:pr-[8vw] lg:pl-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-end pr-[8vw] pl-[6vw] lg:pl-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         {/* Desktop Architectural Pin */}
-        <div className="absolute bottom-[26.5vh] right-[3vw] flex flex-row-reverse items-center select-none pointer-events-none z-20">
+        <div className="absolute lg:bottom-[26.5vh] lg:top-auto top-1/2 lg:translate-y-0 -translate-y-1/2 right-[calc(3vw-24px)] flex flex-row-reverse items-center select-none pointer-events-none z-20">
           <div className="relative flex items-center justify-center w-6 h-6">
             <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
             <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
@@ -130,7 +131,7 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* SLIDE 2: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 3 */}
-      <div className="w-screen h-screen flex-shrink-0 flex items-center justify-center relative overflow-hidden z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+      <div className="w-screen h-screen flex-shrink-0 flex items-center justify-center relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         <img
           src={testimonySlide3Img}
           alt="Testimony Slide 3"
@@ -139,9 +140,9 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* REVIEW 3: Floating typography, aligned top-right */}
-      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-end pr-[16vw] pl-[6vw] lg:pr-[8vw] lg:pl-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-end pr-[8vw] pl-[6vw] lg:pl-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         {/* Desktop Architectural Pin */}
-        <div className="absolute top-[24.5vh] right-[3vw] hidden lg:flex flex-row-reverse items-center select-none pointer-events-none z-20">
+        <div className="absolute lg:top-[24.5vh] top-1/2 lg:translate-y-0 -translate-y-1/2 right-[calc(3vw-24px)] flex flex-row-reverse items-center select-none pointer-events-none z-20">
           <div className="relative flex items-center justify-center w-6 h-6">
             <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
             <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
@@ -167,7 +168,7 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* SLIDE 3: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 4 */}
-      <div className="w-screen h-screen flex-shrink-0 flex items-center justify-center relative overflow-hidden z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+      <div className="w-screen h-screen flex-shrink-0 flex items-center justify-center relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         <img
           src={testimonySlide4Img}
           alt="Testimony Slide 4"
@@ -176,9 +177,9 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* REVIEW 4: Floating typography, aligned bottom-left */}
-      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start pl-[16vw] pr-[6vw] lg:pl-[8vw] lg:pr-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start pl-[8vw] pr-[6vw] lg:pr-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         {/* Desktop Architectural Pin */}
-        <div className="absolute bottom-[22vh] left-[3vw] hidden lg:flex items-center select-none pointer-events-none z-20">
+        <div className="absolute lg:bottom-[22vh] lg:top-auto top-1/2 lg:translate-y-0 -translate-y-1/2 left-[calc(3vw-24px)] flex items-center select-none pointer-events-none z-20">
           <div className="relative flex items-center justify-center w-6 h-6">
             <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
             <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
@@ -204,7 +205,7 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* SLIDE 4: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 5 */}
-      <div className="w-screen h-screen flex-shrink-0 flex items-center justify-center relative overflow-hidden z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+      <div className="w-screen h-screen flex-shrink-0 flex items-center justify-center relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         <img
           src={testimonySlide5Img}
           alt="Testimony Slide 5"
@@ -213,10 +214,10 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* REVIEW 5: Floating typography, aligned center but styled like other left-aligned slides */}
-      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start pl-[16vw] pr-[6vw] lg:pl-[8vw] lg:pr-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+      <div className="w-screen lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start pl-[8vw] pr-[6vw] lg:pr-0 relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         <div className="flex flex-col items-start text-left max-w-lg lg:-translate-x-[8vw] relative border-l border-[#E3D5CA]/20 pl-6 sm:pl-8 py-2">
           {/* Desktop Architectural Pin */}
-          <div className="absolute top-[4.5vh] -left-[5vw] hidden lg:flex items-center select-none pointer-events-none z-20">
+          <div className="absolute lg:top-[4.5vh] top-1/2 lg:translate-y-0 -translate-y-1/2 -left-[calc(5vw+24px)] flex items-center select-none pointer-events-none z-20">
             <div className="relative flex items-center justify-center w-6 h-6">
               <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
               <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
