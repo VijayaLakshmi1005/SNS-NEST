@@ -450,24 +450,35 @@ function App() {
             </div>
 
             {/* REVIEW 1: Floating typography, aligned top-left */}
-            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-start pt-[20vh] pl-[8vw] relative z-10 lg:-ml-[8px] -ml-0">
-              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
-                {reviews[0].number}
-              </span>
-              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
-                "{reviews[0].quote}"
-              </p>
-              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
-              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
-                {reviews[0].author}
-              </h4>
-              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
-                {reviews[0].role}
-              </p>
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-start pt-[20vh] pl-[8vw] relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+              {/* Architectural Pin/Callout Indicator */}
+              <div className="absolute top-[24.5vh] left-[3vw] flex items-center select-none pointer-events-none z-20">
+                <div className="relative flex items-center justify-center w-6 h-6">
+                  <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+                  <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+                </div>
+                {/* Meets the border-l at pl-[8vw] (5vw wide) */}
+                <div className="w-[5vw] h-[1px] bg-[#E3D5CA]/25" />
+              </div>
+
+              {/* Text block with left border */}
+              <div className="border-l border-[#E3D5CA]/20 pl-6 sm:pl-8 py-2 relative z-10">
+                <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4">
+                  "{reviews[0].quote}"
+                </p>
+                <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
+                <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                  {reviews[0].author}
+                </h4>
+                <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                  {reviews[0].role}
+                </p>
+              </div>
             </div>
 
             {/* SLIDE 1: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 2 */}
-            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 lg:-ml-[8px] -ml-0">
+            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
               <img 
                 src={testimonySlide2Img} 
                 alt="Testimony Slide 2" 
@@ -476,24 +487,35 @@ function App() {
             </div>
 
             {/* REVIEW 2: Floating typography, aligned bottom-right */}
-            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-end pb-[22vh] pr-[8vw] items-end text-right relative z-10 lg:-ml-[8px] -ml-0">
-              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
-                {reviews[1].number}
-              </span>
-              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
-                "{reviews[1].quote}"
-              </p>
-              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
-              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
-                {reviews[1].author}
-              </h4>
-              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
-                {reviews[1].role}
-              </p>
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-end pb-[22vh] pr-[8vw] items-end relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+              {/* Architectural Pin/Callout Indicator */}
+              <div className="absolute bottom-[26.5vh] right-[3vw] flex flex-row-reverse items-center select-none pointer-events-none z-20">
+                <div className="relative flex items-center justify-center w-6 h-6">
+                  <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+                  <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+                </div>
+                {/* Meets the border-r at pr-[8vw] (5vw wide) */}
+                <div className="w-[5vw] h-[1px] bg-[#E3D5CA]/25" />
+              </div>
+
+              {/* Text block with right border */}
+              <div className="border-r border-[#E3D5CA]/20 pr-6 sm:pr-8 py-2 text-right relative z-10">
+                <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4">
+                  "{reviews[1].quote}"
+                </p>
+                <div className="w-12 h-px bg-[#E3D5CA]/30 my-4 ml-auto" />
+                <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                  {reviews[1].author}
+                </h4>
+                <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                  {reviews[1].role}
+                </p>
+              </div>
             </div>
 
             {/* SLIDE 2: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 3 */}
-            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 lg:-ml-[8px] -ml-0">
+            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
               <img 
                 src={testimonySlide3Img} 
                 alt="Testimony Slide 3" 
@@ -502,24 +524,35 @@ function App() {
             </div>
 
             {/* REVIEW 3: Floating typography, aligned top-right */}
-            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-start pt-[20vh] pr-[8vw] items-end text-right relative z-10 lg:-ml-[8px] -ml-0">
-              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
-                {reviews[2].number}
-              </span>
-              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
-                "{reviews[2].quote}"
-              </p>
-              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
-              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
-                {reviews[2].author}
-              </h4>
-              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
-                {reviews[2].role}
-              </p>
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-start pt-[20vh] pr-[8vw] items-end relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+              {/* Architectural Pin/Callout Indicator */}
+              <div className="absolute top-[24.5vh] right-[3vw] flex flex-row-reverse items-center select-none pointer-events-none z-20">
+                <div className="relative flex items-center justify-center w-6 h-6">
+                  <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+                  <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+                </div>
+                {/* Meets the border-r at pr-[8vw] (5vw wide) */}
+                <div className="w-[5vw] h-[1px] bg-[#E3D5CA]/25" />
+              </div>
+
+              {/* Text block with right border */}
+              <div className="border-r border-[#E3D5CA]/20 pr-6 sm:pr-8 py-2 text-right relative z-10">
+                <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4">
+                  "{reviews[2].quote}"
+                </p>
+                <div className="w-12 h-px bg-[#E3D5CA]/30 my-4 ml-auto" />
+                <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                  {reviews[2].author}
+                </h4>
+                <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                  {reviews[2].role}
+                </p>
+              </div>
             </div>
 
             {/* SLIDE 3: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 4 */}
-            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 lg:-ml-[8px] -ml-0">
+            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
               <img 
                 src={testimonySlide4Img} 
                 alt="Testimony Slide 4" 
@@ -528,24 +561,35 @@ function App() {
             </div>
 
             {/* REVIEW 4: Floating typography, aligned bottom-left */}
-            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-end pb-[18vh] pl-[8vw] relative z-10 lg:-ml-[8px] -ml-0">
-              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
-                {reviews[3].number}
-              </span>
-              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
-                "{reviews[3].quote}"
-              </p>
-              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
-              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
-                {reviews[3].author}
-              </h4>
-              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
-                {reviews[3].role}
-              </p>
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-end pb-[18vh] pl-[8vw] relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+              {/* Architectural Pin/Callout Indicator */}
+              <div className="absolute bottom-[22vh] left-[3vw] flex items-center select-none pointer-events-none z-20">
+                <div className="relative flex items-center justify-center w-6 h-6">
+                  <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+                  <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+                </div>
+                {/* Meets the border-l at pl-[8vw] (5vw wide) */}
+                <div className="w-[5vw] h-[1px] bg-[#E3D5CA]/25" />
+              </div>
+
+              {/* Text block with left border */}
+              <div className="border-l border-[#E3D5CA]/20 pl-6 sm:pl-8 py-2 relative z-10">
+                <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4">
+                  "{reviews[3].quote}"
+                </p>
+                <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
+                <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                  {reviews[3].author}
+                </h4>
+                <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                  {reviews[3].role}
+                </p>
+              </div>
             </div>
 
             {/* SLIDE 4: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 5 */}
-            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 lg:-ml-[8px] -ml-0">
+            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
               <img 
                 src={testimonySlide5Img} 
                 alt="Testimony Slide 5" 
@@ -553,21 +597,30 @@ function App() {
               />
             </div>
 
-            {/* REVIEW 5: Floating typography, aligned center */}
-            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-center text-center px-4 relative z-10 lg:-ml-[8px] -ml-0">
-              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
-                {reviews[4].number}
-              </span>
-              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
-                "{reviews[4].quote}"
-              </p>
-              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4 mx-auto" />
-              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
-                {reviews[4].author}
-              </h4>
-              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
-                {reviews[4].role}
-              </p>
+            {/* REVIEW 5: Floating typography, aligned center but styled like other left-aligned slides */}
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-start relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor }}>
+              <div className="flex flex-col items-start text-left max-w-lg -translate-x-[4vw] sm:-translate-x-[6vw] lg:-translate-x-[8vw] relative border-l border-[#E3D5CA]/20 pl-6 sm:pl-8 py-2">
+                {/* Architectural Pin/Callout Indicator */}
+                <div className="absolute top-[4.5vh] -left-[5vw] flex items-center select-none pointer-events-none z-20">
+                  <div className="relative flex items-center justify-center w-6 h-6">
+                    <div className="absolute w-full h-full rounded-full border border-[#E3D5CA]/20 animate-ping opacity-75 [animation-duration:3s]" />
+                    <div className="absolute w-4 h-4 rounded-full border border-[#E3D5CA]/35" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#E3D5CA] shadow-[0_0_8px_rgba(227,213,202,0.8)]" />
+                  </div>
+                  {/* Meets the border-l exactly */}
+                  <div className="w-[5vw] h-[1px] bg-[#E3D5CA]/25" />
+                </div>
+                <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light mb-4">
+                  "{reviews[4].quote}"
+                </p>
+                <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
+                <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                  {reviews[4].author}
+                </h4>
+                <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                  {reviews[4].role}
+                </p>
+              </div>
             </div>
 
           </div>
