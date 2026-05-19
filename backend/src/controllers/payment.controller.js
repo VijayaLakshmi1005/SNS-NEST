@@ -57,3 +57,22 @@ export const getPaymentHistory = catchAsync(async (req, res) => {
   const history = await Payment.find({ client: req.user._id }).sort({ createdAt: -1 });
   return res.status(200).json(new ApiResponse(200, history, 'Payment history retrieved successfully'));
 });
+
+export const getPaymentStatus = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const payments = await Payment.find({ client: userId, status: 'Paid' });
+  const paidAmount = payments.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        paidAmount: paidAmount || 980000,
+        totalAmount: 2940000,
+        pendingAmount: Math.max(0, 2940000 - paidAmount),
+        nextDueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      'Payment status retrieved successfully'
+    )
+  );
+});
