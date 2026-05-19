@@ -71,6 +71,39 @@ const scrambleText = (startStr, endStr, progress) => {
   return result;
 };
 
+const reviews = [
+  {
+    number: "01",
+    quote: "SNS NEST transformed our penthouse into a sanctuary of clean lines and quiet luxury. Their eye for detail is unmatched.",
+    author: "Elena Rostova",
+    role: "Creative Director"
+  },
+  {
+    number: "02",
+    quote: "A masterclass in modern spatial design. The flow, the lighting, and the textures feel entirely bespoke.",
+    author: "Julian Vance",
+    role: "Architectural Lead"
+  },
+  {
+    number: "03",
+    quote: "They don't just design rooms; they curate experiences that elevate daily living to an art form.",
+    author: "Marc & Sophia",
+    role: "Estate Owners"
+  },
+  {
+    number: "04",
+    quote: "The seamless integration of smart home features with natural, warm minimalism is absolutely brilliant.",
+    author: "David K.",
+    role: "Tech Entrepreneur"
+  },
+  {
+    number: "05",
+    quote: "From the initial render to the final handover, the craftsmanship and professionalism was flawless.",
+    author: "Zara Sterling",
+    role: "Design Enthusiast"
+  }
+];
+
 function App() {
   const { isNight, setNightMode } = useThemeStore()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -416,47 +449,125 @@ function App() {
               </div>
             </div>
 
-            {/* SLIDES 1, 2, 3: LUXURY CLIENT REVIEWS CARDS (Overlaps Slide 0 by -ml-[4px] to cure subpixel hairline gaps!) */}
-            <div className="flex flex-row items-center h-full px-[8vw] sm:px-[12vw] gap-[8vw] sm:gap-[12vw] flex-shrink-0 bg-[#0A0F1D] -ml-[4px] relative z-10">
-              {testimonials.map((testimonial, idx) => (
-                <div
-                  key={idx}
-                  className="w-[85vw] sm:w-[50vw] md:w-[40vw] lg:w-[32vw] h-[55vh] sm:h-[58vh] bg-[#0E1626] border border-[#E3D5CA]/10 rounded-[32px] p-8 sm:p-12 flex flex-col justify-between shadow-[0_30px_70px_rgba(0,0,0,0.6)] flex-shrink-0 relative overflow-hidden transition-all duration-500 hover:border-[#E3D5CA]/25 hover:shadow-[0_40px_80px_rgba(0,0,0,0.8)] hover:-translate-y-1 group"
-                >
-                  {/* Faint Amber Background light leak */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#B89D7A]/5 blur-2xl rounded-full transition-all duration-500 group-hover:bg-[#B89D7A]/10 pointer-events-none" />
+            {/* REVIEW 1: Floating typography, aligned top-left */}
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-start pt-[20vh] pl-[8vw] relative z-10 lg:-ml-[8px] -ml-0">
+              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
+                {reviews[0].number}
+              </span>
+              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
+                "{reviews[0].quote}"
+              </p>
+              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
+              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                {reviews[0].author}
+              </h4>
+              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                {reviews[0].role}
+              </p>
+            </div>
 
-                  {/* Sleek quotation mark background in Neue Montreal */}
-                  <span className="font-neuemontreal text-[120px] leading-none text-[#E3D5CA]/5 absolute top-0 right-6 select-none pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
-                    “
-                  </span>
+            {/* SLIDE 1: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 2 */}
+            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 lg:-ml-[8px] -ml-0">
+              <img 
+                src={testimonySlide2Img} 
+                alt="Testimony Slide 2" 
+                className="absolute inset-0 w-full h-full object-contain scale-120 translate-y-15 opacity-75 z-0 select-none pointer-events-none"
+              />
+            </div>
 
-                  {/* Stars and Review Text (Neue Montreal!) */}
-                  <div>
-                    <div className="flex items-center gap-1.5 mb-6">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <svg key={i} viewBox="0 0 24 24" fill="#B89D7A" className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#B89D7A] filter drop-shadow-[0_0_2px_rgba(184,157,122,0.3)]">
-                          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                        </svg>
-                      ))}
-                    </div>
-                    <p className="font-neuemontreal text-white/90 text-base sm:text-lg md:text-[19px] leading-relaxed font-light relative z-10 transition-colors duration-300 group-hover:text-white">
-                      "{testimonial.review}"
-                    </p>
-                  </div>
+            {/* REVIEW 2: Floating typography, aligned bottom-right */}
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-end pb-[22vh] pr-[8vw] items-end text-right relative z-10 lg:-ml-[8px] -ml-0">
+              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
+                {reviews[1].number}
+              </span>
+              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
+                "{reviews[1].quote}"
+              </p>
+              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
+              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                {reviews[1].author}
+              </h4>
+              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                {reviews[1].role}
+              </p>
+            </div>
 
-                  {/* Signature Client Info (Neue Montreal!) */}
-                  <div>
-                    <div className="w-8 h-[1px] bg-[#E3D5CA]/20 my-6 transition-all duration-500 group-hover:w-16 group-hover:bg-[#E3D5CA]/40" />
-                    <h4 className="font-neuemontreal text-[#E3D5CA] text-sm sm:text-base font-bold tracking-wider uppercase leading-none">
-                      {testimonial.name}
-                    </h4>
-                    <p className="font-neuemontreal text-white/45 text-[10px] sm:text-xs font-medium uppercase tracking-[0.15em] mt-1.5 transition-colors duration-300 group-hover:text-white/60">
-                      {testimonial.role}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            {/* SLIDE 2: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 3 */}
+            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 lg:-ml-[8px] -ml-0">
+              <img 
+                src={testimonySlide3Img} 
+                alt="Testimony Slide 3" 
+                className="absolute inset-0 w-full h-full object-contain scale-120 translate-y-6 opacity-75 z-0 select-none pointer-events-none"
+              />
+            </div>
+
+            {/* REVIEW 3: Floating typography, aligned top-right */}
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-start pt-[20vh] pr-[8vw] items-end text-right relative z-10 lg:-ml-[8px] -ml-0">
+              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
+                {reviews[2].number}
+              </span>
+              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
+                "{reviews[2].quote}"
+              </p>
+              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
+              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                {reviews[2].author}
+              </h4>
+              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                {reviews[2].role}
+              </p>
+            </div>
+
+            {/* SLIDE 3: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 4 */}
+            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 lg:-ml-[8px] -ml-0">
+              <img 
+                src={testimonySlide4Img} 
+                alt="Testimony Slide 4" 
+                className="absolute inset-0 w-full h-full object-contain scale-120 translate-y-36 opacity-75 z-0 select-none pointer-events-none"
+              />
+            </div>
+
+            {/* REVIEW 4: Floating typography, aligned bottom-left */}
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-end pb-[18vh] pl-[8vw] relative z-10 lg:-ml-[8px] -ml-0">
+              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
+                {reviews[3].number}
+              </span>
+              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
+                "{reviews[3].quote}"
+              </p>
+              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4" />
+              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                {reviews[3].author}
+              </h4>
+              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                {reviews[3].role}
+              </p>
+            </div>
+
+            {/* SLIDE 4: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 5 */}
+            <div className="w-screen h-screen flex-shrink-0 relative overflow-hidden z-10 lg:-ml-[8px] -ml-0">
+              <img 
+                src={testimonySlide5Img} 
+                alt="Testimony Slide 5" 
+                className="absolute inset-0 w-full h-full object-contain scale-90 translate-y-15 opacity-75 z-0 select-none pointer-events-none"
+              />
+            </div>
+
+            {/* REVIEW 5: Floating typography, aligned center */}
+            <div className="w-[60vw] sm:w-[45vw] lg:w-[40vw] h-screen flex-shrink-0 flex flex-col justify-center items-center text-center px-4 relative z-10 lg:-ml-[8px] -ml-0">
+              <span className="font-cormorant text-[70px] sm:text-[90px] lg:text-[110px] leading-none text-[#E3D5CA]/10 select-none">
+                {reviews[4].number}
+              </span>
+              <p className="font-cormorant italic text-[20px] sm:text-[24px] lg:text-[28px] leading-relaxed text-[#E3D5CA]/90 font-light max-w-lg mb-4 mt-2">
+                "{reviews[4].quote}"
+              </p>
+              <div className="w-12 h-px bg-[#E3D5CA]/30 my-4 mx-auto" />
+              <h4 className="font-neuemontreal text-xs uppercase tracking-[0.2em] text-[#E3D5CA]/80 font-bold">
+                {reviews[4].author}
+              </h4>
+              <p className="font-neuemontreal text-[10px] uppercase tracking-[0.15em] text-[#E3D5CA]/40 mt-1">
+                {reviews[4].role}
+              </p>
             </div>
 
           </div>
