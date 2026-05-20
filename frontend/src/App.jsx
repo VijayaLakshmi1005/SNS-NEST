@@ -8,6 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Navbar from './components/Navbar'
 import MobileMenu from './components/MobileMenu'
 import TestimonyTrack from './components/TestimonyTrack'
+import PortfolioIntro from './components/PortfolioIntro'
 import { reviews } from './data/reviews'
 import { interpolateColor, scrambleText } from './utils/scramble'
 
@@ -72,17 +73,63 @@ function App() {
         }
       });
 
-      // 1. Animate horizontal track translation using function-based values for 100% mobile responsiveness
+      // 1. Animate horizontal track translation (35% to 65% of scroll)
       mainTimeline.to(track, {
         x: () => -(track.scrollWidth - window.innerWidth),
         ease: "none",
       }, 0.35);
 
-      // 2. Animate slogan translation in absolute lockstep using matched function-based values
+      // 2. Animate slogan translation in absolute lockstep
       mainTimeline.to(slogan, {
         x: () => -(track.scrollWidth - window.innerWidth),
         ease: "none",
       }, 0.35);
+
+      // 3. Slogan fade out (68%)
+      mainTimeline.to(slogan, {
+        opacity: 0,
+        scale: 0.92,
+        duration: 0.04,
+        ease: "power2.out"
+      }, 0.68);
+
+      // 4. Cinematic camera pull-back (68% to 85%)
+      const getTargetScale = () => {
+        const w = window.innerWidth;
+        if (w >= 1024) return 0.15; // Desktop
+        if (w >= 768) return 0.18;  // Tablet
+        return 0.22; // Mobile - slightly larger to prevent microscopic slides
+      };
+
+      // Set transform origin to 0px so our math is rock-solid and trivially responsive
+      gsap.set(track, { transformOrigin: "0px center" });
+
+      mainTimeline.to(track, {
+        scale: getTargetScale,
+        x: () => {
+          const V = window.innerWidth;
+          const W = track.scrollWidth;
+          const S = getTargetScale();
+          // Center the entire scaled gallery (W * S) inside the viewport (V)
+          return (V - W * S) / 2;
+        },
+        duration: 0.17,
+        ease: "power2.inOut" // Smooth, heavy cinematic momentum
+      }, 0.68);
+
+      // 5. Hold full gallery composition (85% to 88%)
+      mainTimeline.to(track, {
+        opacity: 1,
+        duration: 0.03
+      }, 0.85);
+
+      // 6. Gallery fades softly to background (88% to 100%)
+      mainTimeline.to(track, {
+        opacity: 0,
+        filter: "blur(12px)", // slightly deeper blur for cinematic defocus
+        duration: 0.12,
+        ease: "power2.in"
+      }, 0.88);
     };
 
     // Support horizontal scroll from trackpad / shift + scroll wheel
@@ -184,11 +231,16 @@ function App() {
       : sloganShadow);
 
   // Scroll-driven pastel background color for the testimony section
-  // Horizontal scroll starts at 0.35, ends at 1.0 → normalize to 0-1 across 5 color stops
+  // Horizontal scroll runs from 0.35 to ~0.65, camera pull-back from 0.68 to 0.85
   const testimonyColors = ['#656D4A', '#7D6B5A', '#5A6B6E', '#6B5E78', '#7B5A3C'];
   const testimonyBgColor = (() => {
     if (scrollProgress < 0.35) return testimonyColors[0];
-    const t = Math.min(1, (scrollProgress - 0.35) / 0.65);
+    if (scrollProgress >= 0.85) return '#F0E8DC';
+    if (scrollProgress >= 0.68) {
+      const t = (scrollProgress - 0.68) / 0.17;
+      return interpolateColor(testimonyColors[4], '#F0E8DC', t);
+    }
+    const t = Math.min(1, (scrollProgress - 0.35) / 0.33);
     const segment = t * (testimonyColors.length - 1);
     const idx = Math.floor(Math.min(segment, testimonyColors.length - 2));
     const frac = segment - idx;
@@ -288,6 +340,11 @@ function App() {
 
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* INTERACTION LAYER 3: CREAM PORTFOLIO CANVAS (Scrolls naturally after pin) */}
+      {/* ========================================================================= */}
+      <PortfolioIntro />
 
       {/* Premium Mobile Menu Overlay */}
       <MobileMenu isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
