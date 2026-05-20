@@ -33,14 +33,9 @@ function App() {
       syncTouch: true, // Smooth scrolling on mobile touch events
     });
 
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-
     // Synchronize Lenis with GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
+    
     gsap.ticker.add((time) => {
       lenis.raf(time * 1000);
     });
@@ -73,16 +68,18 @@ function App() {
         }
       });
 
-      // 1. Animate horizontal track translation (35% to 65% of scroll)
+      // 1. Animate horizontal track translation (35% to 68% of scroll)
       mainTimeline.to(track, {
         x: () => -(track.scrollWidth - window.innerWidth),
         ease: "none",
+        duration: 0.33
       }, 0.35);
 
       // 2. Animate slogan translation in absolute lockstep
       mainTimeline.to(slogan, {
         x: () => -(track.scrollWidth - window.innerWidth),
         ease: "none",
+        duration: 0.33
       }, 0.35);
 
       // 3. Slogan fade out (68%)
@@ -96,9 +93,9 @@ function App() {
       // 4. Cinematic camera pull-back (68% to 85%)
       const getTargetScale = () => {
         const w = window.innerWidth;
-        if (w >= 1024) return 0.15; // Desktop
-        if (w >= 768) return 0.18;  // Tablet
-        return 0.22; // Mobile - slightly larger to prevent microscopic slides
+        if (w >= 1024) return 0.26; // Desktop: perfectly frames the last 3 slides (approx 380vw)
+        if (w >= 768) return 0.28;  // Tablet
+        return 0.32; // Mobile: keeps slides from becoming too small
       };
 
       // Set transform origin to 0px so our math is rock-solid and trivially responsive
@@ -110,8 +107,17 @@ function App() {
           const V = window.innerWidth;
           const W = track.scrollWidth;
           const S = getTargetScale();
-          // Center the entire scaled gallery (W * S) inside the viewport (V)
-          return (V - W * S) / 2;
+          
+          // Focus point: center of the last 3 slides
+          // On desktop, the last 3 slides + reviews occupy ~400vw at the end of the track.
+          // Center of that block is roughly 200vw from the right edge.
+          const isDesktop = V >= 1024;
+          const focusDistanceFromRight = isDesktop ? (2.1 * V) : (2.8 * V); 
+          const focusPoint = W - focusDistanceFromRight;
+          
+          // We want the focusPoint to land exactly at the center of the viewport (V / 2)
+          // X + focusPoint * S = V / 2  =>  X = V / 2 - focusPoint * S
+          return (V / 2) - (focusPoint * S);
         },
         duration: 0.17,
         ease: "power2.inOut" // Smooth, heavy cinematic momentum
