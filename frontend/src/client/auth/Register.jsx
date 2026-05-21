@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { useThemeStore } from '../store/themeStore'
 import { Eye, EyeOff, ArrowRight, ShieldCheck } from 'lucide-react'
+import { apiRequest } from '../utils/api'
 
 const THEME = {
   light: {
@@ -22,8 +23,6 @@ const THEME = {
     button: 'bg-[#F5EBE0] text-[#1E1A17] hover:bg-white',
   }
 }
-
-import { apiRequest } from '../utils/api'
 
 export default function Register() {
   const { isNight } = useThemeStore()

@@ -67,11 +67,21 @@ export const loginUser = catchAsync(async (req, res) => {
 
   const userResponse = await User.findById(user._id).select('-password -refreshToken -otp');
 
+  let redirectPath = '/client/dashboard';
+  if (user.role === 'admin') redirectPath = '/admin/dashboard';
+  if (user.role === 'designer') redirectPath = '/designer/dashboard';
+
   return res
     .status(200)
     .cookie('accessToken', accessToken, options)
     .cookie('refreshToken', refreshToken, options)
-    .json(new ApiResponse(200, { user: userResponse, accessToken }, 'Login successful'));
+    .json(new ApiResponse(200, { 
+      user: userResponse, 
+      accessToken, 
+      refreshToken, 
+      role: user.role, 
+      redirectPath 
+    }, 'Login successful'));
 });
 
 export const verifyOTP = catchAsync(async (req, res) => {

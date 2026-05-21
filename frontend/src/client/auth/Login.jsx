@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { useThemeStore } from '../store/themeStore'
+import { useAuthStore } from '../../store/useAuthStore'
 import { Eye, EyeOff, ArrowRight } from 'lucide-react'
 
 const THEME = {
@@ -27,6 +28,7 @@ import { apiRequest } from '../utils/api'
 
 export default function Login() {
   const { isNight } = useThemeStore()
+  const login = useAuthStore(state => state.login)
   const theme = isNight ? THEME.dark : THEME.light
   const navigate = useNavigate()
 
@@ -45,8 +47,8 @@ export default function Login() {
         data: { email, password }
       });
       if (res && res.data && res.data.accessToken) {
-        localStorage.setItem('token', res.data.accessToken);
-        navigate('/client/dashboard');
+        login(res.data.user, res.data.accessToken);
+        navigate(res.data.redirectPath || '/client/dashboard');
       } else {
         setError('Login failed: Invalid server response.');
       }

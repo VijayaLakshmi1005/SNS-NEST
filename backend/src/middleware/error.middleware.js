@@ -20,8 +20,12 @@ export const errorHandler = (err, req, res, next) => {
     }
   };
 
-  // Log error stack for devs
-  console.error(`[Error Boundary]: ${err.stack || err.message}`);
+  // Log error stack for devs (silence for common auth errors)
+  if (error.statusCode !== 401 && error.statusCode !== 403) {
+    console.error(`[Error Boundary]: ${err.stack || err.message}`);
+  } else {
+    console.warn(`[Auth Warning]: ${error.message}`);
+  }
 
   return res.status(error.statusCode).json(response);
 };

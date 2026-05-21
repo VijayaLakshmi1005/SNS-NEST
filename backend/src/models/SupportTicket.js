@@ -29,7 +29,7 @@ const supportTicketSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Open', 'In-Progress', 'Resolved'],
+    enum: ['Open', 'In-Progress', 'Waiting for Client', 'Resolved', 'Closed'],
     default: 'Open'
   },
   messages: [ticketMessageSchema]
@@ -40,4 +40,4 @@ const supportTicketSchema = new mongoose.Schema({
 supportTicketSchema.index({ client: 1 });
 supportTicketSchema.index({ status: 1 });
 
-export const SupportTicket = mongoose.model('SupportTicket', supportTicketSchema);
+export const SupportTicket = mongoose.models.SupportTicket || mongoose.model('SupportTicket', supportTicketSchema);
