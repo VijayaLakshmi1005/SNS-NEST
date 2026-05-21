@@ -59,10 +59,11 @@ export const loginUser = catchAsync(async (req, res) => {
   user.refreshToken = refreshToken;
   await user.save();
 
+  const isProd = (process.env.NODE_ENV || '').trim() === 'production';
   const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict'
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax'
   };
 
   const userResponse = await User.findById(user._id).select('-password -refreshToken -otp');
@@ -125,10 +126,11 @@ export const refreshSessionToken = catchAsync(async (req, res) => {
     user.refreshToken = newRefreshToken;
     await user.save();
 
+    const isProd = (process.env.NODE_ENV || '').trim() === 'production';
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict'
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax'
     };
 
     return res
@@ -147,10 +149,11 @@ export const logoutUser = catchAsync(async (req, res) => {
     await req.user.save();
   }
 
+  const isProd = (process.env.NODE_ENV || '').trim() === 'production';
   const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict'
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax'
   };
 
   return res
