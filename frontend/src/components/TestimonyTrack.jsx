@@ -261,7 +261,7 @@ const TestimonyTrack = forwardRef(({
       </div>
 
       {/* SLIDE 4: FULL SCREEN SHOWCASE OF TESTIMONY IMAGE 5 */}
-      <div className="w-screen h-screen flex-shrink-0 flex items-center justify-center relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
+      <div className="testimony-slide-last w-screen h-screen flex-shrink-0 flex items-center justify-center relative z-10 -ml-[8px]" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
         <img
           src={testimonySlide5Img}
           alt="Testimony Slide 5"

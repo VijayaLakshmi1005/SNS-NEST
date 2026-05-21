@@ -8,6 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Navbar from './components/Navbar'
 import MobileMenu from './components/MobileMenu'
 import TestimonyTrack from './components/TestimonyTrack'
+import PortfolioIntro from './components/PortfolioIntro'
 import { reviews } from './data/reviews'
 import { interpolateColor, scrambleText } from './utils/scramble'
 
@@ -32,14 +33,9 @@ function App() {
       syncTouch: true, // Smooth scrolling on mobile touch events
     });
 
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-
     // Synchronize Lenis with GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
+
     gsap.ticker.add((time) => {
       lenis.raf(time * 1000);
     });
@@ -58,7 +54,6 @@ function App() {
       mainTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: section,
-          pin: true,
           scrub: 1.2, // Butter-smooth momentum vertical-to-horizontal scrub
           start: "top top",
           end: "bottom bottom",
@@ -72,17 +67,74 @@ function App() {
         }
       });
 
-      // 1. Animate horizontal track translation using function-based values for 100% mobile responsiveness
+      // 1. Animate horizontal track translation (35% to 68% of scroll)
       mainTimeline.to(track, {
         x: () => -(track.scrollWidth - window.innerWidth),
         ease: "none",
+        duration: 0.33
       }, 0.35);
 
-      // 2. Animate slogan translation in absolute lockstep using matched function-based values
+      // 2. Animate slogan translation in absolute lockstep
       mainTimeline.to(slogan, {
         x: () => -(track.scrollWidth - window.innerWidth),
         ease: "none",
+        duration: 0.33
       }, 0.35);
+
+      // 3. Slogan fade out (68%)
+      mainTimeline.to(slogan, {
+        opacity: 0,
+        scale: 0.92,
+        duration: 0.04,
+        ease: "power2.out"
+      }, 0.68);
+
+      // 4. Cinematic camera pull-back (68% to 85%)
+      const getTargetScale = () => {
+        const w = window.innerWidth;
+        if (w >= 1024) return 0.26; // Desktop: perfectly frames the last 3 slides (approx 380vw)
+        if (w >= 768) return 0.28;  // Tablet
+        return 0.32; // Mobile: keeps slides from becoming too small
+      };
+
+      // Set transform origin to 0px so our math is rock-solid and trivially responsive
+      gsap.set(track, { transformOrigin: "0px center" });
+
+      mainTimeline.to(track, {
+        scale: getTargetScale,
+        x: () => {
+          const V = window.innerWidth;
+          const W = track.scrollWidth;
+          const S = getTargetScale();
+
+          // Focus point: center of the last 3 slides
+          // On desktop, the last 3 slides + reviews occupy ~400vw at the end of the track.
+          // Center of that block is roughly 200vw from the right edge.
+          const isDesktop = V >= 1024;
+          const focusDistanceFromRight = isDesktop ? (2.1 * V) : (2.8 * V);
+          const focusPoint = W - focusDistanceFromRight;
+
+          // We want the focusPoint to land exactly at the center of the viewport (V / 2)
+          // X + focusPoint * S = V / 2  =>  X = V / 2 - focusPoint * S
+          return (V / 2) - (focusPoint * S);
+        },
+        duration: 0.17,
+        ease: "power2.inOut" // Smooth, heavy cinematic momentum
+      }, 0.68);
+
+      // 5. Hold full gallery composition (85% to 88%)
+      mainTimeline.to(track, {
+        opacity: 1,
+        duration: 0.03
+      }, 0.85);
+
+      // 6. Gallery fades softly to background (88% to 100%)
+      mainTimeline.to(track, {
+        opacity: 0,
+        filter: "blur(12px)", // slightly deeper blur for cinematic defocus
+        duration: 0.12,
+        ease: "power2.in"
+      }, 0.88);
     };
 
     // Support horizontal scroll from trackpad / shift + scroll wheel
@@ -145,8 +197,17 @@ function App() {
 
   // Drive premium dynamic color play for fixed header navigation based on ScrollProgress
   const colorProgress = isNight ? 1 : morphProgress;
-  const navTextColor = interpolateColor('#1A1210', '#E3D5CA', colorProgress);
-  const shouldInvertLogo = isNight || scrollProgress > 0.15;
+  let navTextColor = interpolateColor('#1A1210', '#E3D5CA', colorProgress);
+  
+  // Smoothly transition the navbar text back to dark when zoomout finishes so it looks perfect over the beige Portfolio!
+  if (scrollProgress >= 0.85) {
+    navTextColor = '#1A1210';
+  } else if (scrollProgress > 0.75) {
+    const t = (scrollProgress - 0.75) / 0.10;
+    navTextColor = interpolateColor('#E3D5CA', '#1A1210', t);
+  }
+  
+  const shouldInvertLogo = isNight || scrollProgress > 0.15 && scrollProgress < 0.8;
 
   // Single-Layer Scrambles: Scramble directly from start to finish
   const line1Text = scrambleText("YOUR VISION,", "OUR", morphProgress);
@@ -184,11 +245,16 @@ function App() {
       : sloganShadow);
 
   // Scroll-driven pastel background color for the testimony section
-  // Horizontal scroll starts at 0.35, ends at 1.0 → normalize to 0-1 across 5 color stops
+  // Horizontal scroll runs from 0.35 to ~0.65, camera pull-back from 0.68 to 0.85
   const testimonyColors = ['#656D4A', '#7D6B5A', '#5A6B6E', '#6B5E78', '#7B5A3C'];
   const testimonyBgColor = (() => {
     if (scrollProgress < 0.35) return testimonyColors[0];
-    const t = Math.min(1, (scrollProgress - 0.35) / 0.65);
+    if (scrollProgress >= 0.85) return '#F0E8DC';
+    if (scrollProgress >= 0.68) {
+      const t = (scrollProgress - 0.68) / 0.17;
+      return interpolateColor(testimonyColors[4], '#F0E8DC', t);
+    }
+    const t = Math.min(1, (scrollProgress - 0.35) / 0.33);
     const segment = t * (testimonyColors.length - 1);
     const idx = Math.floor(Math.min(segment, testimonyColors.length - 2));
     const frac = segment - idx;
@@ -196,7 +262,7 @@ function App() {
   })();
 
   return (
-    <div className="relative w-full min-h-screen bg-[#656D4A] overflow-x-hidden select-none flex flex-col items-center">
+    <div className="relative w-full min-h-screen bg-[#656D4A] select-none flex flex-col items-center">
       {/* GLOBAL FIXED NAVIGATION HEADERS (Adapts organically on scroll) */}
       <Navbar
         shouldInvertLogo={shouldInvertLogo}
@@ -208,7 +274,7 @@ function App() {
       {/* ========================================================================= */}
       {/* UNIFIED SCROLLING STORYTELLING SHOWCASE (h-[350vh] for smooth linear translate) */}
       {/* ========================================================================= */}
-      <div ref={mainSectionRef} className="relative w-full h-[350vh] bg-black">
+      <div ref={mainSectionRef} className="relative w-full h-[350vh] bg-[#C7A58D]">
         {/* Pinned Viewport Container (Natively locked via GSAP ScrollTrigger) */}
         <div className="sticky top-0 left-0 w-full h-screen mobile-dvh overflow-hidden" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
 
@@ -250,8 +316,8 @@ function App() {
                 {/* Line 2: sculpted -> TESTIMONY (Beautiful beige when scrambling/settled on navy, zero glow!) */}
                 <span
                   className={`${isUniformStyle
-                      ? 'font-neuemontreal font-bold uppercase text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px]'
-                      : 'font-berlinerins font-medium lowercase text-[58px] xs:text-[64px] sm:text-[46px] md:text-[60px] lg:text-[76px] xl:text-[88px]'
+                    ? 'font-neuemontreal font-bold uppercase text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px]'
+                    : 'font-berlinerins font-medium lowercase text-[58px] xs:text-[64px] sm:text-[46px] md:text-[60px] lg:text-[76px] xl:text-[88px]'
                     } tracking-tight transition-all duration-300`}
                   style={{
                     color: currentLine2Color,
@@ -288,6 +354,11 @@ function App() {
 
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* INTERACTION LAYER 3: CREAM PORTFOLIO CANVAS (Scrolls naturally after pin) */}
+      {/* ========================================================================= */}
+      <PortfolioIntro />
 
       {/* Premium Mobile Menu Overlay */}
       <MobileMenu isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />

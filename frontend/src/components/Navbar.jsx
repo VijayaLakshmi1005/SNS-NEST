@@ -24,7 +24,7 @@ export default function Navbar({
   return (
     <>
       {/* Top Left Logo & Company Name */}
-      <div className="fixed top-[20px] left-4 md:top-[44px] md:left-12 z-35 pointer-events-auto">
+      <div className="fixed top-[20px] left-4 md:top-[44px] md:left-12 z-50 pointer-events-auto">
         <a href="#home" className="flex items-center lg:items-start gap-2 sm:gap-2.5 outline-none hover:opacity-80 transition-opacity duration-300">
           <img
             src={logoImg}
@@ -115,7 +115,7 @@ export default function Navbar({
 
       {/* Centered, Perfectly Spaced Top Navigation Bar */}
       <nav
-        className="fixed top-8 md:top-12 left-1/2 -translate-x-1/2 z-35 hidden lg:flex items-center justify-center gap-10 font-nav-style text-sm md:text-base font-extrabold tracking-wider whitespace-nowrap transition-colors duration-300 ease-in-out pointer-events-auto"
+        className="fixed top-8 md:top-12 left-1/2 -translate-x-1/2 z-50 hidden lg:flex items-center justify-center gap-10 font-nav-style text-sm md:text-base font-extrabold tracking-wider whitespace-nowrap transition-colors duration-300 ease-in-out pointer-events-auto"
         style={{ color: navTextColor }}
       >
         <a href="#home" className="hover:scale-105 transition-all duration-300">HOME</a>
