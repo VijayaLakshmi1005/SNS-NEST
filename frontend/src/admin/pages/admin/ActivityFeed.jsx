@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { io } from 'socket.io-client';
 import { Activity, Clock, RefreshCw, Zap } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 export default function ActivityFeed() {
   const queryClient = useQueryClient();

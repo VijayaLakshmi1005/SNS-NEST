@@ -138,7 +138,7 @@ export default function Chat() {
         // 3. Setup socket channel join
         const token = localStorage.getItem('token');
         if (token) {
-          const socketUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+          const socketUrl = import.meta.env.VITE_API_BASE_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'https://sns-nest-backend.onrender.com');
           const socket = io(socketUrl, { auth: { token } });
           socketRef.current = socket;
 

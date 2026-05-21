@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { PenTool, Plus, FileText, Globe } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 export default function BlogManager({ initialBlogs = [] }) {
   const queryClient = useQueryClient();

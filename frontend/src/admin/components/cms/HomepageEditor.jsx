@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Save, Image as ImageIcon, Layout, ArrowUp, ArrowDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const defaultSections = [
   { sectionId: 'hero', isActive: true, order: 1, content: { title: 'SCULPTING LUXURY', subtitle: 'Interior design that redefines modern living.', ctaText: 'Start Visualizing' } },

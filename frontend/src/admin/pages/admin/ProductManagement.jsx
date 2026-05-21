@@ -5,7 +5,7 @@ import { Package, TrendingUp, AlertTriangle, Eye, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import ProductCatalog from '../../components/products/ProductCatalog';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchProducts = async () => {
   const res = await axios.get(`${API_URL}/products`, { withCredentials: true });

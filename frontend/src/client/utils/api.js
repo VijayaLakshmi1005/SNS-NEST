@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let base = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+let base = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 if (base && !base.endsWith('/api') && !base.endsWith('/api/')) {
   base = base.endsWith('/') ? `${base}api` : `${base}/api`;
 }

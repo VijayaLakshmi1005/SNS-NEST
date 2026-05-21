@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import HomepageEditor from '../../components/cms/HomepageEditor';
 import BlogManager from '../../components/cms/BlogManager';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchCmsData = async () => {
   const [pagesRes, blogsRes] = await Promise.all([

@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Calendar, Clock, Video, User, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/Card';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 // Generates next 14 days
 const generateDates = () => {

@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import { Bell, Check, CheckCircle2, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);

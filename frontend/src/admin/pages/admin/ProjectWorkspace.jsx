@@ -7,7 +7,7 @@ import MilestoneTracker from '../../components/projects/MilestoneTracker';
 import DocumentManager from '../../components/projects/DocumentManager';
 import ActivityFeed from '../../components/projects/ActivityFeed';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchProjectDetails = async (id) => {
   const res = await axios.get(`${API_URL}/projects/${id}`, { withCredentials: true });

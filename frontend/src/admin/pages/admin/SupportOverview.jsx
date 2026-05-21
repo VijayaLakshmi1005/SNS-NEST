@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import { Send, Paperclip, MoreVertical, Search, CheckCircle, AlertTriangle, Clock, RefreshCw, User } from 'lucide-react';
 import { Card, CardContent } from '../../../components/ui/Card';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 export default function SupportOverview() {
   const queryClient = useQueryClient();

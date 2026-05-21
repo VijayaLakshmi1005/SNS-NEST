@@ -5,7 +5,7 @@ import { Briefcase, Clock, CheckCircle, AlertCircle, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import ProjectTable from '../../components/projects/ProjectTable';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchProjects = async () => {
   const res = await axios.get(`${API_URL}/projects`, { withCredentials: true });

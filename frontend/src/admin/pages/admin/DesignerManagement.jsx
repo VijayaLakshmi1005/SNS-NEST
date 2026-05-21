@@ -5,7 +5,7 @@ import { Users, UserCheck, UserMinus, CalendarClock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import DesignerTable from '../../components/designers/DesignerTable';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchDesigners = async () => {
   const res = await axios.get(`${API_URL}/designers`, { withCredentials: true });

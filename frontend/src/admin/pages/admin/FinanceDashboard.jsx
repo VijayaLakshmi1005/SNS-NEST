@@ -6,7 +6,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DollarSign, FileText, Download, TrendingUp, TrendingDown, RefreshCw, Briefcase, Plus } from 'lucide-react';
 import { Card, CardContent } from '../../../components/ui/Card';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 export default function FinanceDashboard() {
   const queryClient = useQueryClient();
