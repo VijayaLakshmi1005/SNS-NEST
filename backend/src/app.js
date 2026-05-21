@@ -128,6 +128,7 @@ import adminDashboardRoutes from './modules/admin-dashboard/dashboard.routes.js'
 import userAdminRoutes from './modules/users/user.routes.js';
 
 app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin/dashboard', adminDashboardRoutes);
 app.use('/api/admin/users', userAdminRoutes);
 app.use('/api/designs', designRoutes);
