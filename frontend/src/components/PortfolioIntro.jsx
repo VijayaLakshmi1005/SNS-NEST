@@ -16,15 +16,14 @@ export default function PortfolioIntro() {
       <div
         key={project.id}
         onClick={() => navigate(`/portfolio/${project.slug}`)}
-        className={`group relative overflow-hidden cursor-pointer rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#E8DAB9]/10 ${
-          isFeatured ? 'col-span-1 lg:col-span-7 h-[45vh] sm:h-[50vh] lg:h-[70vh]' : 'col-span-1 h-[35vh] lg:h-[33.5vh]'
-        }`}
+        className={`group relative overflow-hidden cursor-pointer rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#E8DAB9]/10 ${isFeatured ? 'col-span-1 lg:col-span-7 h-[45vh] sm:h-[50vh] lg:h-[70vh]' : 'col-span-1 h-[35vh] lg:h-[33.5vh]'
+          }`}
       >
         {/* Real Image - INSTANT LOAD */}
         <div className="absolute inset-0 w-full h-full transform transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-105">
-          <img 
-            src={imageUrl} 
-            alt={project.title} 
+          <img
+            src={imageUrl}
+            alt={project.title}
             className="w-full h-full object-cover"
           />
         </div>
@@ -63,7 +62,7 @@ export default function PortfolioIntro() {
   }
 
   return (
-    <div className="portfolio-intro-canvas relative w-full z-40 bg-[#F5EFE6]">
+    <div className="portfolio-intro-canvas relative w-full z-40 bg-[#C7A58D]">
       <div className="relative w-full min-h-screen flex flex-col px-4 sm:px-8 lg:px-12 xl:px-16 pt-24 sm:pt-28 pb-12 sm:pb-20 max-w-[1800px] mx-auto">
 
         {/* ── Section Header ── */}
@@ -72,10 +71,10 @@ export default function PortfolioIntro() {
             Portfolio
           </span>
           <h2 className="font-cormorant italic text-4xl sm:text-5xl lg:text-[64px] text-[#1A1210] font-light leading-none mb-4 sm:mb-6">
-            Selected Works
+            Our Works
           </h2>
           <p className="text-xs sm:text-sm text-[#1A1210]/50 font-neuemontreal leading-relaxed max-w-md mx-auto sm:mx-0">
-            A curated collection of timeless interiors crafted with precision and warmth.
+            Transforming spaces into stories. Every corner, every detail, crafted with passion and purpose.
           </p>
         </div>
 
@@ -98,15 +97,18 @@ export default function PortfolioIntro() {
           <h3 className="font-cormorant italic text-2xl sm:text-3xl lg:text-4xl text-[#1A1210] font-light mb-6">
             Let’s create something beautiful together.
           </h3>
-          <button 
+          <button
             onClick={() => navigate('/contact')}
-            className="group relative flex items-center justify-center gap-3 px-8 py-4 rounded-full border border-[#1A1210]/20 hover:border-[#1A1210]/40 transition-colors duration-300 bg-transparent overflow-hidden"
+            // Changed hover border to soft pastel green
+            className="group relative flex items-center justify-center gap-3 px-8 py-4 rounded-full border border-[#FFFFFF]/20 hover:border-[#B7F5C8] transition-colors duration-300 bg-transparent overflow-hidden"
           >
-            <div className="absolute inset-0 bg-[#1A1210]/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+            <div // Changed hover background to bright pastel green
+              className="absolute inset-0 bg-[#FFFFFF] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
             <span className="relative z-10 text-[10px] sm:text-xs tracking-[0.2em] text-[#1A1210] font-neuemontreal uppercase font-medium">
               Start A Project
             </span>
-            <span className="relative z-10 text-[#1A1210] text-sm group-hover:translate-x-1 transition-transform duration-300">→</span>
+            <span // Added black text effect on hover
+              className="relative z-10 text-[10px] sm:text-xs tracking-[0.2em] text-[#1A1210] group-hover:text-black font-neuemontreal uppercase font-medium transition-colors duration-300">→</span>
           </button>
         </div>
 

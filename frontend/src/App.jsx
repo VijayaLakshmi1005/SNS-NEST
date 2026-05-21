@@ -35,7 +35,7 @@ function App() {
 
     // Synchronize Lenis with GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
-    
+
     gsap.ticker.add((time) => {
       lenis.raf(time * 1000);
     });
@@ -54,7 +54,6 @@ function App() {
       mainTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: section,
-          pin: true,
           scrub: 1.2, // Butter-smooth momentum vertical-to-horizontal scrub
           start: "top top",
           end: "bottom bottom",
@@ -107,14 +106,14 @@ function App() {
           const V = window.innerWidth;
           const W = track.scrollWidth;
           const S = getTargetScale();
-          
+
           // Focus point: center of the last 3 slides
           // On desktop, the last 3 slides + reviews occupy ~400vw at the end of the track.
           // Center of that block is roughly 200vw from the right edge.
           const isDesktop = V >= 1024;
-          const focusDistanceFromRight = isDesktop ? (2.1 * V) : (2.8 * V); 
+          const focusDistanceFromRight = isDesktop ? (2.1 * V) : (2.8 * V);
           const focusPoint = W - focusDistanceFromRight;
-          
+
           // We want the focusPoint to land exactly at the center of the viewport (V / 2)
           // X + focusPoint * S = V / 2  =>  X = V / 2 - focusPoint * S
           return (V / 2) - (focusPoint * S);
@@ -198,8 +197,17 @@ function App() {
 
   // Drive premium dynamic color play for fixed header navigation based on ScrollProgress
   const colorProgress = isNight ? 1 : morphProgress;
-  const navTextColor = interpolateColor('#1A1210', '#E3D5CA', colorProgress);
-  const shouldInvertLogo = isNight || scrollProgress > 0.15;
+  let navTextColor = interpolateColor('#1A1210', '#E3D5CA', colorProgress);
+  
+  // Smoothly transition the navbar text back to dark when zoomout finishes so it looks perfect over the beige Portfolio!
+  if (scrollProgress >= 0.85) {
+    navTextColor = '#1A1210';
+  } else if (scrollProgress > 0.75) {
+    const t = (scrollProgress - 0.75) / 0.10;
+    navTextColor = interpolateColor('#E3D5CA', '#1A1210', t);
+  }
+  
+  const shouldInvertLogo = isNight || scrollProgress > 0.15 && scrollProgress < 0.8;
 
   // Single-Layer Scrambles: Scramble directly from start to finish
   const line1Text = scrambleText("YOUR VISION,", "OUR", morphProgress);
@@ -254,7 +262,7 @@ function App() {
   })();
 
   return (
-    <div className="relative w-full min-h-screen bg-[#656D4A] overflow-x-hidden select-none flex flex-col items-center">
+    <div className="relative w-full min-h-screen bg-[#656D4A] select-none flex flex-col items-center">
       {/* GLOBAL FIXED NAVIGATION HEADERS (Adapts organically on scroll) */}
       <Navbar
         shouldInvertLogo={shouldInvertLogo}
@@ -266,7 +274,7 @@ function App() {
       {/* ========================================================================= */}
       {/* UNIFIED SCROLLING STORYTELLING SHOWCASE (h-[350vh] for smooth linear translate) */}
       {/* ========================================================================= */}
-      <div ref={mainSectionRef} className="relative w-full h-[350vh] bg-black">
+      <div ref={mainSectionRef} className="relative w-full h-[350vh] bg-[#C7A58D]">
         {/* Pinned Viewport Container (Natively locked via GSAP ScrollTrigger) */}
         <div className="sticky top-0 left-0 w-full h-screen mobile-dvh overflow-hidden" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
 
@@ -308,8 +316,8 @@ function App() {
                 {/* Line 2: sculpted -> TESTIMONY (Beautiful beige when scrambling/settled on navy, zero glow!) */}
                 <span
                   className={`${isUniformStyle
-                      ? 'font-neuemontreal font-bold uppercase text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px]'
-                      : 'font-berlinerins font-medium lowercase text-[58px] xs:text-[64px] sm:text-[46px] md:text-[60px] lg:text-[76px] xl:text-[88px]'
+                    ? 'font-neuemontreal font-bold uppercase text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px]'
+                    : 'font-berlinerins font-medium lowercase text-[58px] xs:text-[64px] sm:text-[46px] md:text-[60px] lg:text-[76px] xl:text-[88px]'
                     } tracking-tight transition-all duration-300`}
                   style={{
                     color: currentLine2Color,
