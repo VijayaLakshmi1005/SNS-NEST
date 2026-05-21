@@ -30,7 +30,7 @@ export default function Consultations() {
   const { data: designers = [] } = useQuery({
     queryKey: ['available-designers'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/appointments/designers`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/appointments/designers`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data.data;
     }
   });
@@ -38,7 +38,7 @@ export default function Consultations() {
   const { data: appointments = [] } = useQuery({
     queryKey: ['my-appointments'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/appointments`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/appointments`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data.data;
     }
   });
@@ -46,7 +46,7 @@ export default function Consultations() {
   const handleBook = async () => {
     setIsSubmitting(true);
     try {
-      await axios.post(`${API_URL}/appointments`, formData, { withCredentials: true });
+      await axios.post(`${API_URL}/appointments`, formData, { withCredentials: true, transports: ['websocket', 'polling'] });
       queryClient.invalidateQueries(['my-appointments']);
       setStep(4); // Success step
     } catch (err) {

@@ -14,7 +14,7 @@ import DesignerUploadSystem from '../../components/designers/DesignerUploadSyste
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchDesigner = async (id) => {
-  const res = await axios.get(`${API_URL}/designers/${id}`, { withCredentials: true });
+  const res = await axios.get(`${API_URL}/designers/${id}`, { withCredentials: true, transports: ['websocket', 'polling'] });
   return res.data;
 };
 

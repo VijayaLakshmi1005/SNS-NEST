@@ -13,7 +13,7 @@ export default function FinanceDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true, transports: ['websocket', 'polling'] });
     socket.on('financeUpdated', () => queryClient.invalidateQueries(['financeOverview']));
     return () => socket.disconnect();
   }, [queryClient]);
@@ -21,7 +21,7 @@ export default function FinanceDashboard() {
   const { data: finance, isLoading } = useQuery({
     queryKey: ['financeOverview'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/finance/overview`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/finance/overview`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data.data;
     }
   });

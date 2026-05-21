@@ -8,7 +8,7 @@ import ProductCatalog from '../../components/products/ProductCatalog';
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchProducts = async () => {
-  const res = await axios.get(`${API_URL}/products`, { withCredentials: true });
+  const res = await axios.get(`${API_URL}/products`, { withCredentials: true, transports: ['websocket', 'polling'] });
   return res.data;
 };
 

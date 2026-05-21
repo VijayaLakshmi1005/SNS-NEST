@@ -14,7 +14,7 @@ export default function VendorOverview() {
 
   // Real-time Socket Connection
   useEffect(() => {
-    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true, transports: ['websocket', 'polling'] });
     socket.on('procurementCreated', () => queryClient.invalidateQueries(['procurements']));
     socket.on('procurementUpdated', () => queryClient.invalidateQueries(['procurements']));
     return () => socket.disconnect();
@@ -23,7 +23,7 @@ export default function VendorOverview() {
   const { data: vendors = [], isLoading: loadingVendors } = useQuery({
     queryKey: ['vendors'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/vendors`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/vendors`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data.data;
     }
   });
@@ -31,14 +31,14 @@ export default function VendorOverview() {
   const { data: procurements = [], isLoading: loadingProcurements } = useQuery({
     queryKey: ['procurements'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/vendors/procurements`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/vendors/procurements`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data.data;
     }
   });
 
   const handleUpdateStatus = async (id, newStatus) => {
     try {
-      await axios.patch(`${API_URL}/vendors/procurements/${id}/status`, { status: newStatus }, { withCredentials: true });
+      await axios.patch(`${API_URL}/vendors/procurements/${id}/status`, { status: newStatus }, { withCredentials: true, transports: ['websocket', 'polling'] });
       // UI will auto-update via socket invalidate
     } catch (err) {
       alert('Failed to update procurement status.');

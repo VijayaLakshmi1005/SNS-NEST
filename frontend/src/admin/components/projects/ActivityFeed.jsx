@@ -15,7 +15,7 @@ export default function ActivityFeed({ projectId }) {
     // 1. Fetch initial activities
     const fetchActivities = async () => {
       try {
-        const res = await axios.get(`${API_URL}/projects/${projectId}/activity`, { withCredentials: true });
+        const res = await axios.get(`${API_URL}/projects/${projectId}/activity`, { withCredentials: true, transports: ['websocket', 'polling'] });
         if (res.data?.data) {
           setActivities(res.data.data);
         }
@@ -29,7 +29,7 @@ export default function ActivityFeed({ projectId }) {
     fetchActivities();
 
     // 2. Setup Real-time WebSockets
-    const socket = io(SOCKET_URL, { withCredentials: true });
+    const socket = io(SOCKET_URL, { withCredentials: true, transports: ['websocket', 'polling'] });
     
     socket.on('connect', () => {
       socket.emit('joinProjectRoom', projectId);

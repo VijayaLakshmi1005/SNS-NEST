@@ -20,9 +20,9 @@ export default function BlogManager({ initialBlogs = [] }) {
   const handleSave = async () => {
     try {
       if (currentBlog._id) {
-        await axios.patch(`${API_URL}/cms/blogs/${currentBlog._id}`, currentBlog, { withCredentials: true });
+        await axios.patch(`${API_URL}/cms/blogs/${currentBlog._id}`, currentBlog, { withCredentials: true, transports: ['websocket', 'polling'] });
       } else {
-        await axios.post(`${API_URL}/cms/blogs`, currentBlog, { withCredentials: true });
+        await axios.post(`${API_URL}/cms/blogs`, currentBlog, { withCredentials: true, transports: ['websocket', 'polling'] });
       }
       queryClient.invalidateQueries(['admin-cms']);
       setIsEditing(false);

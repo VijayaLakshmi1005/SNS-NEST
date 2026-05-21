@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchLeadProfile = async (id) => {
-  const res = await axios.get(`${API_URL}/leads/${id}`, { withCredentials: true });
+  const res = await axios.get(`${API_URL}/leads/${id}`, { withCredentials: true, transports: ['websocket', 'polling'] });
   return res.data;
 };
 

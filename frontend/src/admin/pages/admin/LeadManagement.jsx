@@ -8,7 +8,7 @@ import LeadPipeline from '../../components/leads/LeadPipeline';
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchLeads = async () => {
-  const res = await axios.get(`${API_URL}/leads`, { withCredentials: true });
+  const res = await axios.get(`${API_URL}/leads`, { withCredentials: true, transports: ['websocket', 'polling'] });
   return res.data;
 };
 

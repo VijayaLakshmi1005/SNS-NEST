@@ -13,7 +13,7 @@ export default function NotificationDropdown() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true, transports: ['websocket', 'polling'] });
     socket.on('newNotification', () => {
       queryClient.invalidateQueries(['notifications']);
     });
@@ -23,7 +23,7 @@ export default function NotificationDropdown() {
   const { data } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/live-notifications`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/live-notifications`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data;
     },
     refetchInterval: 60000 // Fallback polling every minute just in case
@@ -31,14 +31,14 @@ export default function NotificationDropdown() {
 
   const markAsRead = useMutation({
     mutationFn: async (id) => {
-      await axios.patch(`${API_URL}/live-notifications/${id}/read`, {}, { withCredentials: true });
+      await axios.patch(`${API_URL}/live-notifications/${id}/read`, {}, { withCredentials: true, transports: ['websocket', 'polling'] });
     },
     onSuccess: () => queryClient.invalidateQueries(['notifications'])
   });
 
   const markAllAsRead = useMutation({
     mutationFn: async () => {
-      await axios.patch(`${API_URL}/live-notifications/read-all`, {}, { withCredentials: true });
+      await axios.patch(`${API_URL}/live-notifications/read-all`, {}, { withCredentials: true, transports: ['websocket', 'polling'] });
     },
     onSuccess: () => queryClient.invalidateQueries(['notifications'])
   });

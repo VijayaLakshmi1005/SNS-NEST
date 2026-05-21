@@ -8,7 +8,7 @@ import ProjectTable from '../../components/projects/ProjectTable';
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchProjects = async () => {
-  const res = await axios.get(`${API_URL}/projects`, { withCredentials: true });
+  const res = await axios.get(`${API_URL}/projects`, { withCredentials: true, transports: ['websocket', 'polling'] });
   return res.data;
 };
 

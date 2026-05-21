@@ -37,7 +37,7 @@ export default function AppointmentOverview() {
 
   // Real-time socket connection
   useEffect(() => {
-    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true, transports: ['websocket', 'polling'] });
     socket.on('appointmentCreated', () => queryClient.invalidateQueries(['all-appointments']));
     socket.on('appointmentUpdated', () => queryClient.invalidateQueries(['all-appointments']));
     return () => socket.disconnect();
@@ -46,7 +46,7 @@ export default function AppointmentOverview() {
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ['all-appointments'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/appointments`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/appointments`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data.data;
     }
   });
@@ -65,7 +65,7 @@ export default function AppointmentOverview() {
 
   const handleUpdateStatus = async (id, status, meetingLink = '') => {
     try {
-      await axios.patch(`${API_URL}/appointments/${id}/status`, { status, meetingLink }, { withCredentials: true });
+      await axios.patch(`${API_URL}/appointments/${id}/status`, { status, meetingLink }, { withCredentials: true, transports: ['websocket', 'polling'] });
       queryClient.invalidateQueries(['all-appointments']);
       if (selectedEvent && selectedEvent.id === id) {
         setSelectedEvent(prev => ({ ...prev, resource: { ...prev.resource, status } }));

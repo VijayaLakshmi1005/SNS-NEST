@@ -18,7 +18,7 @@ export default function LeadPipeline({ leads = [] }) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const socket = io(SOCKET_URL, { withCredentials: true });
+    const socket = io(SOCKET_URL, { withCredentials: true, transports: ['websocket', 'polling'] });
     
     socket.on('leadUpdated', (updatedLead) => {
       queryClient.setQueryData(['admin-leads'], (old) => {
@@ -55,7 +55,7 @@ export default function LeadPipeline({ leads = [] }) {
       });
 
       // API Call
-      await axios.patch(`${API_URL}/leads/${leadId}/status`, { status: newStatus }, { withCredentials: true });
+      await axios.patch(`${API_URL}/leads/${leadId}/status`, { status: newStatus }, { withCredentials: true, transports: ['websocket', 'polling'] });
     } catch (err) {
       console.error("Failed to update lead status", err);
       // Revert optimism if needed (React Query invalidate is safer)

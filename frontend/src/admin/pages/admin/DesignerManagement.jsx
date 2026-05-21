@@ -8,12 +8,12 @@ import DesignerTable from '../../components/designers/DesignerTable';
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 const fetchDesigners = async () => {
-  const res = await axios.get(`${API_URL}/designers`, { withCredentials: true });
+  const res = await axios.get(`${API_URL}/designers`, { withCredentials: true, transports: ['websocket', 'polling'] });
   return res.data;
 };
 
 const fetchDesignerAnalytics = async () => {
-  const res = await axios.get(`${API_URL}/designers/analytics`, { withCredentials: true });
+  const res = await axios.get(`${API_URL}/designers/analytics`, { withCredentials: true, transports: ['websocket', 'polling'] });
   return res.data;
 };
 

@@ -15,7 +15,7 @@ export default function SupportOverview() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true, transports: ['websocket', 'polling'] });
     socket.on('supportUpdated', (data) => {
       queryClient.invalidateQueries(['supportTickets']);
       if (data.ticketId === selectedTicket?._id) {
@@ -28,7 +28,7 @@ export default function SupportOverview() {
   const { data: tickets, isLoading: loadingTickets } = useQuery({
     queryKey: ['supportTickets'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/support-tickets/tickets`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/support-tickets/tickets`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data.data;
     }
   });
@@ -37,7 +37,7 @@ export default function SupportOverview() {
     queryKey: ['supportMessages', selectedTicket?._id],
     queryFn: async () => {
       if (!selectedTicket) return [];
-      const res = await axios.get(`${API_URL}/support-tickets/tickets/${selectedTicket._id}/messages`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/support-tickets/tickets/${selectedTicket._id}/messages`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data.data;
     },
     enabled: !!selectedTicket
@@ -45,7 +45,7 @@ export default function SupportOverview() {
 
   const replyMutation = useMutation({
     mutationFn: async (payload) => {
-      await axios.post(`${API_URL}/support-tickets/tickets/${selectedTicket._id}/reply`, payload, { withCredentials: true });
+      await axios.post(`${API_URL}/support-tickets/tickets/${selectedTicket._id}/reply`, payload, { withCredentials: true, transports: ['websocket', 'polling'] });
     },
     onSuccess: () => {
       setMessage('');
@@ -55,7 +55,7 @@ export default function SupportOverview() {
 
   const statusMutation = useMutation({
     mutationFn: async (status) => {
-      await axios.patch(`${API_URL}/support-tickets/tickets/${selectedTicket._id}/status`, { status }, { withCredentials: true });
+      await axios.patch(`${API_URL}/support-tickets/tickets/${selectedTicket._id}/status`, { status }, { withCredentials: true, transports: ['websocket', 'polling'] });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['supportTickets']);

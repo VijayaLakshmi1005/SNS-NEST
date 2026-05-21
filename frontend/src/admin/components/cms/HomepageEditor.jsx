@@ -20,7 +20,7 @@ export default function HomepageEditor({ initialData }) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await axios.patch(`${API_URL}/cms/pages/homepage`, { sections }, { withCredentials: true });
+      await axios.patch(`${API_URL}/cms/pages/homepage`, { sections }, { withCredentials: true, transports: ['websocket', 'polling'] });
       queryClient.invalidateQueries(['admin-cms']);
     } catch (err) {
       console.error('Failed to save homepage', err);

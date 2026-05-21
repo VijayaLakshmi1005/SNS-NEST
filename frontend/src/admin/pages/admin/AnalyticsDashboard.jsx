@@ -19,7 +19,7 @@ export default function AnalyticsDashboard() {
 
   useEffect(() => {
     // Socket connection for real-time analytics invalidation
-    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true, transports: ['websocket', 'polling'] });
     socket.on('financeUpdated', () => queryClient.invalidateQueries(['analyticsOverview']));
     socket.on('projectUpdated', () => queryClient.invalidateQueries(['analyticsOverview']));
     socket.on('leadUpdated', () => queryClient.invalidateQueries(['analyticsOverview']));
@@ -29,7 +29,7 @@ export default function AnalyticsDashboard() {
   const { data: analytics, isLoading } = useQuery({
     queryKey: ['analyticsOverview'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/analytics/overview`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/analytics/overview`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data.data;
     }
   });

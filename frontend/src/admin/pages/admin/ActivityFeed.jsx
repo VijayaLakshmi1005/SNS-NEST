@@ -10,7 +10,7 @@ export default function ActivityFeed() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true, transports: ['websocket', 'polling'] });
     socket.on('newNotification', () => {
       queryClient.invalidateQueries(['activityFeed']);
     });
@@ -20,7 +20,7 @@ export default function ActivityFeed() {
   const { data, isLoading } = useQuery({
     queryKey: ['activityFeed'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/live-notifications`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/live-notifications`, { withCredentials: true, transports: ['websocket', 'polling'] });
       return res.data;
     }
   });
