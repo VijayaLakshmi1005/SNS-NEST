@@ -1,12 +1,71 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SNS NEST</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" id="original-icon" href="Assets/logo.png" sizes="512x512" />
+  
+  <script>
+    // Dynamically add a white background to the icon so it's visible on dark tabs
+    document.addEventListener("DOMContentLoaded", () => {
+      const iconLink = document.getElementById("original-icon");
+      if (!iconLink) return;
+      
+      const img = new Image();
+      img.src = iconLink.href; // Use the path Vite resolved
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext("2d");
+        
+        // Create a rounded square path
+        ctx.beginPath();
+        ctx.roundRect(0, 0, 512, 512, 80); // 80px radius for a little rounding
+        
+        // Draw white background
+        ctx.fillStyle = "white";
+        ctx.fill();
+        
+        // Clip to keep the image inside the rounded corners
+        ctx.clip();
+        
+        // Draw the original image to fit perfectly (no extra padding)
+        ctx.drawImage(img, 0, 0, 512, 512);
+        
+        // Create new icon link with the generated image
+        const newLink = document.createElement("link");
+        newLink.rel = "icon";
+        newLink.type = "image/png";
+        newLink.href = canvas.toDataURL();
+        
+        // Remove old icons and append new one
+        document.querySelectorAll('link[rel="icon"]').forEach(e => e.remove());
+        document.head.appendChild(newLink);
+      };
+    });
+  </script>
+
+  <!-- Apple -->
+  <link rel="apple-touch-icon" href="Assets/logo.png" />
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#ffffff" />
+
+  <title>SNS-NEST</title>
+
+</head>
+
+<body>
+
+  <div id="root"></div>
+
+  <script type="module" src="/src/main.jsx"></script>
+
+</body>
+
 </html>
