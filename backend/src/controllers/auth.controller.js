@@ -62,7 +62,7 @@ export const loginUser = catchAsync(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict'
   };
 
   const userResponse = await User.findById(user._id).select('-password -refreshToken -otp');
@@ -128,7 +128,7 @@ export const refreshSessionToken = catchAsync(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict'
     };
 
     return res
@@ -150,7 +150,7 @@ export const logoutUser = catchAsync(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict'
   };
 
   return res

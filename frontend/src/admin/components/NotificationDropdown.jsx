@@ -13,7 +13,7 @@ export default function NotificationDropdown() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const socket = io('http://localhost:5000', { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
     socket.on('newNotification', () => {
       queryClient.invalidateQueries(['notifications']);
     });

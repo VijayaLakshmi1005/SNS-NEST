@@ -37,7 +37,7 @@ export default function AppointmentOverview() {
 
   // Real-time socket connection
   useEffect(() => {
-    const socket = io('http://localhost:5000', { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
     socket.on('appointmentCreated', () => queryClient.invalidateQueries(['all-appointments']));
     socket.on('appointmentUpdated', () => queryClient.invalidateQueries(['all-appointments']));
     return () => socket.disconnect();

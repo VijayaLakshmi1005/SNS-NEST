@@ -13,7 +13,7 @@ export default function FinanceDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    const socket = io('http://localhost:5000', { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
     socket.on('financeUpdated', () => queryClient.invalidateQueries(['financeOverview']));
     return () => socket.disconnect();
   }, [queryClient]);

@@ -15,7 +15,7 @@ export default function SupportOverview() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const socket = io('http://localhost:5000', { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
     socket.on('supportUpdated', (data) => {
       queryClient.invalidateQueries(['supportTickets']);
       if (data.ticketId === selectedTicket?._id) {

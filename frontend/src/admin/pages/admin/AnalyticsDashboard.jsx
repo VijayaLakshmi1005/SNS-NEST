@@ -19,7 +19,7 @@ export default function AnalyticsDashboard() {
 
   useEffect(() => {
     // Socket connection for real-time analytics invalidation
-    const socket = io('http://localhost:5000', { withCredentials: true });
+    const socket = io(API_URL.replace('/api', ''), { withCredentials: true });
     socket.on('financeUpdated', () => queryClient.invalidateQueries(['analyticsOverview']));
     socket.on('projectUpdated', () => queryClient.invalidateQueries(['analyticsOverview']));
     socket.on('leadUpdated', () => queryClient.invalidateQueries(['analyticsOverview']));
