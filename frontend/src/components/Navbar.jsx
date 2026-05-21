@@ -14,7 +14,7 @@ export default function Navbar({
   return (
     <>
       {/* Top Left Logo & Company Name */}
-      <div className="fixed top-[20px] left-4 md:top-[44px] md:left-12 z-35 pointer-events-auto">
+      <div className="fixed top-[20px] left-4 md:top-[44px] md:left-12 z-50 pointer-events-auto">
         <a href="#home" className="flex items-center lg:items-start gap-2 sm:gap-2.5 outline-none hover:opacity-80 transition-opacity duration-300">
           <img
             src={logoImg}
@@ -35,7 +35,7 @@ export default function Navbar({
 
       {/* Top Right Header Actions Panel */}
       <div
-        className="fixed top-[20px] right-4 md:top-[44px] md:right-12 z-35 flex items-center gap-4 sm:gap-6 bg-[#817773]/15 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-1.5 px-3 lg:p-0 rounded-full border border-white/5 lg:border-none shadow-sm lg:shadow-none transition-all duration-300 ease-in-out pointer-events-auto"
+        className="fixed top-[20px] right-4 md:top-[44px] md:right-12 z-50 flex items-center gap-4 sm:gap-6 bg-[#817773]/15 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-1.5 px-3 lg:p-0 rounded-full border border-white/5 lg:border-none shadow-sm lg:shadow-none transition-all duration-300 ease-in-out pointer-events-auto"
         style={{ color: navTextColor }}
       >
         <Link to="/auth/register" className="block outline-none hover:opacity-80 hover:scale-105 active:scale-95 transition-all duration-300">
@@ -61,7 +61,7 @@ export default function Navbar({
 
       {/* Centered, Perfectly Spaced Top Navigation Bar */}
       <nav
-        className="fixed top-8 md:top-12 left-1/2 -translate-x-1/2 z-35 hidden lg:flex items-center justify-center gap-10 font-nav-style text-sm md:text-base font-extrabold tracking-wider whitespace-nowrap transition-colors duration-300 ease-in-out pointer-events-auto"
+        className="fixed top-8 md:top-12 left-1/2 -translate-x-1/2 z-50 hidden lg:flex items-center justify-center gap-10 font-nav-style text-sm md:text-base font-extrabold tracking-wider whitespace-nowrap transition-colors duration-300 ease-in-out pointer-events-auto"
         style={{ color: navTextColor }}
       >
         <a href="#home" className="hover:scale-105 transition-all duration-300">HOME</a>

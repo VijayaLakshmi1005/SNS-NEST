@@ -63,7 +63,10 @@ export default function PortfolioIntro() {
 
   return (
     <div className="portfolio-intro-canvas relative w-full z-40 bg-[#C7A58D]">
-      <div className="relative w-full min-h-screen flex flex-col px-4 sm:px-8 lg:px-12 xl:px-16 pt-24 sm:pt-28 pb-12 sm:pb-20 max-w-[1800px] mx-auto">
+      {/* Invisible mask to fade out text before it hits the transparent navbar */}
+      <div className="sticky top-0 left-0 w-full h-[180px] pointer-events-none z-30 bg-gradient-to-b from-[#C7A58D] via-[#C7A58D] to-transparent" />
+      
+      <div className="relative w-full min-h-screen flex flex-col px-4 sm:px-8 lg:px-12 xl:px-16 pt-56 sm:pt-64 lg:pt-72 pb-12 sm:pb-20 max-w-[1800px] mx-auto -mt-[180px] z-10">
 
         {/* ── Section Header ── */}
         <div className="flex flex-col items-center sm:items-start text-center sm:text-left mb-6 sm:mb-8 lg:mb-12">
