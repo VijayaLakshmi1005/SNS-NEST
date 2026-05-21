@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { LayoutDashboard, FolderKanban, Upload, Video, MessageSquare } from 'lucide-react';
 import { cn } from '../../admin/components/ui/Card';
 
@@ -15,9 +15,9 @@ export default function DesignerSidebar() {
   return (
     <aside className="w-64 bg-[#fbfbf9] border-r border-[#e6e6df] flex flex-col h-full shrink-0">
       <div className="h-16 flex items-center px-6 border-b border-[#e6e6df]">
-        <span className="text-xl font-playfair font-bold text-[#1a1a1a] tracking-wide">
+        <Link to="/" className="text-xl font-playfair font-bold text-[#1a1a1a] tracking-wide hover:opacity-80 transition-opacity">
           DESIGNER<span className="text-[#8b8175] ml-1">PANEL</span>
-        </span>
+        </Link>
       </div>
       
       <div className="flex-1 overflow-y-auto py-6 px-4">

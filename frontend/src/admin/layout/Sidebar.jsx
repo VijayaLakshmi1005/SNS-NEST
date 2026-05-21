@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
@@ -42,7 +42,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
     `}>
       <div className="h-16 flex items-center justify-between px-6 border-b border-[#e6e6df]">
-        <h1 className="text-xl font-bold font-playfair uppercase tracking-widest">SNS Nest</h1>
+        <Link to="/" className="text-xl font-bold font-playfair uppercase tracking-widest text-[#1a1a1a] hover:opacity-80 transition-opacity">SNS Nest</Link>
         <button className="lg:hidden text-[#8b8175] hover:text-[#1a1a1a]" onClick={() => setIsOpen(false)}>
           <X className="w-5 h-5" />
         </button>
