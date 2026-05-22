@@ -1,6 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom'
 import App from '../App'
 import ClientLayout from './layouts/ClientLayout'
+import AdminApp from '../admin/routes/AdminApp'
+import DesignerApp from '../designer/routes/DesignerApp'
+import { ClientRoute, AdminRoute, DesignerRoute, PublicRoute } from './components/RouteGuards'
 
 // Pages
 import Dashboard from './dashboard/Dashboard'
@@ -8,6 +11,7 @@ import Login from './auth/Login'
 import Register from './auth/Register'
 import Designs from './designs/Designs'
 import Booking from './booking/Booking'
+import Consultations from './pages/Consultations'
 import Estimate from './estimate/Estimate'
 import Tracking from './tracking/Tracking'
 import AiRoom from './ai-room/AiRoom'
@@ -28,26 +32,52 @@ export const router = createBrowserRouter([
   },
   {
     path: '/client',
-    element: <ClientLayout />,
+    element: <ClientRoute />,
     children: [
-      { path: 'dashboard', element: <Dashboard /> },
-      { path: 'designs', element: <Designs /> },
-      { path: 'booking', element: <Booking /> },
-      { path: 'estimate', element: <Estimate /> },
-      { path: 'tracking', element: <Tracking /> },
-      { path: 'ai-room', element: <AiRoom /> },
-      { path: 'chat', element: <Chat /> },
-      { path: 'wishlist', element: <Wishlist /> },
-      { path: 'payment', element: <Placeholder name="Payments" /> },
-      { path: 'profile', element: <Placeholder name="User Profile" /> },
+      {
+        path: '',
+        element: <ClientLayout />,
+        children: [
+          { path: 'dashboard', element: <Dashboard /> },
+          { path: 'designs', element: <Designs /> },
+          { path: 'booking', element: <Consultations /> },
+          { path: 'estimate', element: <Estimate /> },
+          { path: 'tracking', element: <Tracking /> },
+          { path: 'ai-room', element: <AiRoom /> },
+          { path: 'chat', element: <Chat /> },
+          { path: 'wishlist', element: <Wishlist /> },
+          { path: 'payment', element: <Placeholder name="Payments" /> },
+          { path: 'profile', element: <Placeholder name="User Profile" /> },
+        ]
+      }
     ]
   },
   {
     path: '/auth',
-    element: <ClientLayout />,
+    element: <PublicRoute />,
     children: [
-      { path: 'login', element: <Login /> },
-      { path: 'register', element: <Register /> },
+      {
+        path: '',
+        element: <ClientLayout />,
+        children: [
+          { path: 'login', element: <Login /> },
+          { path: 'register', element: <Register /> },
+        ]
+      }
+    ]
+  },
+  {
+    path: '/admin/*',
+    element: <AdminRoute />,
+    children: [
+      { path: '*', element: <AdminApp /> }
+    ]
+  },
+  {
+    path: '/designer/*',
+    element: <DesignerRoute />,
+    children: [
+      { path: '*', element: <DesignerApp /> }
     ]
   }
 ])

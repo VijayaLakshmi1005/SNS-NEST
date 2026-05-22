@@ -47,6 +47,27 @@ const designerSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  status: {
+    type: String,
+    enum: ['Active', 'Busy', 'Inactive'],
+    default: 'Active'
+  },
+  activeProjects: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project'
+  }],
+  completedProjects: {
+    type: Number,
+    default: 0
+  },
+  totalEarnings: {
+    type: Number,
+    default: 0
+  },
+  pendingCommissions: {
+    type: Number,
+    default: 0
+  },
   consultationTypes: {
     type: [String],
     enum: ['Video Call', 'Offline Meeting'],
@@ -57,4 +78,4 @@ const designerSchema = new mongoose.Schema({
   timestamps: true
 });
 
-export const Designer = mongoose.model('Designer', designerSchema);
+export const Designer = mongoose.models.Designer || mongoose.model('Designer', designerSchema);

@@ -121,7 +121,7 @@ export default function Tracking() {
         // 2. Initialize Socket.io Connection
         const token = localStorage.getItem('token');
         if (token && data.project?._id) {
-          const socketUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+          const socketUrl = import.meta.env.VITE_API_BASE_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'https://sns-nest-backend.onrender.com');
           const socket = io(socketUrl, {
             auth: { token }
           });

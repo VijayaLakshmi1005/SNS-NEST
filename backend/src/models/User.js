@@ -43,6 +43,15 @@ const userSchema = new mongoose.Schema({
     code: String,
     expiresAt: Date
   },
+  isBlocked: {
+    type: Boolean,
+    default: false
+  },
+  internalNotes: [{
+    note: { type: String, required: true },
+    addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    createdAt: { type: Date, default: Date.now }
+  }],
   refreshToken: {
     type: String
   }
@@ -61,4 +70,4 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-export const User = mongoose.model('User', userSchema);
+export const User = mongoose.models.User || mongoose.model('User', userSchema);

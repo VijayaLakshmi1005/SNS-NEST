@@ -19,7 +19,7 @@ import designRoutes from './routes/design.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
 import estimateRoutes from './routes/estimate.routes.js';
 import aiRoutes from './modules/ai-visualizer/ai.routes.js';
-import projectRoutes from './routes/project.routes.js';
+import projectRoutes from './modules/projects/project.routes.js';
 import chatRoutes from './modules/chat/chat.routes.js';
 import paymentRoutes from './routes/payment.routes.js';
 import wishlistRoutes from './modules/wishlist/wishlist.routes.js';
@@ -30,6 +30,15 @@ import designerRoutes from './modules/designers/designer.routes.js';
 import consultationRoutes from './modules/consultations/consultation.routes.js';
 import estimatorRoutes from './modules/estimator/estimator.routes.js';
 import trackingRoutes from './modules/project-tracking/tracking.routes.js';
+import leadRoutes from './modules/leads/lead.routes.js';
+import productRoutes from './modules/products/product.routes.js';
+import cmsRoutes from './modules/cms/cms.routes.js';
+import appointmentRoutes from './modules/appointments/appointment.routes.js';
+import vendorRoutes from './modules/vendors/vendor.routes.js';
+import financeRoutes from './modules/finance/finance.routes.js';
+import analyticsRoutes from './modules/analytics/analytics.routes.js';
+import supportTicketRoutes from './modules/support/support.routes.js';
+import liveNotificationRoutes from './modules/notifications/notification.routes.js';
 
 // Express 5 query getter compatibility workaround for legacy middlewares (like xss-clean, express-mongo-sanitize)
 const queryDescriptor = Object.getOwnPropertyDescriptor(express.request, 'query');
@@ -115,8 +124,13 @@ app.use(compression());
 app.use('/api', globalLimiter);
 
 // API Routing Mapping
+import adminDashboardRoutes from './modules/admin-dashboard/dashboard.routes.js';
+import userAdminRoutes from './modules/users/user.routes.js';
+
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/admin/dashboard', adminDashboardRoutes);
+app.use('/api/admin/users', userAdminRoutes);
 app.use('/api/designs', designRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/estimate', estimateRoutes);
@@ -135,6 +149,15 @@ app.use('/api/support', supportRoutes);
 app.use('/api/designers', designerRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/estimator', estimatorRoutes);
+app.use('/api/leads', leadRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/cms', cmsRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/vendors', vendorRoutes);
+app.use('/api/finance', financeRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/support-tickets', supportTicketRoutes);
+app.use('/api/live-notifications', liveNotificationRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

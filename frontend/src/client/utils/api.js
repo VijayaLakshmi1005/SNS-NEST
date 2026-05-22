@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let base = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+let base = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 if (base && !base.endsWith('/api') && !base.endsWith('/api/')) {
   base = base.endsWith('/') ? `${base}api` : `${base}/api`;
 }
@@ -17,9 +17,16 @@ const api = axios.create({
 // Request interceptor to attach JWT token if it exists in localStorage
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const authStorageStr = localStorage.getItem('auth-storage');
+      if (authStorageStr) {
+        const authData = JSON.parse(authStorageStr);
+        if (authData?.state?.token) {
+          config.headers.Authorization = `Bearer ${authData.state.token}`;
+        }
+      }
+    } catch (e) {
+      console.error('Error parsing auth storage', e);
     }
     return config;
   },
@@ -48,7 +55,7 @@ export const apiRequest = async (url, options = {}) => {
     
     // Auto redirect to login on token expiration or 401 Unauthorized
     if (error.response?.status === 401 || responseData.message === 'jwt expired') {
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth-storage');
       if (!window.location.pathname.includes('/auth')) {
         window.location.href = '/auth/login';
       }

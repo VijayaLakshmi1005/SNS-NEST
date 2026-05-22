@@ -1,6 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useThemeStore } from '../client/store/themeStore'
+import { useAuthStore } from '../store/useAuthStore'
 import logoImg from '../../Assets/logo.png'
 
 export default function Navbar({
@@ -10,6 +11,15 @@ export default function Navbar({
   setIsMobileMenuOpen
 }) {
   const { isNight, setNightMode } = useThemeStore()
+  const { isAuthenticated, role, logout } = useAuthStore()
+  const navigate = useNavigate()
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
+
+  const handleLogout = () => {
+    logout()
+    setIsDropdownOpen(false)
+    navigate('/')
+  }
 
   return (
     <>
@@ -38,13 +48,57 @@ export default function Navbar({
         className="fixed top-[20px] right-4 md:top-[44px] md:right-12 z-50 flex items-center gap-4 sm:gap-6 bg-[#817773]/15 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-1.5 px-3 lg:p-0 rounded-full border border-white/5 lg:border-none shadow-sm lg:shadow-none transition-all duration-300 ease-in-out pointer-events-auto"
         style={{ color: navTextColor }}
       >
-        <Link to="/auth/register" className="block outline-none hover:opacity-80 hover:scale-105 active:scale-95 transition-all duration-300">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
-            <circle cx="12" cy="8" r="3.5" />
-            <path d="M5 20c0-3.3 2.7-6 7-6s7 2.7 7 6" />
-            <path d="M9.5 14l2.5 3 2.5-3" />
-          </svg>
-        </Link>
+        <div className="relative">
+          {isAuthenticated ? (
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="block outline-none hover:opacity-80 hover:scale-105 active:scale-95 transition-all duration-300"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
+                <circle cx="12" cy="8" r="3.5" />
+                <path d="M5 20c0-3.3 2.7-6 7-6s7 2.7 7 6" />
+                <path d="M9.5 14l2.5 3 2.5-3" />
+              </svg>
+            </button>
+          ) : (
+            <Link to="/auth/login" className="block outline-none hover:opacity-80 hover:scale-105 active:scale-95 transition-all duration-300">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] lg:w-[26px] lg:h-[26px]">
+                <circle cx="12" cy="8" r="3.5" />
+                <path d="M5 20c0-3.3 2.7-6 7-6s7 2.7 7 6" />
+                <path d="M9.5 14l2.5 3 2.5-3" />
+              </svg>
+            </Link>
+          )}
+
+          {/* Dynamic Dropdown */}
+          {isAuthenticated && isDropdownOpen && (
+            <div className="absolute right-0 mt-4 w-48 bg-[#fbfbf9] rounded-xl shadow-2xl border border-[#e6e6df] overflow-hidden text-[#1a1a1a] font-nav-style">
+              {role === 'client' && (
+                <div className="py-2">
+                  <Link to="/client/dashboard" className="block px-4 py-2 text-sm hover:bg-[#e6e6df] transition" onClick={() => setIsDropdownOpen(false)}>My Dashboard</Link>
+                  <Link to="/client/wishlist" className="block px-4 py-2 text-sm hover:bg-[#e6e6df] transition" onClick={() => setIsDropdownOpen(false)}>Wishlist</Link>
+                  <Link to="/client/booking" className="block px-4 py-2 text-sm hover:bg-[#e6e6df] transition" onClick={() => setIsDropdownOpen(false)}>Consultations</Link>
+                </div>
+              )}
+              {role === 'admin' && (
+                <div className="py-2">
+                  <Link to="/admin/dashboard" className="block px-4 py-2 text-sm font-bold text-amber-800 hover:bg-[#e6e6df] transition" onClick={() => setIsDropdownOpen(false)}>Admin Panel</Link>
+                  <Link to="/admin/users" className="block px-4 py-2 text-sm hover:bg-[#e6e6df] transition" onClick={() => setIsDropdownOpen(false)}>Users</Link>
+                  <Link to="/admin/projects" className="block px-4 py-2 text-sm hover:bg-[#e6e6df] transition" onClick={() => setIsDropdownOpen(false)}>Projects</Link>
+                </div>
+              )}
+              {role === 'designer' && (
+                <div className="py-2">
+                  <Link to="/designer/dashboard" className="block px-4 py-2 text-sm font-bold text-amber-800 hover:bg-[#e6e6df] transition" onClick={() => setIsDropdownOpen(false)}>Designer Workspace</Link>
+                  <Link to="/designer/projects" className="block px-4 py-2 text-sm hover:bg-[#e6e6df] transition" onClick={() => setIsDropdownOpen(false)}>My Projects</Link>
+                </div>
+              )}
+              <div className="border-t border-[#e6e6df] py-1">
+                <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 font-bold transition">Logout</button>
+              </div>
+            </div>
+          )}
+        </div>
 
         <button
           onClick={() => setIsMobileMenuOpen(true)}

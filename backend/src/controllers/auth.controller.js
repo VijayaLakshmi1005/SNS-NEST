@@ -59,19 +59,30 @@ export const loginUser = catchAsync(async (req, res) => {
   user.refreshToken = refreshToken;
   await user.save();
 
+  const isProd = (process.env.NODE_ENV || '').trim() === 'production';
   const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax'
   };
 
   const userResponse = await User.findById(user._id).select('-password -refreshToken -otp');
+
+  let redirectPath = '/client/dashboard';
+  if (user.role === 'admin') redirectPath = '/admin/dashboard';
+  if (user.role === 'designer') redirectPath = '/designer/dashboard';
 
   return res
     .status(200)
     .cookie('accessToken', accessToken, options)
     .cookie('refreshToken', refreshToken, options)
-    .json(new ApiResponse(200, { user: userResponse, accessToken }, 'Login successful'));
+    .json(new ApiResponse(200, { 
+      user: userResponse, 
+      accessToken, 
+      refreshToken, 
+      role: user.role, 
+      redirectPath 
+    }, 'Login successful'));
 });
 
 export const verifyOTP = catchAsync(async (req, res) => {
@@ -115,10 +126,11 @@ export const refreshSessionToken = catchAsync(async (req, res) => {
     user.refreshToken = newRefreshToken;
     await user.save();
 
+    const isProd = (process.env.NODE_ENV || '').trim() === 'production';
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax'
     };
 
     return res
@@ -137,10 +149,11 @@ export const logoutUser = catchAsync(async (req, res) => {
     await req.user.save();
   }
 
+  const isProd = (process.env.NODE_ENV || '').trim() === 'production';
   const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax'
   };
 
   return res
