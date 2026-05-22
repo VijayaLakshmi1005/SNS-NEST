@@ -9,6 +9,8 @@ import Navbar from './components/Navbar'
 import MobileMenu from './components/MobileMenu'
 import TestimonyTrack from './components/TestimonyTrack'
 import PortfolioIntro from './components/PortfolioIntro'
+import AntigravitySequence from './components/AntigravitySequence'
+import Preloader from './components/Preloader'
 import { reviews } from './data/reviews'
 import { interpolateColor, scrambleText } from './utils/scramble'
 
@@ -18,6 +20,10 @@ function App() {
   const { isNight, setNightMode } = useThemeStore()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
+  
+  // Preloader State
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [siteLoaded, setSiteLoaded] = useState(false)
 
   const mainSectionRef = useRef(null)
   const horizontalTrackRef = useRef(null)
@@ -32,6 +38,15 @@ function App() {
       touchMultiplier: 1.5,
       syncTouch: true, // Smooth scrolling on mobile touch events
     });
+
+    // Lock scrolling while preloader is active
+    if (!siteLoaded) {
+      lenis.stop();
+      document.body.style.overflow = 'hidden';
+    } else {
+      lenis.start();
+      document.body.style.overflow = '';
+    }
 
     // Synchronize Lenis with GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
@@ -188,7 +203,7 @@ function App() {
         track.removeEventListener('touchmove', handleTouchMove);
       }
     };
-  }, []);
+  }, [siteLoaded]);
 
   // Synchronized: Ensure morphProgress is strictly active up until the horizontal scroll triggers (at exactly 0.35 progress)
   const morphProgress = scrollProgress < 0.008
@@ -262,7 +277,14 @@ function App() {
   })();
 
   return (
-    <div className="relative w-full min-h-screen bg-[#656D4A] select-none flex flex-col items-center">
+    <>
+      {!siteLoaded && (
+        <Preloader 
+          progress={loadingProgress} 
+          onComplete={() => setSiteLoaded(true)} 
+        />
+      )}
+      <div className="relative w-full min-h-screen bg-[#656D4A] select-none flex flex-col items-center">
       {/* GLOBAL FIXED NAVIGATION HEADERS (Adapts organically on scroll) */}
       <Navbar
         shouldInvertLogo={shouldInvertLogo}
@@ -360,10 +382,16 @@ function App() {
       {/* ========================================================================= */}
       <PortfolioIntro />
 
+      {/* ========================================================================= */}
+      {/* INTERACTION LAYER 4: ANTIGRAVITY CINEMATIC SEQUENCE                        */}
+      {/* ========================================================================= */}
+      <AntigravitySequence onProgress={setLoadingProgress} />
+
       {/* Premium Mobile Menu Overlay */}
       <MobileMenu isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
 
     </div>
+    </>
   )
 }
 

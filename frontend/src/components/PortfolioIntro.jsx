@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import projects from '../data/projects'
 
 export default function PortfolioIntro() {
   const navigate = useNavigate()
+  const [hasHovered, setHasHovered] = useState(false)
 
   const featuredProject = projects.find(p => p.featured) || projects[0]
   const supportingProjects = projects.filter(p => p.id !== featuredProject.id).slice(0, 4)
@@ -66,7 +67,7 @@ export default function PortfolioIntro() {
       {/* Invisible mask to fade out text before it hits the transparent navbar */}
       <div className="sticky top-0 left-0 w-full h-[180px] pointer-events-none z-30 bg-gradient-to-b from-[#C7A58D] via-[#C7A58D] to-transparent" />
       
-      <div className="relative w-full min-h-screen flex flex-col px-4 sm:px-8 lg:px-12 xl:px-16 pt-56 sm:pt-64 lg:pt-72 pb-12 sm:pb-20 max-w-[1800px] mx-auto -mt-[180px] z-10">
+      <div className="relative w-full min-h-screen flex flex-col px-4 sm:px-8 lg:px-12 xl:px-16 pt-56 sm:pt-64 lg:pt-72 pb-[35vh] lg:pb-[40vh] max-w-[1800px] mx-auto -mt-[180px] z-10">
 
         {/* ── Section Header ── */}
         <div className="flex flex-col items-center sm:items-start text-center sm:text-left mb-6 sm:mb-8 lg:mb-12">
@@ -102,16 +103,17 @@ export default function PortfolioIntro() {
           </h3>
           <button
             onClick={() => navigate('/contact')}
+            onMouseEnter={() => setHasHovered(true)}
             // Changed hover border to soft pastel green
-            className="group relative flex items-center justify-center gap-3 px-8 py-4 rounded-full border border-[#FFFFFF]/20 hover:border-[#B7F5C8] transition-colors duration-300 bg-transparent overflow-hidden"
+            className={`group relative flex items-center justify-center gap-3 px-8 py-4 rounded-full border transition-colors duration-300 bg-transparent overflow-hidden ${hasHovered ? 'border-[#FFFFFF]' : 'border-[#FFFFFF]/20 hover:border-[#B7F5C8]'}`}
           >
             <div // Changed hover background to bright pastel green
-              className="absolute inset-0 bg-[#FFFFFF] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+              className={`absolute inset-0 bg-[#FFFFFF] transition-transform duration-500 ease-out ${hasHovered ? 'translate-y-0' : 'translate-y-full group-hover:translate-y-0'}`} />
             <span className="relative z-10 text-[10px] sm:text-xs tracking-[0.2em] text-[#1A1210] font-neuemontreal uppercase font-medium">
               Start A Project
             </span>
             <span // Added black text effect on hover
-              className="relative z-10 text-[10px] sm:text-xs tracking-[0.2em] text-[#1A1210] group-hover:text-black font-neuemontreal uppercase font-medium transition-colors duration-300">→</span>
+              className={`relative z-10 text-[10px] sm:text-xs tracking-[0.2em] font-neuemontreal uppercase font-medium transition-colors duration-300 ${hasHovered ? 'text-black' : 'text-[#1A1210] group-hover:text-black'}`}>→</span>
           </button>
         </div>
 

@@ -36,6 +36,7 @@
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.0",
     "three": "^0.184.0",
+    "webp-converter": "^2.3.3",
     "zod": "^4.4.3",
     "zustand": "^5.0.13"
   },
