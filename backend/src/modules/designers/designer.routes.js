@@ -1,22 +1,23 @@
 import express from 'express';
-import { 
-  getDesigners, 
-  getDesignerById, 
-  getDesignerAvailability,
-  getDesignerAnalytics,
-  assignProject,
-  uploadDesign
-} from './designer.controller.js';
-import { verifyJWT, restrictTo } from '../../middleware/auth.middleware.js';
+// import { verifyJWT } from '../../middleware/auth.middleware.js';
+import * as designerController from './designer.controller.js';
 
 const router = express.Router();
 
-router.get('/analytics', verifyJWT, restrictTo('admin'), getDesignerAnalytics);
-router.get('/', getDesigners);
-router.get('/:id', getDesignerById);
-router.get('/:id/availability', getDesignerAvailability);
+router.get('/', designerController.getDesigners);
+router.post('/create', designerController.createDesigner);
+router.get('/analytics', designerController.getAnalytics);
+router.patch('/:id/status', designerController.updateStatus);
 
-router.post('/:id/assign-project', verifyJWT, restrictTo('admin'), assignProject);
-router.post('/:id/upload', verifyJWT, restrictTo('admin', 'designer'), uploadDesign);
+router.get('/:id', designerController.getDesignerById);
+router.patch('/:id', designerController.updateDesigner);
+router.delete('/:id', designerController.deleteDesigner);
+router.post('/:id/assign-project', designerController.assignProject);
+router.post('/:id/message', designerController.sendMessage);
+router.post('/:id/upload-profile', designerController.uploadProfile);
+router.post('/:id/upload-portfolio', designerController.uploadPortfolio);
+
+router.get('/workload/overview', designerController.getWorkload);
+router.get('/schedules/overview', designerController.getSchedules);
 
 export default router;

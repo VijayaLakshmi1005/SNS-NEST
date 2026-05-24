@@ -39,6 +39,7 @@ import financeRoutes from './modules/finance/finance.routes.js';
 import analyticsRoutes from './modules/analytics/analytics.routes.js';
 import supportTicketRoutes from './modules/support/support.routes.js';
 import liveNotificationRoutes from './modules/notifications/notification.routes.js';
+import crmRoutes from './modules/crm/crm.routes.js';
 
 // Express 5 query getter compatibility workaround for legacy middlewares (like xss-clean, express-mongo-sanitize)
 const queryDescriptor = Object.getOwnPropertyDescriptor(express.request, 'query');
@@ -158,6 +159,7 @@ app.use('/api/finance', financeRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/support-tickets', supportTicketRoutes);
 app.use('/api/live-notifications', liveNotificationRoutes);
+app.use('/api/crm', crmRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

@@ -52,6 +52,38 @@ const userSchema = new mongoose.Schema({
     addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now }
   }],
+  // CRM Specific Fields
+  clientStatus: {
+    type: String,
+    enum: ['New Lead', 'Active Client', 'Consultation Ongoing', 'Project Active', 'High Priority', 'VIP', 'Inactive', 'Blocked'],
+    default: 'New Lead'
+  },
+  assignedDesigner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  crmTags: [{
+    type: String,
+    trim: true
+  }],
+  clientHealthScore: {
+    type: Number,
+    default: 100,
+    min: 0,
+    max: 100
+  },
+  aiEngagementScore: {
+    type: Number,
+    default: 0
+  },
+  totalRevenue: {
+    type: Number,
+    default: 0
+  },
+  lastActivityAt: {
+    type: Date,
+    default: Date.now
+  },
   refreshToken: {
     type: String
   }

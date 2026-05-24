@@ -3,13 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Search, Filter, Briefcase, Star, Eye } from 'lucide-react';
 
-export default function DesignerTable({ designers, isLoading }) {
+export default function DesignerTable({ designers, isLoading, onEdit, onDelete, onView }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
   
-  const filteredDesigners = designers.filter(d => 
-    d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    d.specialization.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredDesigners = designers.filter(d => {
+    const matchesSearch = (d.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (d.specialization || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'All' ? true : d.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="bg-white border border-[#e5e0d8] rounded-2xl shadow-sm overflow-hidden flex flex-col">
@@ -26,12 +29,18 @@ export default function DesignerTable({ designers, isLoading }) {
           />
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 bg-white border border-[#e5e0d8] rounded-xl text-sm font-medium text-[#2d2a26] hover:bg-[#fcfbf9] transition-colors flex items-center gap-2">
-            <Filter className="w-4 h-4" /> Filter Status
-          </button>
-          <button className="px-4 py-2 bg-[#2d2a26] text-white rounded-xl text-sm font-medium hover:bg-[#1a1816] transition-colors shadow-sm">
-            + Add Designer
-          </button>
+          <select 
+            onChange={(e) => setStatusFilter(e.target.value)}
+            value={statusFilter}
+            className="px-4 py-2 bg-white border border-[#e5e0d8] rounded-xl text-sm font-medium text-[#2d2a26] hover:bg-[#fcfbf9] transition-colors focus:outline-none appearance-none cursor-pointer"
+          >
+            <option value="All">All Statuses</option>
+            <option value="Available">Available</option>
+            <option value="Busy">Busy</option>
+            <option value="In Consultation">In Consultation</option>
+            <option value="Offline">Offline</option>
+            <option value="On Leave">On Leave</option>
+          </select>
         </div>
       </div>
 
@@ -44,7 +53,7 @@ export default function DesignerTable({ designers, isLoading }) {
               <th className="px-6 py-4 text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Specialization</th>
               <th className="px-6 py-4 text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Status</th>
               <th className="px-6 py-4 text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Active Projects</th>
-              <th className="px-6 py-4 text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Rating</th>
+
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -104,21 +113,34 @@ export default function DesignerTable({ designers, isLoading }) {
                         {designer.activeProjects?.length || 0} Projects
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1 text-sm font-medium text-[#2d2a26]">
-                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                        {designer.rating}
-                      </div>
-                    </td>
+
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link 
-                          to={`/admin/designers/${designer._id}`}
+                        <button
+                          onClick={() => onEdit(designer)}
+                          className="p-2 text-[#8b8175] hover:bg-[#e5e0d8] hover:text-[#2d2a26] rounded-xl transition-colors"
+                          title="Edit Designer"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                        </button>
+                        <button
+                          onClick={() => {
+                            if(window.confirm('Are you sure you want to delete this designer?')) {
+                              onDelete(designer._id);
+                            }
+                          }}
+                          className="p-2 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-colors"
+                          title="Delete Designer"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </button>
+                        <button 
+                          onClick={() => onView(designer)}
                           className="p-2 text-[#8b8175] hover:bg-[#e5e0d8] hover:text-[#2d2a26] rounded-xl transition-colors"
                           title="View 360° Profile"
                         >
                           <Eye className="w-4 h-4" />
-                        </Link>
+                        </button>
                       </div>
                     </td>
                   </motion.tr>

@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { Users, UserCheck, UserMinus, CalendarClock } from 'lucide-react';
+import { Users, UserCheck, UserMinus, CalendarClock, UserPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
 import DesignerTable from '../../components/designers/DesignerTable';
+import DesignerFormDialog from '../../components/designers/DesignerFormDialog';
+import DesignerProfileDrawer from '../../components/designers/DesignerProfileDrawer';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
@@ -18,7 +21,13 @@ const fetchDesignerAnalytics = async () => {
 };
 
 export default function DesignerManagement() {
-  const { data: designersQuery, isLoading: isLoadingDesigners } = useQuery({
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedDesigner, setSelectedDesigner] = useState(null);
+  
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [viewDesigner, setViewDesigner] = useState(null);
+
+  const { data: designersQuery, isLoading: isLoadingDesigners, refetch } = useQuery({
     queryKey: ['admin-designers'],
     queryFn: fetchDesigners
   });
@@ -28,15 +37,48 @@ export default function DesignerManagement() {
     queryFn: fetchDesignerAnalytics
   });
 
+  const handleDelete = async (id) => {
+    try {
+      const authStorageStr = localStorage.getItem('auth-storage');
+      const token = authStorageStr ? JSON.parse(authStorageStr)?.state?.token : null;
+      await axios.delete(`${API_URL}/designers/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      refetch();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete designer');
+    }
+  };
+
+  const handleEdit = (designer) => {
+    setSelectedDesigner(designer);
+    setIsFormOpen(true);
+  };
+
+  const handleView = (designer) => {
+    setViewDesigner(designer);
+    setIsDrawerOpen(true);
+  };
+
   const designers = designersQuery?.data || [];
   const analytics = analyticsQuery?.data || {};
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 relative h-full w-full">
       {/* Header */}
-      <div>
-        <h1 className="font-nav-style text-3xl font-extrabold text-[#2d2a26]">Designer Ecosystem</h1>
-        <p className="font-sans text-[#8b8175]">Manage assignments, monitor workloads, and collaborate with your design team.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-nav-style text-3xl font-extrabold text-[#2d2a26]">Designer Ecosystem</h1>
+          <p className="font-sans text-[#8b8175]">Manage assignments, monitor workloads, and collaborate with your design team.</p>
+        </div>
+        <Button 
+          className="gap-2 bg-[#1a1a1a] hover:bg-[#333] text-white"
+          onClick={() => { setSelectedDesigner(null); setIsFormOpen(true); }}
+        >
+          <UserPlus className="w-4 h-4" />
+          Add Designer
+        </Button>
       </div>
 
       {/* Analytics Overview Grid */}
@@ -48,7 +90,7 @@ export default function DesignerManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-nav-style font-bold text-[#2d2a26]">
-              {analytics.totalDesigners || 0}
+              {analytics.total || 0}
             </div>
           </CardContent>
         </Card>
@@ -60,7 +102,7 @@ export default function DesignerManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-nav-style font-bold text-green-600">
-              {analytics.activeDesigners || 0}
+              {analytics.active || 0}
             </div>
           </CardContent>
         </Card>
@@ -72,7 +114,7 @@ export default function DesignerManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-nav-style font-bold text-orange-500">
-              {analytics.busyDesigners || 0}
+              {analytics.busy || 0}
             </div>
           </CardContent>
         </Card>
@@ -91,7 +133,28 @@ export default function DesignerManagement() {
       </div>
 
       {/* Designer Table Ecosystem */}
-      <DesignerTable designers={designers} isLoading={isLoadingDesigners} />
+      <DesignerTable 
+        designers={designers} 
+        isLoading={isLoadingDesigners} 
+        onEdit={handleEdit} 
+        onDelete={handleDelete} 
+        onView={handleView}
+      />
+
+      {isFormOpen && (
+        <DesignerFormDialog 
+          isOpen={isFormOpen}
+          initialData={selectedDesigner}
+          onClose={() => { setIsFormOpen(false); setSelectedDesigner(null); }}
+          onSuccess={() => refetch()}
+        />
+      )}
+
+      <DesignerProfileDrawer 
+        designer={viewDesigner}
+        isOpen={isDrawerOpen}
+        onClose={() => { setIsDrawerOpen(false); setViewDesigner(null); }}
+      />
     </div>
   );
 }

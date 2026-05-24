@@ -62,7 +62,7 @@ export default function Projects() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[#8b8175]">Value</span>
-                  <span className="font-medium text-[#1a1a1a]">${project.value.toLocaleString()}</span>
+                  <span className="font-medium text-[#1a1a1a]">₹{project.value.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-[#8b8175] mt-4 pt-4 border-t border-[#e6e6df]">
                   <Calendar className="w-4 h-4" />

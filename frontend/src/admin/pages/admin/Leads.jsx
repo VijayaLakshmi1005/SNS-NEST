@@ -51,7 +51,7 @@ export default function Leads() {
                         </button>
                       </div>
                       <h4 className="font-bold text-[#1a1a1a] text-lg leading-tight mb-1">{lead.name}</h4>
-                      <p className="text-[#8b8175] text-sm font-medium mb-3">Est. Value: ${lead.value.toLocaleString()}</p>
+                      <p className="text-[#8b8175] text-sm font-medium mb-3">Est. Value: ₹{lead.value.toLocaleString()}</p>
                       <div className="flex items-center text-xs text-[#8b8175] pt-3 border-t border-[#e6e6df]">
                         <Calendar className="w-3 h-3 mr-1" />
                         {lead.date}

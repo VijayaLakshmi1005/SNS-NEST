@@ -72,7 +72,7 @@ export default function Designers() {
                       <span className="font-medium">{d.rating}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="font-medium">${(d.revenue / 1000).toFixed(1)}k</TableCell>
+                  <TableCell className="font-medium">₹{(d.revenue / 1000).toFixed(1)}k</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon">
                       <MoreHorizontal className="w-4 h-4" />

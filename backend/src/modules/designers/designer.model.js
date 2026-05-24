@@ -13,29 +13,37 @@ const availabilitySlotSchema = new mongoose.Schema({
 });
 
 const designerSchema = new mongoose.Schema({
+  user: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User',
+    required: false // Optional for now to avoid breaking existing data
+  },
   name: {
     type: String,
-    required: [true, 'Designer name is required'],
+    required: false,
     trim: true
   },
   email: {
     type: String,
-    required: [true, 'Designer email is required'],
+    required: false,
     unique: true,
     lowercase: true,
     trim: true
   },
+  phoneNumber: {
+    type: String
+  },
   specialization: {
     type: String,
-    required: true
+    default: 'General'
   },
   experience: {
     type: Number,
-    required: true
+    default: 0
   },
   bio: {
     type: String,
-    required: true
+    default: ''
   },
   rating: {
     type: Number,
@@ -49,8 +57,8 @@ const designerSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Active', 'Busy', 'Inactive'],
-    default: 'Active'
+    enum: ['Active', 'Busy', 'Available', 'In Consultation', 'Offline', 'On Leave', 'Suspended', 'Inactive'],
+    default: 'Available'
   },
   activeProjects: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -73,7 +81,9 @@ const designerSchema = new mongoose.Schema({
     enum: ['Video Call', 'Offline Meeting'],
     default: ['Video Call', 'Offline Meeting']
   },
-  availability: [availabilitySlotSchema]
+  availability: [availabilitySlotSchema],
+  workloadPercentage: { type: Number, default: 0 },
+  consultationsToday: { type: Number, default: 0 }
 }, {
   timestamps: true
 });

@@ -4,7 +4,7 @@ import AdminLayout from '../layout/AdminLayout';
 
 // Mock components until we build them
 const Dashboard = React.lazy(() => import('../pages/admin/Dashboard'));
-const UserManagement = React.lazy(() => import('../pages/admin/UserManagement'));
+const CRMWorkspace = React.lazy(() => import('../pages/admin/crm/CRMWorkspace'));
 const UserProfile = React.lazy(() => import('../pages/admin/UserProfile'));
 const DesignerManagement = React.lazy(() => import('../pages/admin/DesignerManagement'));
 const DesignerProfile = React.lazy(() => import('../pages/admin/DesignerProfile'));
@@ -29,7 +29,7 @@ export default function AdminApp() {
         <Route path="/" element={<AdminLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="users" element={<UserManagement />} />
+          <Route path="users" element={<CRMWorkspace />} />
           <Route path="users/:id" element={<UserProfile />} />
           <Route path="designers" element={<DesignerManagement />} />
           <Route path="designers/:id" element={<DesignerProfile />} />

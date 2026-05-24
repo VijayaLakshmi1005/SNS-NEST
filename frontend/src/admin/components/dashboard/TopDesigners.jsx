@@ -37,7 +37,7 @@ export default function TopDesigners({ data }) {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-bold text-[#1a1a1a]">${(designer.revenue / 1000).toFixed(1)}k</div>
+                  <div className="text-sm font-bold text-[#1a1a1a]">₹{(designer.revenue / 1000).toFixed(1)}k</div>
                   <div className="text-[10px] text-[#8b8175]">Generated</div>
                 </div>
               </div>
