@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import loadingVideo from '../../Assets/Spinning_top_animation.mp4';
+import paperTexture from '../../Assets/paper_texture.png';
 
 export default function Preloader({ progress, onComplete }) {
   const containerRef = useRef(null);
@@ -8,6 +9,23 @@ export default function Preloader({ progress, onComplete }) {
   const contentRef = useRef(null);
   const startTime = useRef(Date.now());
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const [globalAssetsLoaded, setGlobalAssetsLoaded] = useState(false);
+
+  // Global Asset Preloading
+  useEffect(() => {
+    const checkAssets = async () => {
+      // 1. Wait for DOM and standard assets (images, stylesheets)
+      if (document.readyState !== 'complete') {
+        await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+      }
+      // 2. Wait for all custom fonts to finish loading
+      if (document.fonts) {
+        await document.fonts.ready;
+      }
+      setGlobalAssetsLoaded(true);
+    };
+    checkAssets();
+  }, []);
 
   useEffect(() => {
     // Fast play the video
@@ -21,51 +39,35 @@ export default function Preloader({ progress, onComplete }) {
   }, []);
 
   useEffect(() => {
-    // Basic entrance animation - ONLY trigger when the video frame is fully loaded
-    if (isVideoReady && contentRef.current) {
-      gsap.fromTo(
-        contentRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 1, ease: 'power3.out' }
-      );
-    }
-  }, [isVideoReady]);
-
-  useEffect(() => {
-    // When progress hits 100, ensure the screen has been visible for at least 3.5 seconds
-    if (progress === 100) {
+    // When Antigravity sequence hits 100%, AND all global assets/fonts are loaded, AND video is ready
+    if (progress === 100 && globalAssetsLoaded && isVideoReady) {
       const elapsed = Date.now() - startTime.current;
-      const remainingWait = Math.max(0, 3500 - elapsed);
-      const delayInSeconds = remainingWait / 1000;
+      // Enforce a strict minimum 4-second display time as mandated
+      const remainingWait = Math.max(0, 4000 - elapsed);
 
-      const tl = gsap.timeline({
-        delay: delayInSeconds,
-        onComplete: onComplete
-      });
-
-      // "Pro" cinematic exit: Slide the entire screen up like a curtain, 
-      // while pushing the inner content down slightly for a premium parallax effect. No basic fade outs!
-      tl.to(containerRef.current, {
-        yPercent: -100,
-        duration: 1.2,
-        ease: 'expo.inOut'
-      })
-      .to(contentRef.current, {
-        yPercent: 40, // Premium parallax effect
-        duration: 1.2,
-        ease: 'expo.inOut'
-      }, "<"); // Execute at the exact same time
+      // Instant exit without any fadeout or sliding effects, as requested
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, remainingWait);
     }
-  }, [progress, onComplete]);
+  }, [progress, globalAssetsLoaded, isVideoReady, onComplete]);
 
   return (
     <div 
       ref={containerRef}
       className="fixed inset-0 z-[9999] bg-[#E8E2DA] flex flex-col items-center justify-center pointer-events-none overflow-hidden"
+      style={{
+        backgroundImage: `url(${paperTexture})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
     >
-      {/* Wrapper to animate both text and video together. Opacity 0 initially to prevent text flashing early */}
-      <div ref={contentRef} className="absolute inset-0 w-full h-full opacity-0">
+      {/* Wrapper containing text and video. Opacity is strictly 0 until the video is fully loaded. 
+          Uses flexbox to mathematically center both elements. Added px-4 so it doesn't touch edges on tiny phones. */}
+      <div ref={contentRef} className="absolute inset-0 w-full h-full flex items-center justify-center px-4" style={{ opacity: isVideoReady ? 1 : 0 }}>
         
+        {/* The video is placed back as absolute fullscreen to prevent any hard edges from showing on wide desktop monitors.
+            It uses object-contain on mobile with a scale to stay proportional, and object-cover on desktop. */}
         <video 
           ref={videoRef}
           src={loadingVideo}
@@ -74,15 +76,17 @@ export default function Preloader({ progress, onComplete }) {
           loop
           playsInline
           onLoadedData={() => setIsVideoReady(true)}
-          className="absolute inset-0 w-full h-full object-cover scale-[1.20] sm:scale-[1.25] md:scale-[1.30] lg:scale-[1.35] z-0" 
+          className="absolute inset-0 w-full h-full object-contain md:object-cover scale-[1.4] md:scale-100 z-0 mix-blend-darken" 
         />
 
-        {/* Huge cinematic text placed ON TOP of the video, but using mix-blend-overlay.
-            This CSS trick makes the black text disappear into the white highlights and dark shadows of the spinning top,
-            creating the perfect optical illusion that it is being blocked by the physical top! */}
-        <h1 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] md:-translate-y-[55%] font-clash font-bold uppercase text-[18vw] md:text-[14vw] lg:text-[12vw] xl:text-[10rem] tracking-[0.15em] md:tracking-[0.2em] text-black opacity-80 mix-blend-overlay z-10 select-none text-center leading-none whitespace-nowrap">
-          LOADING
-        </h1>
+        {/* Elegant Cinematic Placement: Moved to the bottom right corner so the spinning top takes center stage. 
+            Includes a retro blinking cursor to match the VT323 font theme perfectly. */}
+        <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 xl:bottom-16 xl:right-16 z-10 flex items-center gap-2 md:gap-3 xl:gap-4 select-none">
+          <h1 className="font-retro uppercase text-[clamp(1.2rem,4vw,3.5rem)] tracking-[0.1em] text-black drop-shadow-sm leading-none">
+            LOADING...
+          </h1>
+          <div className="w-[8px] h-[18px] md:w-[12px] md:h-[26px] xl:w-[16px] xl:h-[36px] bg-black animate-terminal-blink" />
+        </div>
 
       </div>
     </div>

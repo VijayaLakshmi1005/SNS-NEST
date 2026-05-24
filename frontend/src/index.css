@@ -1,6 +1,10 @@
 @import url('https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Instrument+Sans:wght@700;800&family=Inter:wght@700;800;900&family=WindSong:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Instrument+Sans:wght@700;800&family=Inter:wght@700;800;900&family=WindSong:wght@400;500&family=VT323&display=swap');
 @import "tailwindcss";
+
+.font-retro {
+  font-family: 'VT323', monospace;
+}
 
 body {
   margin: 0;
@@ -56,6 +60,15 @@ body {
     transform: translateY(0);
     filter: blur(0);
   }
+}
+
+@keyframes terminalBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-terminal-blink {
+  animation: terminalBlink 0.7s step-end infinite;
 }
 
 .animate-vision-reveal {
