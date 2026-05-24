@@ -76,7 +76,7 @@ export default function Preloader({ progress, onComplete }) {
           loop
           playsInline
           onLoadedData={() => setIsVideoReady(true)}
-          className="absolute inset-0 w-full h-full object-contain md:object-cover scale-[1.4] md:scale-100 z-0 mix-blend-darken" 
+          className="absolute inset-0 w-full h-full object-cover z-0 mix-blend-darken" 
         />
 
         {/* Elegant Cinematic Placement: Moved to the bottom right corner so the spinning top takes center stage. 
