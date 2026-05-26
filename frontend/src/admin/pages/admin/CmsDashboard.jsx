@@ -36,7 +36,10 @@ export default function CmsDashboard() {
           <h1 className="font-nav-style text-3xl font-extrabold text-[#2d2a26]">CMS Operating System</h1>
           <p className="font-sans text-[#8b8175]">Visual content and blog management.</p>
         </div>
-        <button className="flex items-center gap-2 bg-[#2d2a26] text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-[#1a1816] transition-all shadow-sm">
+        <button 
+          onClick={() => window.open('/', '_blank')}
+          className="flex items-center gap-2 bg-[#2d2a26] text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-[#1a1816] transition-all shadow-sm"
+        >
           <MonitorPlay className="w-4 h-4" /> Live Preview
         </button>
       </div>

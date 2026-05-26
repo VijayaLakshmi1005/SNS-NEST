@@ -19,7 +19,7 @@ const leadActivitySchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['status_change', 'call', 'message', 'follow_up', 'consultation', 'ai_usage', 'system'],
+    enum: ['status_change', 'call', 'message', 'follow_up', 'consultation', 'ai_usage', 'system', 'proposal', 'conversion', 'designer_assigned'],
     default: 'system'
   }
 }, {

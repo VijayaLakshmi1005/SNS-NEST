@@ -114,6 +114,43 @@ body {
 
 }
 
+/* ===== ADVANCED UX ANIMATIONS & CLASSES ===== */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  80%, 100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes float-shadow {
+  0% { box-shadow: 0 4px 6px rgba(0,0,0,0.05); transform: translateY(0); }
+  50% { box-shadow: 0 10px 15px rgba(0,0,0,0.1); transform: translateY(-4px); }
+  100% { box-shadow: 0 4px 6px rgba(0,0,0,0.05); transform: translateY(0); }
+}
+
+.animate-pulse-ring::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  z-index: -1;
+}
+
+.luxury-card-hover {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.luxury-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.05), 0 10px 10px rgba(0,0,0,0.02);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 /* ===== ADVANCED LUXURY CALENDAR OVERRIDES ===== */
 .luxury-calendar .rbc-calendar {
   font-family: 'Neue Montreal', 'Inter', -apple-system, sans-serif;
@@ -129,33 +166,34 @@ body {
 
 .luxury-calendar .rbc-toolbar button {
   border: 1px solid #e5e0d8;
-  color: #2d2a26;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-weight: 600;
-  transition: all 0.2s ease-in-out;
-  background: white;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  color: #8b8175;
+  border-radius: 12px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  background: #fcfbf9;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
 .luxury-calendar .rbc-toolbar button:hover,
 .luxury-calendar .rbc-toolbar button:active,
 .luxury-calendar .rbc-toolbar button.rbc-active {
-  background-color: #2d2a26;
+  background: #2d2a26;
   color: #fcfbf9;
   border-color: #2d2a26;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(45, 42, 38, 0.15);
 }
 
 .luxury-calendar .rbc-header {
   border-bottom: 1px solid #e5e0d8;
   border-left: none;
-  padding: 1rem 0;
-  font-weight: 700;
+  padding: 1.25rem 0;
+  font-weight: 800;
   color: #8b8175;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   font-size: 0.75rem;
+  background: #fcfbf9;
 }
 
 .luxury-calendar .rbc-time-header.rbc-overflowing {
@@ -166,23 +204,25 @@ body {
 .luxury-calendar .rbc-time-view,
 .luxury-calendar .rbc-agenda-view {
   border: 1px solid #e5e0d8;
-  border-radius: 12px;
-  background: white;
+  border-radius: 16px;
+  background: #fcfbf9;
   overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
 }
 
 .luxury-calendar .rbc-day-bg {
   border-left: 1px dashed #e5e0d8;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s ease;
+  background-color: #fcfbf9;
 }
 
 .luxury-calendar .rbc-day-bg:hover {
-  background-color: rgba(229, 224, 216, 0.2);
+  background-color: #f5f2eb;
 }
 
 .luxury-calendar .rbc-today {
-  background-color: rgba(101, 109, 74, 0.05); /* very soft green/beige */
+  background-color: #f5f2eb !important;
+  border-left: 1px solid #d4cfc5 !important;
 }
 
 .luxury-calendar .rbc-time-slot {
@@ -193,25 +233,34 @@ body {
   border-bottom: none;
 }
 
+.luxury-calendar .rbc-time-gutter .rbc-timeslot-group {
+  font-weight: 700;
+  color: #8b8175;
+  font-size: 0.75rem;
+  background-color: #fcfbf9;
+}
+
 .luxury-calendar .rbc-event {
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 2px 4px rgba(45,42,38,0.05);
+  border: 1px solid #e5e0d8 !important;
 }
 
 .luxury-calendar .rbc-event:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-  z-index: 10;
+  box-shadow: 0 8px 15px -3px rgba(45, 42, 38, 0.1) !important;
+  z-index: 20;
 }
 
 /* Glassmorphism event labels */
 .luxury-calendar .rbc-event-content {
   font-size: 0.75rem;
+  font-weight: 800;
   letter-spacing: 0.02em;
 }
 
 .luxury-calendar .rbc-current-time-indicator {
-  background-color: #d97706; /* amber for current time line */
+  background-color: #8b8175;
   height: 2px;
 }
 .luxury-calendar .rbc-current-time-indicator::before {
@@ -222,6 +271,6 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: #d97706;
+  background-color: #8b8175;
 }
 

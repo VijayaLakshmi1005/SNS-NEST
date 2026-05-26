@@ -4,6 +4,7 @@ import { ApiResponse } from '../../utils/ApiResponse.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { catchAsync } from '../../utils/catchAsync.js';
 import { getIO } from '../../config/socket.js';
+import * as projectService from './project.service.js';
 
 // Helper to log activities
 const logActivity = async (projectId, userId, action, type, details = '') => {
@@ -25,7 +26,7 @@ const logActivity = async (projectId, userId, action, type, details = '') => {
 };
 
 export const createProject = catchAsync(async (req, res) => {
-  const { title, clientId, budget, estimatedCompletion } = req.body;
+  const { title, clientId, budget, estimatedCompletion, projectType, priority } = req.body;
   if (!title || !clientId) throw new ApiError(400, 'Title and Client ID are required');
 
   const project = await ProjectModular.create({
@@ -33,6 +34,8 @@ export const createProject = catchAsync(async (req, res) => {
     client: clientId,
     budget,
     estimatedCompletion,
+    projectType: projectType || 'Residential',
+    priority: priority || 'Medium',
     status: 'Draft'
   });
 
@@ -42,26 +45,76 @@ export const createProject = catchAsync(async (req, res) => {
 });
 
 export const getProjects = catchAsync(async (req, res) => {
-  // Can add filters based on req.user.role (e.g., if client, only fetch their projects)
   const query = {};
   if (req.user.role === 'client') query.client = req.user._id;
 
   const projects = await ProjectModular.find(query)
-    .populate('client', 'firstName lastName email profileImage')
-    .populate('designer', 'name email profileImage');
+    .populate('client', 'fullName email mobile')
+    .populate('designer', 'name email specialization');
   
   return res.status(200).json(new ApiResponse(200, projects, 'Projects fetched'));
 });
 
 export const getProjectById = catchAsync(async (req, res) => {
   const project = await ProjectModular.findById(req.params.id)
-    .populate('client', 'firstName lastName email profileImage')
-    .populate('designer', 'name email profileImage');
+    .populate('client', 'fullName email mobile')
+    .populate('designer', 'name email specialization');
   
   if (!project) throw new ApiError(404, 'Project not found');
   return res.status(200).json(new ApiResponse(200, project, 'Project fetched'));
 });
 
+export const getProjectAnalytics = catchAsync(async (req, res) => {
+  const analytics = await projectService.getProjectAnalytics();
+  res.status(200).json(new ApiResponse(200, analytics, 'Analytics fetched successfully'));
+});
+
+export const updateProjectProgress = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { progress } = req.body;
+  const updated = await projectService.updateProjectProgress(id, progress);
+  await logActivity(id, req.user._id, 'Progress Updated', 'progress', `Progress updated to ${progress}%`);
+  res.status(200).json(new ApiResponse(200, updated, 'Progress updated'));
+});
+
+export const getProjectTasks = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const tasks = await projectService.getTasksForProject(id);
+  res.status(200).json(new ApiResponse(200, tasks, 'Tasks fetched'));
+});
+
+export const createProjectTask = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const task = await projectService.createTask(id, req.body);
+  await logActivity(id, req.user._id, 'Task Created', 'task', `Task added: ${task.title}`);
+  res.status(201).json(new ApiResponse(201, task, 'Task created'));
+});
+
+export const updateProjectTaskStatus = catchAsync(async (req, res) => {
+  const { id, taskId } = req.params;
+  const { status } = req.body;
+  const task = await projectService.updateTaskStatus(taskId, status);
+  await logActivity(id, req.user._id, 'Task Updated', 'task', `Task '${task.title}' moved to ${status}`);
+  res.status(200).json(new ApiResponse(200, task, 'Task status updated'));
+});
+
+export const updateProjectTask = catchAsync(async (req, res) => {
+  const { id, taskId } = req.params;
+  const task = await projectService.updateTask(taskId, req.body);
+  await logActivity(id, req.user._id, 'Task Edited', 'task', `Task '${task.title}' was edited`);
+  res.status(200).json(new ApiResponse(200, task, 'Task updated'));
+});
+
+export const deleteProjectTask = catchAsync(async (req, res) => {
+  const { id, taskId } = req.params;
+  const task = await projectService.deleteTask(taskId);
+  if (task) {
+    await logActivity(id, req.user._id, 'Task Deleted', 'task', `Task '${task.title}' was deleted`);
+  }
+  res.status(200).json(new ApiResponse(200, null, 'Task deleted'));
+});
+
+// Preserved old functions (assignUsers, addMilestone, updateMilestoneStatus, uploadDocument, approveDocument, getActivityFeed)
 export const assignUsers = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { designerId } = req.body;
@@ -115,7 +168,8 @@ export const updateMilestoneStatus = catchAsync(async (req, res) => {
 
 export const uploadDocument = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const { fileName, fileUrl, fileType, requiresApproval } = req.body;
+  // Use mocked fileUrl if actual upload logic isn't provided yet
+  const { fileName, fileUrl = 'https://res.cloudinary.com/demo/image/upload/sample.jpg', fileType, requiresApproval } = req.body;
 
   const project = await ProjectModular.findById(id);
   if (!project) throw new ApiError(404, 'Project not found');
@@ -131,7 +185,7 @@ export const uploadDocument = catchAsync(async (req, res) => {
 
 export const approveDocument = catchAsync(async (req, res) => {
   const { id, uploadId } = req.params;
-  const { status, feedback } = req.body; // status: 'Approved' or 'Revision Requested'
+  const { status, feedback } = req.body;
 
   const project = await ProjectModular.findById(id);
   if (!project) throw new ApiError(404, 'Project not found');
@@ -152,7 +206,7 @@ export const getActivityFeed = catchAsync(async (req, res) => {
   const { id } = req.params;
   const activities = await ProjectActivity.find({ project: id })
     .sort({ createdAt: -1 })
-    .populate('user', 'firstName lastName profileImage role');
+    .populate('user', 'fullName profileImage role');
     
   return res.status(200).json(new ApiResponse(200, activities, 'Activity feed fetched'));
 });

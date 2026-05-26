@@ -27,7 +27,6 @@ const navItems = [
   { name: 'Catalog', path: '/admin/products', icon: ShoppingBag },
   { name: 'CMS', path: '/admin/cms', icon: FileText },
   { name: 'Appointments', path: '/admin/appointments', icon: CalendarDays },
-  { name: 'Vendors', path: '/admin/vendors', icon: Truck },
   { name: 'Finance', path: '/admin/finance', icon: CreditCard },
   { name: 'Analytics', path: '/admin/analytics', icon: BarChart3 },
   { name: 'Support', path: '/admin/support', icon: LifeBuoy },

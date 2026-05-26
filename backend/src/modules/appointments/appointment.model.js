@@ -23,7 +23,8 @@ const appointmentSchema = new mongoose.Schema({
     notes: String
   },
   meetingLink: { type: String }, // For video consultations
-  adminNotes: { type: String }
+  adminNotes: { type: String },
+  remindersSent: [{ type: String }] // e.g. '24hr', '1hr', '15m'
 }, { timestamps: true });
 
 // Ensure a designer cannot be double booked for the exact same date and timeSlot

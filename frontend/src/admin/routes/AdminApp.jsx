@@ -12,11 +12,10 @@ const ProjectManagement = React.lazy(() => import('../pages/admin/ProjectManagem
 const ProjectWorkspace = React.lazy(() => import('../pages/admin/ProjectWorkspace'));
 const LeadManagement = React.lazy(() => import('../pages/admin/LeadManagement'));
 const LeadProfile = React.lazy(() => import('../pages/admin/LeadProfile'));
-const ProductManagement = React.lazy(() => import('../pages/admin/ProductManagement'));
+const CatalogManagement = React.lazy(() => import('../pages/admin/CatalogManagement'));
 const ProductDetail = React.lazy(() => import('../pages/admin/ProductDetail'));
 const CmsDashboard = React.lazy(() => import('../pages/admin/CmsDashboard'));
 const AppointmentOverview = React.lazy(() => import('../pages/admin/AppointmentOverview'));
-const VendorOverview = React.lazy(() => import('../pages/admin/VendorOverview'));
 const FinanceDashboard = React.lazy(() => import('../pages/admin/FinanceDashboard'));
 const AnalyticsDashboard = React.lazy(() => import('../pages/admin/AnalyticsDashboard'));
 const SupportOverview = React.lazy(() => import('../pages/admin/SupportOverview'));
@@ -37,11 +36,10 @@ export default function AdminApp() {
           <Route path="projects/:id" element={<ProjectWorkspace />} />
           <Route path="leads" element={<LeadManagement />} />
           <Route path="leads/:id" element={<LeadProfile />} />
-          <Route path="products" element={<ProductManagement />} />
+          <Route path="products" element={<CatalogManagement />} />
           <Route path="products/:id" element={<ProductDetail />} />
           <Route path="cms" element={<CmsDashboard />} />
           <Route path="appointments" element={<AppointmentOverview />} />
-          <Route path="vendors" element={<VendorOverview />} />
           <Route path="finance" element={<FinanceDashboard />} />
           <Route path="analytics" element={<AnalyticsDashboard />} />
           <Route path="support" element={<SupportOverview />} />

@@ -1,32 +1,44 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { Package, TrendingUp, AlertTriangle, Eye, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import ProductCatalog from '../../components/products/ProductCatalog';
+import CatalogGrid from '../../components/catalog/CatalogGrid';
+import AdminUploadStudio from '../../components/catalog/AdminUploadStudio';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
-const fetchProducts = async () => {
-  const res = await axios.get(`${API_URL}/products`, { withCredentials: true, transports: ['websocket', 'polling'] });
+const fetchCatalog = async () => {
+  const res = await axios.get(`${API_URL}/catalog`, { withCredentials: true, transports: ['websocket', 'polling'] });
   return res.data;
 };
 
-export default function ProductManagement() {
+export default function CatalogManagement() {
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
 
-  const { data: productsQuery, isLoading } = useQuery({
-    queryKey: ['admin-products'],
-    queryFn: fetchProducts,
-    refetchInterval: 5000 // Real-time fallback
+  const queryClient = useQueryClient();
+
+  const { data: catalogQuery, isLoading } = useQuery({
+    queryKey: ['admin-catalog'],
+    queryFn: fetchCatalog,
+    refetchInterval: false // Now relying entirely on real-time sockets
   });
 
-  const products = productsQuery?.data || [];
+  useEffect(() => {
+    // Assuming a global socket instance or you can import it if available.
+    // For now we will rely on react-query invalidation triggered from top-level App.jsx or re-fetching on mount
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries(['admin-catalog']);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [queryClient]);
 
-  const total = products.length;
-  const lowStock = products.filter(p => p.inventory.status === 'Low Stock' || p.inventory.status === 'Out of Stock').length;
-  const totalViews = products.reduce((sum, p) => sum + (p.stats?.views || 0), 0);
-  const totalSaves = products.reduce((sum, p) => sum + (p.stats?.wishlistSaves || 0), 0);
+  const catalogItems = catalogQuery?.data || [];
+
+  const total = catalogItems.length;
+  const lowStock = catalogItems.filter(p => p.inventory?.status === 'Low Stock' || p.inventory?.status === 'Out of Stock').length;
+  const totalViews = catalogItems.reduce((sum, p) => sum + (p.stats?.views || 0), 0);
+  const totalSaves = catalogItems.reduce((sum, p) => sum + (p.stats?.wishlistSaves || 0), 0);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-12">
@@ -87,13 +99,17 @@ export default function ProductManagement() {
         </Card>
       </div>
 
-      {/* Product Catalog Grid */}
+      {/* Catalog Grid */}
       {isLoading ? (
-        <div className="flex justify-center py-12 text-[#8b8175]">Loading Catalog...</div>
+        <div className="flex justify-center py-12 text-[#8b8175]">Loading Catalog Ecosystem...</div>
       ) : (
-        <ProductCatalog products={products} />
+        <CatalogGrid items={catalogItems} />
       )}
       
+      <AdminUploadStudio 
+        isOpen={isCreateModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+      />
     </div>
   );
 }

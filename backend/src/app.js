@@ -9,8 +9,13 @@ import xss from 'xss-clean';
 import morgan from 'morgan';
 
 // Middleware Imports
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { globalLimiter } from './middleware/rateLimiter.middleware.js';
 import { errorHandler } from './middleware/error.middleware.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Route Imports
 import authRoutes from './routes/auth.routes.js';
@@ -31,10 +36,9 @@ import consultationRoutes from './modules/consultations/consultation.routes.js';
 import estimatorRoutes from './modules/estimator/estimator.routes.js';
 import trackingRoutes from './modules/project-tracking/tracking.routes.js';
 import leadRoutes from './modules/leads/lead.routes.js';
-import productRoutes from './modules/products/product.routes.js';
+import catalogRoutes from './modules/catalog/catalog.routes.js';
 import cmsRoutes from './modules/cms/cms.routes.js';
 import appointmentRoutes from './modules/appointments/appointment.routes.js';
-import vendorRoutes from './modules/vendors/vendor.routes.js';
 import financeRoutes from './modules/finance/finance.routes.js';
 import analyticsRoutes from './modules/analytics/analytics.routes.js';
 import supportTicketRoutes from './modules/support/support.routes.js';
@@ -59,8 +63,13 @@ if (queryDescriptor && queryDescriptor.get && !queryDescriptor.set) {
 
 const app = express();
 
+// Serve Static Uploads
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+
 // Security HTTP Headers
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // Logging Middleware
 // app.use(morgan('dev'));
@@ -137,9 +146,9 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/estimate', estimateRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Mounting modular real-time project tracking BEFORE legacy routes to cascade smoothly
-app.use('/api/projects', trackingRoutes);
+// Mounting modular real-time project tracking
 app.use('/api/projects', projectRoutes);
+app.use('/api/projects', trackingRoutes);
 
 app.use('/api/chat', chatRoutes);
 app.use('/api/payments', paymentRoutes);
@@ -151,10 +160,9 @@ app.use('/api/designers', designerRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/estimator', estimatorRoutes);
 app.use('/api/leads', leadRoutes);
-app.use('/api/products', productRoutes);
+app.use('/api/catalog', catalogRoutes);
 app.use('/api/cms', cmsRoutes);
 app.use('/api/appointments', appointmentRoutes);
-app.use('/api/vendors', vendorRoutes);
 app.use('/api/finance', financeRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/support-tickets', supportTicketRoutes);

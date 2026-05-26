@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Users, TrendingUp, Phone, Calendar, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import LeadPipeline from '../../components/leads/LeadPipeline';
+import LeadProfileDrawer from '../../components/leads/LeadProfileDrawer';
+import CreateLeadModal from '../../components/leads/CreateLeadModal';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
@@ -14,6 +16,7 @@ const fetchLeads = async () => {
 
 export default function LeadManagement() {
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+  const [selectedLeadId, setSelectedLeadId] = useState(null);
 
   const { data: leadsQuery, isLoading } = useQuery({
     queryKey: ['admin-leads'],
@@ -48,31 +51,33 @@ export default function LeadManagement() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-white/80 backdrop-blur-md border-[#e5e0d8] shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-[#8b8175]">Total Leads</CardTitle>
+            <CardTitle className="text-sm font-medium text-[#8b8175]">Total Pipeline</CardTitle>
             <Users className="w-4 h-4 text-[#2d2a26]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-nav-style font-bold text-[#2d2a26]">{total}</div>
+            <div className="text-2xl font-nav-style font-bold text-[#2d2a26]">{total} Leads</div>
           </CardContent>
         </Card>
 
         <Card className="bg-white/80 backdrop-blur-md border-[#e5e0d8] shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-[#8b8175]">New Opportunities</CardTitle>
+            <CardTitle className="text-sm font-medium text-[#8b8175]">Active Opportunities</CardTitle>
             <TrendingUp className="w-4 h-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-nav-style font-bold text-blue-600">{newLeads}</div>
+            <div className="text-2xl font-nav-style font-bold text-blue-600">{activeFollowups + newLeads}</div>
           </CardContent>
         </Card>
 
         <Card className="bg-white/80 backdrop-blur-md border-[#e5e0d8] shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-[#8b8175]">Active Pipeline</CardTitle>
+            <CardTitle className="text-sm font-medium text-[#8b8175]">Revenue Potential</CardTitle>
             <Phone className="w-4 h-4 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-nav-style font-bold text-orange-600">{activeFollowups}</div>
+            <div className="text-2xl font-nav-style font-bold text-orange-600">
+              ₹{leads.filter(l => l.status !== 'Closed Lost').reduce((sum, l) => sum + (l.budget || 0), 0).toLocaleString()}
+            </div>
           </CardContent>
         </Card>
 
@@ -91,9 +96,19 @@ export default function LeadManagement() {
       {isLoading ? (
         <div className="flex justify-center py-12 text-[#8b8175]">Loading CRM Pipeline...</div>
       ) : (
-        <LeadPipeline leads={leads} />
+        <LeadPipeline leads={leads} onLeadClick={setSelectedLeadId} />
       )}
       
+      <LeadProfileDrawer 
+        leadId={selectedLeadId} 
+        isOpen={!!selectedLeadId} 
+        onClose={() => setSelectedLeadId(null)} 
+      />
+
+      <CreateLeadModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setCreateModalOpen(false)} 
+      />
     </div>
   );
 }

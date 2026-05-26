@@ -23,20 +23,26 @@ const leadSchema = new mongoose.Schema({
   preferredStyle: { type: String, trim: true },
   requirements: { type: String, trim: true },
   
+  // Smart Qualification & AI Scoring
   probabilityScore: {
     type: Number,
     min: 0,
     max: 100,
     default: 10
   },
+  aiQualificationNotes: { type: String, default: 'Lead just entered pipeline. Needs contact to evaluate intent.' },
   
   aiVisualizerUsage: {
     generationsCount: { type: Number, default: 0 },
     stylesExplored: [String]
   },
   
+  // Engagement & Automation Tracking
+  lastContactedAt: { type: Date },
   followUpDate: { type: Date },
+  responseTimeHours: { type: Number, default: 0 },
   
+  // References
   assignedToAdmin: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -44,6 +50,14 @@ const leadSchema = new mongoose.Schema({
   assignedToDesigner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Designer'
+  },
+  convertedToClient: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  convertedToProject: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProjectModular'
   },
   
   notes: String

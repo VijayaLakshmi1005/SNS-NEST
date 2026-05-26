@@ -14,7 +14,7 @@ const COLUMNS = [
   'Proposal Sent', 'Negotiation', 'Converted', 'Closed Lost'
 ];
 
-export default function LeadPipeline({ leads = [] }) {
+export default function LeadPipeline({ leads = [], onLeadClick }) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -103,19 +103,22 @@ export default function LeadPipeline({ leads = [] }) {
                   </span>
                 </div>
                 
-                <p className="text-xs text-[#8b8175] mb-3 truncate">{lead.email}</p>
+                <div className="flex flex-col gap-1 mb-3">
+                  <p className="text-xs font-semibold text-[#2d2a26] truncate">₹{(lead.budget || 0).toLocaleString()}</p>
+                  <p className="text-[10px] text-[#8b8175] truncate">{lead.preferredStyle || 'Style pending'} • {lead.propertyType || 'Type pending'}</p>
+                </div>
                 
                 <div className="flex items-center justify-between text-xs text-[#8b8175]">
                   <div className="flex items-center gap-1">
                     <User className="w-3 h-3" />
                     <span>{lead.source}</span>
                   </div>
-                  <Link 
-                    to={`/admin/leads/${lead._id}`}
+                  <button 
+                    onClick={() => onLeadClick(lead._id)}
                     className="flex items-center gap-1 text-[#2d2a26] font-medium opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     View <ArrowRight className="w-3 h-3" />
-                  </Link>
+                  </button>
                 </div>
               </motion.div>
             ))}

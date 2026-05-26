@@ -10,11 +10,18 @@ export const createDesigner = async (data) => {
     email: data.email,
     mobile: data.phoneNumber,
     password: data.password,
-    role: 'Designer'
+    role: 'designer'
   });
 
   const designer = await Designer.create({
     user: user._id,
+    name: data.fullName,
+    email: data.email,
+    phoneNumber: data.phoneNumber,
+    specialization: data.expertise,
+    experience: data.experience,
+    bio: data.bio,
+    profileImage: data.profileImage,
     status: data.status || 'Available'
   });
 

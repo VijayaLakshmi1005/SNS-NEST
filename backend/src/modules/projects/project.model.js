@@ -42,6 +42,28 @@ const projectSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  progress: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 100
+  },
+  projectType: {
+    type: String,
+    default: 'Residential Interior Design'
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['Unpaid', 'Partially Paid', 'Fully Paid', 'Overdue'],
+    default: 'Unpaid'
+  },
+  priority: {
+    type: String,
+    enum: ['Low', 'Medium', 'High', 'Urgent'],
+    default: 'Medium'
+  },
+  tags: [{ type: String, trim: true }],
+  lastActivityAt: { type: Date, default: Date.now },
   milestones: [milestoneSchema],
   uploads: [uploadSchema],
   startDate: { type: Date, default: Date.now },

@@ -84,13 +84,13 @@ export default function DesignerTable({ designers, isLoading, onEdit, onDelete, 
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-[#e5e0d8] flex items-center justify-center overflow-hidden">
                           {designer.profileImage ? (
-                            <img src={designer.profileImage} alt={designer.name} className="w-full h-full object-cover" />
+                            <img src={designer.profileImage} alt={designer.name || 'Designer'} className="w-full h-full object-cover" />
                           ) : (
-                            <span className="text-[#2d2a26] font-bold font-nav-style">{designer.name.charAt(0)}</span>
+                            <span className="text-[#2d2a26] text-lg font-bold font-nav-style">{(designer.name || 'D').charAt(0)}</span>
                           )}
                         </div>
                         <div>
-                          <div className="font-nav-style font-bold text-[#2d2a26]">{designer.name}</div>
+                          <div className="font-nav-style font-bold text-[#2d2a26]">{designer.name || 'Unnamed Designer'}</div>
                           <div className="text-xs text-[#8b8175]">{designer.email}</div>
                         </div>
                       </div>
