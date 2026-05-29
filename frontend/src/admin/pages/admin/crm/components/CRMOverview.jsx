@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 export default function CRMOverview() {
   const { analytics, setAnalytics } = useCrmStore();
 
+  const navigate = useNavigate();
+
   React.useEffect(() => {
     // In a real app, this would be a React Query hook pointing to /api/crm/analytics
     // For now, let's mock it using adminApi or fetch directly
@@ -38,8 +40,6 @@ export default function CRMOverview() {
     { label: 'Pending Consultations', value: analytics.pendingConsultations, icon: <Calendar className="w-5 h-5 text-[#8b8175]" />, link: '/admin/appointments' },
     { label: 'Support Tickets', value: analytics.supportTickets, icon: <Ticket className="w-5 h-5 text-[#8b8175]" />, link: '/admin/support' }
   ];
-
-  const navigate = useNavigate();
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

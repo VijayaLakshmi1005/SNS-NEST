@@ -103,20 +103,38 @@ export const addNote = async (clientId, noteText, adminId, isPinned = false) => 
 };
 
 import { ProjectModular as Project } from '../projects/project.model.js';
+import { Booking } from '../../models/Booking.js';
+import { Message } from '../../models/Message.js';
+import { Payment } from '../../models/Payment.js';
+import { SupportTicket } from '../../models/SupportTicket.js';
 
 export const getCRMAnalytics = async () => {
-  const totalClients = await User.countDocuments({ role: ROLES.CLIENT });
-  const activeClients = await User.countDocuments({ role: ROLES.CLIENT, clientStatus: { $in: ['Active Client', 'Project Active', 'Consultation Ongoing', 'VIP'] } });
-  const highValueClients = await User.countDocuments({ role: ROLES.CLIENT, clientStatus: 'VIP' });
-  
-  // Aggregate total revenue
-  const revenueAgg = await User.aggregate([
-    { $match: { role: ROLES.CLIENT } },
-    { $group: { _id: null, total: { $sum: '$totalRevenue' } } }
+  const [
+    totalClients,
+    activeClients,
+    highValueClients,
+    revenueAgg,
+    activeProjects,
+    pendingConsultations,
+    unreadMessages,
+    pendingPayments,
+    supportTickets
+  ] = await Promise.all([
+    User.countDocuments({ role: ROLES.CLIENT }),
+    User.countDocuments({ role: ROLES.CLIENT, clientStatus: { $in: ['Active Client', 'Project Active', 'Consultation Ongoing', 'VIP'] } }),
+    User.countDocuments({ role: ROLES.CLIENT, clientStatus: 'VIP' }),
+    Payment.aggregate([
+      { $match: { status: 'Paid' } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]),
+    Project.countDocuments({ status: { $ne: 'Completed' } }),
+    Booking.countDocuments({ status: 'Scheduled' }),
+    Message.countDocuments({ isRead: false }),
+    Payment.countDocuments({ status: 'Created' }),
+    SupportTicket.countDocuments({ status: { $in: ['Open', 'In-Progress'] } })
   ]);
+
   const totalRevenue = revenueAgg.length > 0 ? revenueAgg[0].total : 0;
-  
-  const activeProjects = await Project.countDocuments({ status: { $ne: 'Completed' } });
 
   return {
     totalClients,
@@ -124,10 +142,10 @@ export const getCRMAnalytics = async () => {
     highValueClients,
     totalRevenue,
     activeProjects,
-    pendingConsultations: Math.floor(activeClients * 0.1), // placeholder
-    unreadMessages: 12, // placeholder
-    pendingPayments: 5, // placeholder
-    supportTickets: 3 // placeholder
+    pendingConsultations,
+    unreadMessages,
+    pendingPayments,
+    supportTickets
   };
 };
 
