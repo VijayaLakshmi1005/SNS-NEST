@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
+import { useAuthStore } from '../../store/useAuthStore';
 import { 
   LayoutDashboard, 
   Users, 
@@ -20,8 +21,6 @@ import {
 
 const navItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-  { name: 'Users', path: '/admin/users', icon: Users },
-  { name: 'Designers', path: '/admin/designers', icon: PenTool },
   { name: 'Projects', path: '/admin/projects', icon: FolderKanban },
   { name: 'Leads', path: '/admin/leads', icon: Megaphone },
   { name: 'Catalog', path: '/admin/products', icon: ShoppingBag },
@@ -31,9 +30,12 @@ const navItems = [
   { name: 'Analytics', path: '/admin/analytics', icon: BarChart3 },
   { name: 'Support', path: '/admin/support', icon: LifeBuoy },
   { name: 'Notifications', path: '/admin/notifications', icon: Bell },
+  { name: 'Client CRM', path: '/admin/users', icon: Users },
+  { name: 'User Management', path: '/admin/user-management', icon: Users },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
+  const { user } = useAuthStore();
   return (
     <div className={`
       fixed inset-y-0 left-0 z-50 w-64 bg-[#fbfbf9] border-r border-[#e6e6df] text-[#1a1a1a] flex flex-col flex-shrink-0
@@ -72,12 +74,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       </div>
       <div className="p-4 border-t border-[#e6e6df]">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#d4cfc5] flex items-center justify-center text-xs font-bold">
-            AD
+          <div className="w-8 h-8 rounded-full bg-[#d4cfc5] flex items-center justify-center text-xs font-bold uppercase text-[#1a1a1a]">
+            {user?.fullName?.charAt(0) || 'U'}
           </div>
-          <div>
-            <p className="text-sm font-medium">Admin User</p>
-            <p className="text-xs text-[#8b8175]">Super Admin</p>
+          <div className="overflow-hidden">
+            <p className="text-sm font-medium truncate">{user?.fullName || 'Loading...'}</p>
+            <p className="text-xs text-[#8b8175] capitalize truncate">{user?.role || 'Admin'}</p>
           </div>
         </div>
       </div>

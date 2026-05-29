@@ -42,7 +42,7 @@ const seedAdminData = async () => {
       paymentDocs.push({
         client: clients[0]._id,
         amount: Math.floor(Math.random() * 20000) + 5000,
-        currency: 'USD',
+        currency: 'INR',
         status: 'Paid',
         orderId: `ORDER_${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
         milestoneName: 'Design Consultation Retainer',
@@ -54,7 +54,7 @@ const seedAdminData = async () => {
     console.log('Seeding Activities...');
     await Activity.insertMany([
       { title: 'New Lead Registered', description: 'Victoria Chase signed up.', type: 'user_registered' },
-      { title: 'Payment Received', description: '$12,500 received for Project X.', type: 'payment_received' },
+      { title: 'Payment Received', description: '₹12,500 received for Project X.', type: 'payment_received' },
       { title: 'Consultation Scheduled', description: 'Jonathan Pierce scheduled with Sophia.', type: 'system' }
     ]);
 

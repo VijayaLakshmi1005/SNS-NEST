@@ -176,7 +176,7 @@ export default function ClientLayout() {
               <button 
                 onClick={async () => {
                   try {
-                    await apiRequest('/auth/logout', { method: 'POST' });
+                    await apiRequest('/auth/logout', { method: 'POST', body: {} });
                   } catch (e) {
                     console.error('Logout request failed', e);
                   }

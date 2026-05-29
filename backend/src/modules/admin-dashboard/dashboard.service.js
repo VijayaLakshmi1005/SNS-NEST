@@ -1,32 +1,45 @@
 import { User } from '../../models/User.js';
-import { Project } from '../../models/Project.js';
-import { Lead } from '../../models/Lead.js';
+import { ProjectModular as Project } from '../projects/project.model.js';
+import { LeadModular as Lead } from '../leads/lead.model.js';
 import { Payment } from '../../models/Payment.js';
 import { Activity } from '../../models/Activity.js';
 
 export class DashboardService {
   static async getOverviewMetrics() {
-    const [totalUsers, activeProjects, leads, payments] = await Promise.all([
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [totalUsers, activeProjects, leads, payments, recentUsers, recentProjects, recentLeads, recentPayments] = await Promise.all([
       User.countDocuments({ role: 'client' }),
-      Project.countDocuments({ status: { $ne: 'completed' } }),
-      Lead.countDocuments({ status: 'New' }),
+      Project.countDocuments({ status: { $ne: 'Completed' } }),
+      Lead.countDocuments({ status: 'New Lead' }),
       Payment.aggregate([
         { $match: { status: 'Paid' } },
+        { $group: { _id: null, total: { $sum: '$amount' } } }
+      ]),
+      User.countDocuments({ role: 'client', createdAt: { $gte: thirtyDaysAgo } }),
+      Project.countDocuments({ status: { $ne: 'Completed' }, createdAt: { $gte: thirtyDaysAgo } }),
+      Lead.countDocuments({ status: 'New Lead', createdAt: { $gte: thirtyDaysAgo } }),
+      Payment.aggregate([
+        { $match: { status: 'Paid', createdAt: { $gte: thirtyDaysAgo } } },
         { $group: { _id: null, total: { $sum: '$amount' } } }
       ])
     ]);
 
     const revenue = payments.length > 0 ? payments[0].total : 0;
+    const recentRevenue = recentPayments.length > 0 ? recentPayments[0].total : 0;
+
+    const calcTrend = (recent, total) => total > 0 ? `+${((recent / total) * 100).toFixed(1)}%` : '0%';
 
     return {
       totalUsers,
       activeProjects,
       newLeads: leads,
       revenue,
-      revenueTrend: '+12.5%',
-      usersTrend: '+5.2%',
-      projectsTrend: '+2.1%',
-      leadsTrend: '+8.4%'
+      revenueTrend: calcTrend(recentRevenue, revenue),
+      usersTrend: calcTrend(recentUsers, totalUsers),
+      projectsTrend: calcTrend(recentProjects, activeProjects),
+      leadsTrend: calcTrend(recentLeads, leads)
     };
   }
 
@@ -82,7 +95,7 @@ export class DashboardService {
         $group: {
           _id: '$status',
           count: { $sum: 1 },
-          value: { $sum: '$estimatedValue' }
+          value: { $sum: '$budget' }
         }
       }
     ]);
@@ -102,15 +115,24 @@ export class DashboardService {
   }
 
   static async getTopDesigners() {
-    const designers = await User.find({ role: 'designer' }).select('fullName email profileImage').lean();
-    // Simulate aggregation of designer stats (in real app, join with projects and reviews)
-    return designers.map(d => ({
-      ...d,
-      activeProjects: Math.floor(Math.random() * 5) + 1,
-      completedProjects: Math.floor(Math.random() * 20),
-      rating: (Math.random() * (5 - 4) + 4).toFixed(1),
-      revenue: Math.floor(Math.random() * 500000) + 100000
-    })).sort((a, b) => b.revenue - a.revenue);
+    const designers = await User.find({ $or: [{ role: { $in: ['designer', 'senior_designer'] } }, { isDesigner: true }] }).select('fullName email profileImage').lean();
+    
+    const designerStats = await Promise.all(designers.map(async (d) => {
+      const activeProjects = await Project.countDocuments({ designer: d._id, status: { $ne: 'Completed' } });
+      const completedProjects = await Project.countDocuments({ designer: d._id, status: 'Completed' });
+      
+      const projects = await Project.find({ designer: d._id }).select('budget');
+      const revenue = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
+      
+      return {
+        ...d,
+        activeProjects,
+        completedProjects,
+        revenue
+      };
+    }));
+
+    return designerStats.sort((a, b) => b.revenue - a.revenue);
   }
 
   static async getRecentPayments() {

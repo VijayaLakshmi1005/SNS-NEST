@@ -11,9 +11,7 @@ export const ClientRoute = () => {
   }
 
   if (role !== 'client') {
-    // If Admin tries to access client, redirect back to admin dashboard
     if (role === 'admin') return <Navigate to="/admin/dashboard" replace />;
-    if (role === 'designer') return <Navigate to="/designer/dashboard" replace />;
   }
 
   return <Outlet />;
@@ -29,23 +27,6 @@ export const AdminRoute = () => {
 
   if (role !== 'admin') {
     if (role === 'client') return <Navigate to="/client/dashboard" replace />;
-    if (role === 'designer') return <Navigate to="/designer/dashboard" replace />;
-  }
-
-  return <Outlet />;
-};
-
-// Guard for Designer Routes
-export const DesignerRoute = () => {
-  const { isAuthenticated, role } = useAuthStore();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/auth/login" replace />;
-  }
-
-  if (role !== 'designer') {
-    if (role === 'client') return <Navigate to="/client/dashboard" replace />;
-    if (role === 'admin') return <Navigate to="/admin/dashboard" replace />;
   }
 
   return <Outlet />;
@@ -58,7 +39,6 @@ export const PublicRoute = () => {
   if (isAuthenticated) {
     if (role === 'client') return <Navigate to="/client/dashboard" replace />;
     if (role === 'admin') return <Navigate to="/admin/dashboard" replace />;
-    if (role === 'designer') return <Navigate to="/designer/dashboard" replace />;
   }
 
   return <Outlet />;

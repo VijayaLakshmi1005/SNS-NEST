@@ -7,6 +7,37 @@ export const getUsers = catchAsync(async (req, res) => {
   res.status(200).json(new ApiResponse(200, result, 'Users fetched successfully'));
 });
 
+export const getDashboardKPIs = catchAsync(async (req, res) => {
+  const kpis = await UserService.getDashboardKPIs();
+  res.status(200).json(new ApiResponse(200, kpis, 'KPIs fetched successfully'));
+});
+
+export const createUser = catchAsync(async (req, res) => {
+  const user = await UserService.createUser(req.body, req.user._id);
+  res.status(201).json(new ApiResponse(201, user, 'User created successfully'));
+});
+
+export const updateUser = catchAsync(async (req, res) => {
+  const user = await UserService.updateUser(req.params.id, req.body, req.user._id);
+  res.status(200).json(new ApiResponse(200, user, 'User updated successfully'));
+});
+
+export const softDeleteUser = catchAsync(async (req, res) => {
+  const user = await UserService.softDeleteUser(req.params.id, req.user._id);
+  res.status(200).json(new ApiResponse(200, user, 'User archived successfully'));
+});
+
+export const verifyUser = catchAsync(async (req, res) => {
+  const user = await UserService.verifyUser(req.params.id, req.user._id);
+  res.status(200).json(new ApiResponse(200, user, 'User verified successfully'));
+});
+
+export const assignDesigner = catchAsync(async (req, res) => {
+  const { designerId } = req.body;
+  const user = await UserService.assignDesigner(req.params.id, designerId, req.user._id);
+  res.status(200).json(new ApiResponse(200, user, 'Designer assigned successfully'));
+});
+
 export const getUserProfile = catchAsync(async (req, res) => {
   const profile = await UserService.getUserProfile(req.params.id);
   res.status(200).json(new ApiResponse(200, profile, 'User profile fetched successfully'));

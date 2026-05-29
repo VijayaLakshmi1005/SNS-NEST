@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { FileStack, Upload, FileText, CheckCircle, Clock } from 'lucide-react';
+import axios from 'axios';
 
 export default function DocumentManager({ projectId, uploads = [] }) {
   const [dragActive, setDragActive] = useState(false);
@@ -12,11 +13,28 @@ export default function DocumentManager({ projectId, uploads = [] }) {
     else if (e.type === "dragleave") setDragActive(false);
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    // Real upload logic goes here
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      try {
+        // In a real scenario, this would be a FormData upload to AWS/Cloudinary
+        const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
+        await axios.post(`${API_URL}/projects/${projectId}/upload`, {
+          fileName: file.name,
+          fileType: 'Other',
+          requiresApproval: false
+        }, { withCredentials: true });
+        
+        // Let the parent query refetch or use socket for updates
+        window.location.reload(); // Simple refresh for now to see updates
+      } catch (err) {
+        console.error("Upload failed", err);
+      }
+    }
   };
 
   return (

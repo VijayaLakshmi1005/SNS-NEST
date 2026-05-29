@@ -3,12 +3,13 @@ import App from '../App'
 import ClientLayout from './layouts/ClientLayout'
 import AdminApp from '../admin/routes/AdminApp'
 import DesignerApp from '../designer/routes/DesignerApp'
-import { ClientRoute, AdminRoute, DesignerRoute, PublicRoute } from './components/RouteGuards'
+import { ClientRoute, AdminRoute, PublicRoute } from './components/RouteGuards'
 
 // Pages
 import Dashboard from './dashboard/Dashboard'
 import Login from './auth/Login'
 import Register from './auth/Register'
+import ForgotPassword from './auth/ForgotPassword'
 import Designs from './designs/Designs'
 import Booking from './booking/Booking'
 import Consultations from './pages/Consultations'
@@ -17,6 +18,7 @@ import Tracking from './tracking/Tracking'
 import AiRoom from './ai-room/AiRoom'
 import Chat from './chat/Chat'
 import Wishlist from './wishlist/Wishlist'
+import Support from './support/Support'
 
 // Temporary placeholders for remaining modules to ensure routing works
 const Placeholder = ({ name }) => (
@@ -46,6 +48,7 @@ export const router = createBrowserRouter([
           { path: 'ai-room', element: <AiRoom /> },
           { path: 'chat', element: <Chat /> },
           { path: 'wishlist', element: <Wishlist /> },
+          { path: 'support', element: <Support /> },
           { path: 'payment', element: <Placeholder name="Payments" /> },
           { path: 'profile', element: <Placeholder name="User Profile" /> },
         ]
@@ -62,6 +65,7 @@ export const router = createBrowserRouter([
         children: [
           { path: 'login', element: <Login /> },
           { path: 'register', element: <Register /> },
+          { path: 'forgot', element: <ForgotPassword /> },
         ]
       }
     ]
@@ -71,13 +75,6 @@ export const router = createBrowserRouter([
     element: <AdminRoute />,
     children: [
       { path: '*', element: <AdminApp /> }
-    ]
-  },
-  {
-    path: '/designer/*',
-    element: <DesignerRoute />,
-    children: [
-      { path: '*', element: <DesignerApp /> }
     ]
   }
 ])

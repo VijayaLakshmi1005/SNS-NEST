@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { adminApi } from '../../services/mockApi';
+import { adminApiClient } from '../../services/apiClient';
 import { Plus, MoreVertical, Calendar } from 'lucide-react';
 
 const COLUMNS = ['New Lead', 'Contacted', 'Interested', 'Consultation Scheduled', 'Converted'];
@@ -10,7 +10,7 @@ export default function Leads() {
   const [leads, setLeads] = React.useState(null);
 
   React.useEffect(() => {
-    adminApi.getLeads().then(setLeads);
+    adminApiClient.get('/leads').then(res => setLeads(res.data || []));
   }, []);
 
   if (!leads) return <div className="animate-pulse text-[#8b8175]">Loading CRM pipeline...</div>;
@@ -42,19 +42,19 @@ export default function Leads() {
               
               <div className="flex-1 overflow-y-auto space-y-3">
                 {colLeads.map((lead) => (
-                  <Card key={lead.id} className="cursor-pointer hover:border-[#8b8175] transition-colors shadow-sm">
+                  <Card key={lead._id || lead.id} className="cursor-pointer hover:border-[#8b8175] transition-colors shadow-sm">
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
-                        <span className="text-xs font-bold text-[#8b8175] uppercase">{lead.source}</span>
+                        <span className="text-xs font-bold text-[#8b8175] uppercase">{lead.source || 'Organic'}</span>
                         <button className="text-[#8b8175] hover:text-[#1a1a1a]">
                           <MoreVertical className="w-4 h-4" />
                         </button>
                       </div>
                       <h4 className="font-bold text-[#1a1a1a] text-lg leading-tight mb-1">{lead.name}</h4>
-                      <p className="text-[#8b8175] text-sm font-medium mb-3">Est. Value: ₹{lead.value.toLocaleString()}</p>
+                      <p className="text-[#8b8175] text-sm font-medium mb-3">Est. Value: ₹{(lead.budget || lead.value || 0).toLocaleString()}</p>
                       <div className="flex items-center text-xs text-[#8b8175] pt-3 border-t border-[#e6e6df]">
                         <Calendar className="w-3 h-3 mr-1" />
-                        {lead.date}
+                        {new Date(lead.createdAt || lead.date).toLocaleDateString()}
                       </div>
                     </CardContent>
                   </Card>

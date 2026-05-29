@@ -45,7 +45,7 @@ const seedDatabase = async () => {
       console.log('Updated existing client user details successfully!');
     }
 
-    // 2. Seed Designer
+    // 2. Seed Admin (Formerly Designer)
     let designer = await User.findOne({ $or: [{ email: 'designer@snsnest.com' }, { mobile: '9876543210' }] });
     if (!designer) {
       designer = new User({
@@ -53,15 +53,16 @@ const seedDatabase = async () => {
         email: 'designer@snsnest.com',
         mobile: '9876543210',
         password: 'designer123',
-        role: 'designer',
+        role: 'admin',
         isVerified: true
       });
       await designer.save();
-      console.log('Seeded default designer successfully!');
+      console.log('Seeded default admin successfully!');
     } else {
       designer.email = 'designer@snsnest.com';
+      designer.role = 'admin';
       await designer.save();
-      console.log('Updated existing designer user details successfully!');
+      console.log('Updated existing admin user details successfully!');
     }
 
     // 3. Seed Project

@@ -4,6 +4,7 @@ import {
   createProject,
   getProjects,
   getProjectById,
+  getCurrentProject,
   assignUsers,
   addMilestone,
   updateMilestoneStatus,
@@ -16,7 +17,8 @@ import {
   createProjectTask,
   updateProjectTaskStatus,
   updateProjectTask,
-  deleteProjectTask
+  deleteProjectTask,
+  addProjectMessage
 } from './project.controller.js';
 
 const router = express.Router();
@@ -28,6 +30,7 @@ router.get('/analytics', restrictTo('admin', 'designer'), getProjectAnalytics);
 
 router.post('/', restrictTo('admin'), createProject);
 router.get('/', getProjects);
+router.get('/current', getCurrentProject);
 router.get('/:id', getProjectById);
 router.patch('/:id/progress', updateProjectProgress);
 
@@ -46,5 +49,6 @@ router.post('/:id/upload', uploadDocument);
 router.patch('/:id/upload/:uploadId/approve', approveDocument);
 
 router.get('/:id/activity', getActivityFeed);
+router.post('/:id/messages', addProjectMessage);
 
 export default router;

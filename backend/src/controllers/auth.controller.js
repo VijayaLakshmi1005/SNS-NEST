@@ -70,7 +70,6 @@ export const loginUser = catchAsync(async (req, res) => {
 
   let redirectPath = '/client/dashboard';
   if (user.role === 'admin') redirectPath = '/admin/dashboard';
-  if (user.role === 'designer') redirectPath = '/designer/dashboard';
 
   return res
     .status(200)

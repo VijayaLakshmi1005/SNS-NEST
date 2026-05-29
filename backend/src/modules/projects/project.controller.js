@@ -64,6 +64,18 @@ export const getProjectById = catchAsync(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, project, 'Project fetched'));
 });
 
+export const getCurrentProject = catchAsync(async (req, res) => {
+  const query = {};
+  if (req.user.role === 'client') query.client = req.user._id;
+
+  const project = await ProjectModular.findOne(query).sort({ createdAt: -1 })
+    .populate('client', 'fullName email mobile')
+    .populate('designer', 'name email specialization');
+  
+  if (!project) throw new ApiError(404, 'No active project found');
+  return res.status(200).json(new ApiResponse(200, project, 'Current project fetched'));
+});
+
 export const getProjectAnalytics = catchAsync(async (req, res) => {
   const analytics = await projectService.getProjectAnalytics();
   res.status(200).json(new ApiResponse(200, analytics, 'Analytics fetched successfully'));
@@ -209,4 +221,17 @@ export const getActivityFeed = catchAsync(async (req, res) => {
     .populate('user', 'fullName profileImage role');
     
   return res.status(200).json(new ApiResponse(200, activities, 'Activity feed fetched'));
+});
+
+export const addProjectMessage = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { message } = req.body;
+  if (!message) throw new ApiError(400, 'Message content is required');
+
+  const project = await ProjectModular.findById(id);
+  if (!project) throw new ApiError(404, 'Project not found');
+
+  await logActivity(id, req.user._id, 'Message Posted', 'message', message);
+  
+  return res.status(201).json(new ApiResponse(201, null, 'Message posted successfully'));
 });

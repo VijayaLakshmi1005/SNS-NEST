@@ -1,100 +1,38 @@
-import { Ticket, SupportMessage } from './support.model.js';
-import { getIO } from '../../config/socket.js';
+import { catchAsync } from '../../utils/catchAsync.js';
+import { ApiResponse } from '../../utils/ApiResponse.js';
+import { SupportService } from './support.service.js';
 
-// Auto-seed for MVP
-const seedSupportSystem = async () => {
-  try {
-    const count = await Ticket.countDocuments();
-    if (count === 0) {
-      const ticket1 = await Ticket.create({
-        ticketNumber: 'TKT-1001',
-        clientName: 'Aarav Patel',
-        subject: 'Delay in Italian Marble delivery',
-        category: 'Project Issue',
-        priority: 'High',
-        status: 'Open'
-      });
-      const ticket2 = await Ticket.create({
-        ticketNumber: 'TKT-1002',
-        clientName: 'Priya Sharma',
-        subject: 'Payment failed for 3D Visualizer',
-        category: 'Payment',
-        priority: 'Medium',
-        status: 'In Progress'
-      });
+export const getDashboardKPIs = catchAsync(async (req, res) => {
+  const kpis = await SupportService.getDashboardKPIs();
+  res.status(200).json(new ApiResponse(200, kpis, 'Dashboard KPIs fetched successfully'));
+});
 
-      await SupportMessage.create([
-        { ticketId: ticket1._id, senderName: 'Aarav Patel', senderRole: 'client', message: 'Hi, the marble for my living room was supposed to arrive yesterday.' },
-        { ticketId: ticket1._id, senderName: 'Support Agent', senderRole: 'admin', message: 'Hello Aarav, checking with our procurement team right away!' },
-        { ticketId: ticket2._id, senderName: 'Priya Sharma', senderRole: 'client', message: 'I was charged twice for the AI consultation.' }
-      ]);
-      console.log('Seeded luxury support tickets');
-    }
-  } catch (error) {
-    console.error('Support Seed Error:', error);
-  }
-};
+export const getTickets = catchAsync(async (req, res) => {
+  const result = await SupportService.getTickets(req.query);
+  res.status(200).json(new ApiResponse(200, result, 'Tickets fetched successfully'));
+});
 
-seedSupportSystem();
+export const getTicketById = catchAsync(async (req, res) => {
+  const ticket = await SupportService.getTicketById(req.params.id);
+  res.status(200).json(new ApiResponse(200, ticket, 'Ticket fetched successfully'));
+});
 
-export const getTickets = async (req, res) => {
-  try {
-    const tickets = await Ticket.find().sort({ updatedAt: -1 });
-    res.json({ success: true, data: tickets });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
+export const createTicket = catchAsync(async (req, res) => {
+  const ticket = await SupportService.createTicket(req.user._id, req.body);
+  res.status(201).json(new ApiResponse(201, ticket, 'Ticket created successfully'));
+});
 
-export const getTicketMessages = async (req, res) => {
-  try {
-    const messages = await SupportMessage.find({ ticketId: req.params.id }).sort({ createdAt: 1 });
-    res.json({ success: true, data: messages });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
+export const updateTicket = catchAsync(async (req, res) => {
+  const ticket = await SupportService.updateTicket(req.params.id, req.body, req.user._id);
+  res.status(200).json(new ApiResponse(200, ticket, 'Ticket updated successfully'));
+});
 
-export const replyToTicket = async (req, res) => {
-  try {
-    const { ticketId } = req.params;
-    const { message, isInternalNote } = req.body;
+export const getTicketMessages = catchAsync(async (req, res) => {
+  const messages = await SupportService.getMessages(req.params.id);
+  res.status(200).json(new ApiResponse(200, messages, 'Messages fetched successfully'));
+});
 
-    const newMessage = await SupportMessage.create({
-      ticketId,
-      senderName: 'Admin', // Hardcoded for Phase 1 MVP Dashboard
-      senderRole: 'admin',
-      message,
-      isInternalNote: isInternalNote || false
-    });
-
-    await Ticket.findByIdAndUpdate(ticketId, { status: 'Waiting for Client', updatedAt: new Date() });
-
-    try {
-      getIO().emit('supportUpdated', { ticketId, message: newMessage });
-    } catch (e) {
-      console.error('Socket emission failed silently', e.message);
-    }
-
-    res.status(201).json({ success: true, data: newMessage });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-export const updateTicketStatus = async (req, res) => {
-  try {
-    const { ticketId } = req.params;
-    const { status } = req.body;
-
-    const ticket = await Ticket.findByIdAndUpdate(ticketId, { status }, { new: true });
-
-    try {
-      getIO().emit('supportUpdated', { ticketId, status });
-    } catch (e) {}
-
-    res.json({ success: true, data: ticket });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
+export const sendMessage = catchAsync(async (req, res) => {
+  const message = await SupportService.sendMessage(req.params.id, req.user._id, req.body);
+  res.status(201).json(new ApiResponse(201, message, 'Message sent successfully'));
+});

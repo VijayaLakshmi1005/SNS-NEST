@@ -3,14 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { adminApi } from '../../services/mockApi';
+import { adminApiClient } from '../../services/apiClient';
 import { Search, FolderKanban, Calendar, Clock } from 'lucide-react';
 
 export default function Projects() {
   const [projects, setProjects] = React.useState(null);
 
   React.useEffect(() => {
-    adminApi.getProjects().then(setProjects);
+    adminApiClient.get('/projects').then(res => setProjects(res.data || []));
   }, []);
 
   if (!projects) return <div className="animate-pulse text-[#8b8175]">Loading projects...</div>;
@@ -44,29 +44,29 @@ export default function Projects() {
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {projects.map((project) => (
-          <Card key={project.id} className="hover:border-[#d4cfc5] transition-colors cursor-pointer group">
+          <Card key={project._id || project.id} className="hover:border-[#d4cfc5] transition-colors cursor-pointer group">
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <Badge variant={project.status === 'execution' ? 'warning' : 'outline'} className="capitalize">
-                  {project.status.replace('-', ' ')}
+                  {(project.status || 'Draft').replace('-', ' ')}
                 </Badge>
-                <span className="text-sm font-medium font-mono text-[#8b8175]">{project.id}</span>
+                <span className="text-sm font-medium font-mono text-[#8b8175]">{project._id ? project._id.slice(-6) : project.id}</span>
               </div>
               
-              <h3 className="text-xl font-bold font-playfair text-[#1a1a1a] mb-2">{project.client}'s Residence</h3>
+              <h3 className="text-xl font-bold font-playfair text-[#1a1a1a] mb-2">{project.title || `${project.client}'s Residence`}</h3>
               
               <div className="space-y-3 mt-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-[#8b8175]">Designer</span>
-                  <span className="font-medium text-[#1a1a1a]">{project.designer}</span>
+                  <span className="font-medium text-[#1a1a1a]">{project.assignedDesigner?.name || 'Unassigned'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[#8b8175]">Value</span>
-                  <span className="font-medium text-[#1a1a1a]">₹{project.value.toLocaleString()}</span>
+                  <span className="font-medium text-[#1a1a1a]">₹{(project.budget || project.value || 0).toLocaleString()}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-[#8b8175] mt-4 pt-4 border-t border-[#e6e6df]">
                   <Calendar className="w-4 h-4" />
-                  <span>Deadline: <span className="text-[#1a1a1a] font-medium">{project.deadline}</span></span>
+                  <span>Deadline: <span className="text-[#1a1a1a] font-medium">{project.endDate ? new Date(project.endDate).toLocaleDateString() : 'TBD'}</span></span>
                 </div>
               </div>
             </CardContent>

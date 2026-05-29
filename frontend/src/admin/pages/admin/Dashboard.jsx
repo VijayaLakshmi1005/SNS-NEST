@@ -47,17 +47,17 @@ export default function Dashboard() {
               <CardDescription>Frequently used tasks</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-3 bg-[#e6e6df] rounded-lg cursor-pointer hover:bg-[#d4cfc5] transition">
-                <h4 className="font-semibold text-sm text-[#1a1a1a]">Assign Designer</h4>
-                <p className="text-xs text-[#8b8175]">3 projects waiting for assignment</p>
+              <div onClick={() => window.location.href='/admin/projects'} className="p-3 bg-[#e6e6df] rounded-lg cursor-pointer hover:bg-[#d4cfc5] transition">
+                <h4 className="font-semibold text-sm text-[#1a1a1a]">Active Projects</h4>
+                <p className="text-xs text-[#8b8175]">{overviewQuery.data?.activeProjects || 0} projects currently active</p>
               </div>
-              <div className="p-3 bg-[#e6e6df] rounded-lg cursor-pointer hover:bg-[#d4cfc5] transition">
-                <h4 className="font-semibold text-sm text-[#1a1a1a]">Review Proposals</h4>
-                <p className="text-xs text-[#8b8175]">2 new design proposals</p>
+              <div onClick={() => window.location.href='/admin/leads'} className="p-3 bg-[#e6e6df] rounded-lg cursor-pointer hover:bg-[#d4cfc5] transition">
+                <h4 className="font-semibold text-sm text-[#1a1a1a]">New Leads</h4>
+                <p className="text-xs text-[#8b8175]">{overviewQuery.data?.newLeads || 0} new leads need contacting</p>
               </div>
-              <div className="p-3 bg-[#e6e6df] rounded-lg cursor-pointer hover:bg-[#d4cfc5] transition">
-                <h4 className="font-semibold text-sm text-[#1a1a1a]">Lead Follow-ups</h4>
-                <p className="text-xs text-[#8b8175]">5 leads need contacting today</p>
+              <div onClick={() => window.location.href='/admin/support'} className="p-3 bg-[#e6e6df] rounded-lg cursor-pointer hover:bg-[#d4cfc5] transition">
+                <h4 className="font-semibold text-sm text-[#1a1a1a]">Support Tickets</h4>
+                <p className="text-xs text-[#8b8175]">Check live support inbox</p>
               </div>
             </CardContent>
           </Card>

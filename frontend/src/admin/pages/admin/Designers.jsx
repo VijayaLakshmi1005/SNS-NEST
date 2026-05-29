@@ -10,14 +10,14 @@ import {
 } from '../../components/ui/Table';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { adminApi } from '../../services/mockApi';
+import { adminApiClient } from '../../services/apiClient';
 import { MoreHorizontal, Search, Star, PenTool } from 'lucide-react';
 
 export default function Designers() {
   const [designers, setDesigners] = React.useState(null);
 
   React.useEffect(() => {
-    adminApi.getDesigners().then(setDesigners);
+    adminApiClient.get('/admin/dashboard/designers').then(res => setDesigners(res.data || []));
   }, []);
 
   if (!designers) return <div className="animate-pulse text-[#8b8175]">Loading designers...</div>;

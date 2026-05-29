@@ -23,12 +23,17 @@ export default function RevenueAnalytics({ data }) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e6e6df" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#8b8175', fontSize: 12 }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#8b8175', fontSize: 12 }} tickFormatter={(val) => `$${val/1000}k`} />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#1a1a1a', borderRadius: '8px', border: 'none', color: '#fbfbf9' }}
-                itemStyle={{ color: '#d4cfc5' }}
-              />
-              <Area type="monotone" dataKey="revenue" stroke="#1a1a1a" strokeWidth={2} fillOpacity={1} fill="url(#colorRev)" />
+              <YAxis 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fill: '#8b8175', fontSize: 12 }}
+              tickFormatter={(value) => `₹${value / 1000}k`}
+            />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#1a1a1a', borderRadius: '8px', border: 'none', color: '#fff' }}
+              itemStyle={{ color: '#fff' }}
+              formatter={(value) => [`₹${value}`, 'revenue']}
+            />  <Area type="monotone" dataKey="revenue" stroke="#1a1a1a" strokeWidth={2} fillOpacity={1} fill="url(#colorRev)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>

@@ -102,6 +102,8 @@ export const addNote = async (clientId, noteText, adminId, isPinned = false) => 
   return note.populate('addedBy', 'fullName');
 };
 
+import { ProjectModular as Project } from '../projects/project.model.js';
+
 export const getCRMAnalytics = async () => {
   const totalClients = await User.countDocuments({ role: ROLES.CLIENT });
   const activeClients = await User.countDocuments({ role: ROLES.CLIENT, clientStatus: { $in: ['Active Client', 'Project Active', 'Consultation Ongoing', 'VIP'] } });
@@ -114,12 +116,14 @@ export const getCRMAnalytics = async () => {
   ]);
   const totalRevenue = revenueAgg.length > 0 ? revenueAgg[0].total : 0;
   
+  const activeProjects = await Project.countDocuments({ status: { $ne: 'Completed' } });
+
   return {
     totalClients,
     activeClients,
     highValueClients,
     totalRevenue,
-    activeProjects: Math.floor(activeClients * 0.4), // placeholder until actual project integration
+    activeProjects,
     pendingConsultations: Math.floor(activeClients * 0.1), // placeholder
     unreadMessages: 12, // placeholder
     pendingPayments: 5, // placeholder

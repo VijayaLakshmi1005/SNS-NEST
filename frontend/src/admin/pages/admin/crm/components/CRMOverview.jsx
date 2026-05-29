@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/Card';
 import { useCrmStore } from '../../../../../store/useCrmStore';
 import { Users, Activity, Target, Briefcase, Calendar, CreditCard, MessageSquare, Ticket } from 'lucide-react';
-import { adminApi } from '../../../../services/mockApi';
+import { useNavigate } from 'react-router-dom';
 
 export default function CRMOverview() {
   const { analytics, setAnalytics } = useCrmStore();
@@ -31,20 +31,24 @@ export default function CRMOverview() {
   if (!analytics) return <div className="h-32 animate-pulse bg-[#f5f5f0] rounded-xl border border-[#e6e6df]"></div>;
 
   const stats = [
-    { label: 'Total Clients', value: analytics.totalClients, icon: <Users className="w-5 h-5 text-[#8b8175]" /> },
-    { label: 'Active Clients', value: analytics.activeClients, icon: <Activity className="w-5 h-5 text-[#8b8175]" /> },
-
-    { label: 'Total Revenue', value: `₹${analytics.totalRevenue.toLocaleString()}`, icon: <CreditCard className="w-5 h-5 text-[#8b8175]" /> },
-    { label: 'Active Projects', value: analytics.activeProjects, icon: <Briefcase className="w-5 h-5 text-[#8b8175]" /> },
-    { label: 'Pending Consultations', value: analytics.pendingConsultations, icon: <Calendar className="w-5 h-5 text-[#8b8175]" /> },
-
-    { label: 'Support Tickets', value: analytics.supportTickets, icon: <Ticket className="w-5 h-5 text-[#8b8175]" /> }
+    { label: 'Total Clients', value: analytics.totalClients, icon: <Users className="w-5 h-5 text-[#8b8175]" />, link: '/admin/users' },
+    { label: 'Active Clients', value: analytics.activeClients, icon: <Activity className="w-5 h-5 text-[#8b8175]" />, link: '/admin/users' },
+    { label: 'Total Revenue', value: `₹${analytics.totalRevenue.toLocaleString()}`, icon: <CreditCard className="w-5 h-5 text-[#8b8175]" />, link: '/admin/finance' },
+    { label: 'Active Projects', value: analytics.activeProjects, icon: <Briefcase className="w-5 h-5 text-[#8b8175]" />, link: '/admin/projects' },
+    { label: 'Pending Consultations', value: analytics.pendingConsultations, icon: <Calendar className="w-5 h-5 text-[#8b8175]" />, link: '/admin/appointments' },
+    { label: 'Support Tickets', value: analytics.supportTickets, icon: <Ticket className="w-5 h-5 text-[#8b8175]" />, link: '/admin/support' }
   ];
+
+  const navigate = useNavigate();
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       {stats.map((stat, index) => (
-        <Card key={index} className="border-[#e6e6df] shadow-sm hover:shadow-md transition-shadow bg-white/50 backdrop-blur-sm">
+        <Card 
+          key={index} 
+          onClick={() => navigate(stat.link)}
+          className="border-[#e6e6df] shadow-sm hover:shadow-md hover:border-[#1a1a1a]/20 transition-shadow bg-white/50 backdrop-blur-sm cursor-pointer"
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[#8b8175]">{stat.label}</CardTitle>
             {stat.icon}

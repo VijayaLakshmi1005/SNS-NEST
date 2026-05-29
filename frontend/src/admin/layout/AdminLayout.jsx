@@ -5,6 +5,7 @@ import { Bell, Menu, Search } from 'lucide-react';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import NotificationDropdown from '../components/NotificationDropdown';
+import GlobalSearch from '../components/GlobalSearch';
 
 export default function AdminLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -28,10 +29,7 @@ export default function AdminLayout() {
             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu className="w-5 h-5" />
             </Button>
-            <div className="relative w-64 hidden sm:block">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#8b8175]" />
-              <Input className="pl-9 bg-[#f5f5f0] border-transparent" placeholder="Search anything..." />
-            </div>
+            <GlobalSearch />
           </div>
           <div className="flex items-center gap-4">
             <NotificationDropdown />

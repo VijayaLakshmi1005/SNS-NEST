@@ -10,6 +10,22 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_
 export default function ActivityFeed({ projectId }) {
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [newMessage, setNewMessage] = useState('');
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+    setIsSending(true);
+    try {
+      await axios.post(`${API_URL}/projects/${projectId}/messages`, { message: newMessage }, { withCredentials: true });
+      setNewMessage('');
+    } catch (err) {
+      console.error("Failed to send message", err);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   useEffect(() => {
     // 1. Fetch initial activities
@@ -83,6 +99,25 @@ export default function ActivityFeed({ projectId }) {
           </div>
         )}
       </CardContent>
+      <div className="p-4 border-t border-gray-700 bg-[#2d2a26]">
+        <form onSubmit={handleSendMessage} className="flex gap-2">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Log an update or message..."
+            className="flex-1 bg-gray-800 text-sm text-gray-200 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-yellow-500"
+            disabled={isSending}
+          />
+          <button 
+            type="submit"
+            disabled={!newMessage.trim() || isSending}
+            className="px-4 py-2 bg-yellow-500 text-black text-sm font-bold rounded-lg hover:bg-yellow-400 disabled:opacity-50 transition-colors"
+          >
+            {isSending ? '...' : 'Send'}
+          </button>
+        </form>
+      </div>
     </Card>
   );
 }

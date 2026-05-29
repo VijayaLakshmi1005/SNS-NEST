@@ -13,7 +13,15 @@ export default function NotificationDropdown() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const socket = io(API_URL.replace('/api', ''), { withCredentials: true, transports: ['websocket', 'polling'] });
+    let token = '';
+    try {
+      const authData = JSON.parse(localStorage.getItem('auth-storage') || '{}');
+      token = authData?.state?.token || '';
+    } catch (e) {}
+
+    const backendUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace('/api', '');
+    const socket = io(backendUrl, { auth: { token } });
+
     socket.on('newNotification', () => {
       queryClient.invalidateQueries(['notifications']);
     });

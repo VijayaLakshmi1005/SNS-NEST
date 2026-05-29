@@ -3,17 +3,62 @@ import crypto from 'crypto';
 import { FinancePayment, Invoice, ActivityLog } from './finance.model.js';
 import { emitPaymentSuccess, emitActivityLog, emitFinanceUpdate } from './finance.socket.js';
 
-// Initialize Razorpay instance (using mock keys if env vars missing, though webhooks will fail without real keys)
+// Initialize Razorpay instance
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_mock_key',
   key_secret: process.env.RAZORPAY_KEY_SECRET || 'rzp_test_mock_secret',
 });
 
+export const getPayments = async (req, res) => {
+  try {
+     const payments = await FinancePayment.find().populate('invoiceId').sort({ createdAt: -1 });
+     res.json({ success: true, data: payments });
+  } catch (error) {
+     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const createManualPayment = async (req, res) => {
+  try {
+    const { amount, clientName, invoiceId, method, notes } = req.body;
+    
+    const payment = await FinancePayment.create({
+      receiptId: `rcpt_manual_${Date.now()}`,
+      amount,
+      clientName,
+      invoiceId,
+      method: method || 'Cash',
+      status: 'Captured',
+      notes
+    });
+
+    if (invoiceId) {
+      const invoice = await Invoice.findById(invoiceId);
+      if (invoice) {
+        invoice.amountPaid += amount;
+        invoice.status = invoice.amountPaid >= invoice.totalAmount ? 'Paid' : 'Partial';
+        await invoice.save();
+      }
+    }
+
+    const log = await ActivityLog.create({
+      title: 'Manual Payment Added', description: `₹${amount.toLocaleString()} received via ${method || 'Cash'}.`, type: 'Payment'
+    });
+
+    emitPaymentSuccess(payment);
+    emitActivityLog(log);
+    emitFinanceUpdate();
+
+    res.status(201).json({ success: true, data: payment });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const createOrder = async (req, res) => {
   try {
     const { amount, currency = 'INR', clientName, invoiceId } = req.body;
     
-    // Convert amount to paise for Razorpay
     const options = {
       amount: amount * 100, 
       currency,
@@ -22,9 +67,7 @@ export const createOrder = async (req, res) => {
     };
 
     let orderId = `mock_order_${Date.now()}`;
-
-    // If using real keys, call razorpay
-    if (process.env.RAZORPAY_KEY_ID) {
+    if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_ID !== 'rzp_test_mock_key') {
       const order = await razorpay.orders.create(options);
       orderId = order.id;
     }
@@ -49,8 +92,7 @@ export const verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, payment_id } = req.body;
     
-    // For mock environment
-    if (!process.env.RAZORPAY_KEY_SECRET) {
+    if (!process.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET === 'rzp_test_mock_secret') {
        await finalizePayment(payment_id, razorpay_payment_id || `mock_pay_${Date.now()}`, 'Card');
        return res.json({ success: true, message: 'Mock payment verified' });
     }
@@ -59,7 +101,7 @@ export const verifyPayment = async (req, res) => {
     const expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET).update(body.toString()).digest('hex');
     
     if (expectedSignature === razorpay_signature) {
-      await finalizePayment(payment_id, razorpay_payment_id, 'UPI'); // simplified method
+      await finalizePayment(payment_id, razorpay_payment_id, 'UPI');
       res.json({ success: true, message: 'Payment verified successfully' });
     } else {
       await FinancePayment.findByIdAndUpdate(payment_id, { status: 'Failed' });
@@ -78,31 +120,23 @@ const finalizePayment = async (dbPaymentId, gatewayPaymentId, method) => {
   }, { new: true }).populate('invoiceId');
 
   if (payment.invoiceId) {
-    // Update invoice amountPaid and status
     const invoice = payment.invoiceId;
     invoice.amountPaid += payment.amount;
-    if (invoice.amountPaid >= invoice.totalAmount) {
-       invoice.status = 'Paid';
-    } else {
-       invoice.status = 'Partial';
-    }
+    invoice.status = invoice.amountPaid >= invoice.totalAmount ? 'Paid' : 'Partial';
     await invoice.save();
   }
 
-  // Create Activity Log
   const log = await ActivityLog.create({
     title: 'Payment Received',
     description: `₹${payment.amount.toLocaleString()} received from ${payment.clientName}.`,
     type: 'Payment'
   });
 
-  // Emit Realtime Events
   emitPaymentSuccess(payment);
   emitActivityLog(log);
+  emitFinanceUpdate();
 };
 
 export const webhookHandler = async (req, res) => {
-   // Implementation for async razorpay webhooks
-   // Verifies x-razorpay-signature header
    res.json({status: 'ok'});
 };

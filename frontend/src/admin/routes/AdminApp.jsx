@@ -6,8 +6,6 @@ import AdminLayout from '../layout/AdminLayout';
 const Dashboard = React.lazy(() => import('../pages/admin/Dashboard'));
 const CRMWorkspace = React.lazy(() => import('../pages/admin/crm/CRMWorkspace'));
 const UserProfile = React.lazy(() => import('../pages/admin/UserProfile'));
-const DesignerManagement = React.lazy(() => import('../pages/admin/DesignerManagement'));
-const DesignerProfile = React.lazy(() => import('../pages/admin/DesignerProfile'));
 const ProjectManagement = React.lazy(() => import('../pages/admin/ProjectManagement'));
 const ProjectWorkspace = React.lazy(() => import('../pages/admin/ProjectWorkspace'));
 const LeadManagement = React.lazy(() => import('../pages/admin/LeadManagement'));
@@ -20,6 +18,7 @@ const FinanceDashboard = React.lazy(() => import('../pages/admin/FinanceDashboar
 const AnalyticsDashboard = React.lazy(() => import('../pages/admin/AnalyticsDashboard'));
 const SupportOverview = React.lazy(() => import('../pages/admin/SupportOverview'));
 const ActivityFeed = React.lazy(() => import('../pages/admin/ActivityFeed'));
+const UserManagement = React.lazy(() => import('../pages/admin/UserManagement'));
 
 export default function AdminApp() {
   return (
@@ -30,8 +29,6 @@ export default function AdminApp() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<CRMWorkspace />} />
           <Route path="users/:id" element={<UserProfile />} />
-          <Route path="designers" element={<DesignerManagement />} />
-          <Route path="designers/:id" element={<DesignerProfile />} />
           <Route path="projects" element={<ProjectManagement />} />
           <Route path="projects/:id" element={<ProjectWorkspace />} />
           <Route path="leads" element={<LeadManagement />} />
@@ -43,6 +40,7 @@ export default function AdminApp() {
           <Route path="finance" element={<FinanceDashboard />} />
           <Route path="analytics" element={<AnalyticsDashboard />} />
           <Route path="support" element={<SupportOverview />} />
+          <Route path="user-management" element={<UserManagement />} />
           <Route path="notifications" element={<ActivityFeed />} />
           <Route path="*" element={<div className="p-8 text-center text-[#8b8175]">Module under construction</div>} />
         </Route>

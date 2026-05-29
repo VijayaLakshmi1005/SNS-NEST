@@ -31,7 +31,6 @@ import wishlistRoutes from './modules/wishlist/wishlist.routes.js';
 import reviewRoutes from './routes/review.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import supportRoutes from './routes/support.routes.js';
-import designerRoutes from './modules/designers/designer.routes.js';
 import consultationRoutes from './modules/consultations/consultation.routes.js';
 import estimatorRoutes from './modules/estimator/estimator.routes.js';
 import trackingRoutes from './modules/project-tracking/tracking.routes.js';
@@ -148,7 +147,7 @@ app.use('/api/ai', aiRoutes);
 
 // Mounting modular real-time project tracking
 app.use('/api/projects', projectRoutes);
-app.use('/api/projects', trackingRoutes);
+app.use('/api/tracking', trackingRoutes);
 
 app.use('/api/chat', chatRoutes);
 app.use('/api/payments', paymentRoutes);
@@ -156,7 +155,6 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/support', supportRoutes);
-app.use('/api/designers', designerRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/estimator', estimatorRoutes);
 app.use('/api/leads', leadRoutes);
@@ -167,6 +165,8 @@ app.use('/api/finance', financeRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/support-tickets', supportTicketRoutes);
 app.use('/api/live-notifications', liveNotificationRoutes);
+import searchRoutes from './modules/search/search.routes.js';
+app.use('/api/search', searchRoutes);
 app.use('/api/crm', crmRoutes);
 
 // Root endpoint

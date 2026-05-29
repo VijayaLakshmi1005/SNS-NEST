@@ -59,13 +59,18 @@ export default function ClientFormDialog({ isOpen, onClose, clientData, onSucces
       
       const method = clientData ? 'PATCH' : 'POST';
 
+      const payload = { ...formData };
+      if (payload.assignedDesigner === '') {
+        delete payload.assignedDesigner;
+      }
+
       const res = await fetch(url, {
         method,
         headers: { 
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}` 
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
       
       const data = await res.json();

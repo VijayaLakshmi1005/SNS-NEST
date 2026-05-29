@@ -39,11 +39,19 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isDesigner: {
+    type: Boolean,
+    default: false
+  },
   otp: {
     code: String,
     expiresAt: Date
   },
   isBlocked: {
+    type: Boolean,
+    default: false
+  },
+  isArchived: {
     type: Boolean,
     default: false
   },
@@ -55,7 +63,7 @@ const userSchema = new mongoose.Schema({
   // CRM Specific Fields
   clientStatus: {
     type: String,
-    enum: ['New Lead', 'Active Client', 'Consultation Ongoing', 'Project Active', 'High Priority', 'VIP', 'Inactive', 'Blocked'],
+    enum: ['New Lead', 'Active Client', 'Consultation Ongoing', 'Project Active', 'High Priority', 'VIP', 'Inactive', 'Blocked', 'FOLLOW-UP'],
     default: 'New Lead'
   },
   assignedDesigner: {

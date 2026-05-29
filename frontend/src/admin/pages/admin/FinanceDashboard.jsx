@@ -5,11 +5,14 @@ import { io } from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 import { 
-  DollarSign, FileText, Download, TrendingUp, TrendingDown, RefreshCw, 
+  IndianRupee, FileText, Download, TrendingUp, TrendingDown, RefreshCw, 
   Briefcase, Plus, CheckCircle2, AlertCircle, Activity, CreditCard, Receipt, 
   Wallet, ShieldCheck, ChevronRight
 } from 'lucide-react';
 import { Card, CardContent } from '../../../components/ui/Card';
+import InvoiceModal from '../../components/finance/InvoiceModal';
+import ProcurementDrawer from '../../components/finance/ProcurementDrawer';
+import ActionMenu from '../../components/finance/ActionMenu';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
@@ -17,22 +20,43 @@ export default function FinanceDashboard() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  // Dynamic Currency Formatter for Indian Rupees
+  const formatCurrency = (val) => {
+    const num = Number(val) || 0;
+    const absNum = Math.abs(num);
+    const sign = num < 0 ? '-' : '';
+    if (absNum >= 10000000) return { value: `${sign}${(absNum / 10000000).toFixed(2)}`, suffix: 'Cr' };
+    if (absNum >= 100000) return { value: `${sign}${(absNum / 100000).toFixed(2)}`, suffix: 'L' };
+    if (absNum >= 1000) return { value: `${sign}${(absNum / 1000).toFixed(1)}`, suffix: 'k' };
+    return { value: `${sign}${absNum.toFixed(0)}`, suffix: '' };
+  };
+
+  // Modal States
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [isProcurementDrawerOpen, setIsProcurementDrawerOpen] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState(null);
+  const [editingExpense, setEditingExpense] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+  };
 
   useEffect(() => {
-    const socket = io(API_URL.replace('/api', ''), { withCredentials: true, transports: ['websocket', 'polling'] });
+    const authStorage = JSON.parse(localStorage.getItem('auth-storage') || '{}');
+    const token = authStorage?.state?.token || '';
     
-    socket.on('financeUpdated', () => {
-      queryClient.invalidateQueries(['financeOverview']);
+    const socket = io(API_URL.replace('/api', ''), { 
+      auth: { token },
+      withCredentials: true, 
+      transports: ['websocket', 'polling'] 
     });
     
-    socket.on('payment:success', (data) => {
-      // Optimistically trigger a refetch but we could also inject data
-      queryClient.invalidateQueries(['financeOverview']);
-    });
-
-    socket.on('activity:new', () => {
-      queryClient.invalidateQueries(['financeOverview']);
-    });
+    socket.on('financeUpdated', () => queryClient.invalidateQueries(['financeOverview']));
+    socket.on('payment:success', () => queryClient.invalidateQueries(['financeOverview']));
+    socket.on('activity:new', () => queryClient.invalidateQueries(['financeOverview']));
 
     return () => socket.disconnect();
   }, [queryClient]);
@@ -44,6 +68,58 @@ export default function FinanceDashboard() {
       return res.data.data;
     },
     staleTime: 60000
+  });
+
+  // MUTATIONS - INVOICES
+  const invoiceMutation = useMutation({
+    mutationFn: async (data) => {
+      if (editingInvoice) {
+        return axios.patch(`${API_URL}/finance/invoices/${editingInvoice._id}`, data, { withCredentials: true });
+      }
+      return axios.post(`${API_URL}/finance/invoices`, data, { withCredentials: true });
+    },
+    onSuccess: () => {
+      showToast(editingInvoice ? 'Invoice updated successfully' : 'Invoice created successfully');
+      setIsInvoiceModalOpen(false);
+      setEditingInvoice(null);
+      queryClient.invalidateQueries(['financeOverview']);
+    },
+    onError: (err) => showToast(err.response?.data?.message || 'Error processing invoice', 'error')
+  });
+
+  const deleteInvoiceMutation = useMutation({
+    mutationFn: async (id) => axios.delete(`${API_URL}/finance/invoices/${id}`, { withCredentials: true }),
+    onSuccess: () => {
+      showToast('Invoice deleted successfully');
+      queryClient.invalidateQueries(['financeOverview']);
+    },
+    onError: (err) => showToast(err.response?.data?.message || 'Error deleting invoice', 'error')
+  });
+
+  // MUTATIONS - EXPENSES (PROCUREMENT)
+  const expenseMutation = useMutation({
+    mutationFn: async (data) => {
+      if (editingExpense) {
+        return axios.patch(`${API_URL}/finance/procurement/${editingExpense._id}`, data, { withCredentials: true });
+      }
+      return axios.post(`${API_URL}/finance/procurement`, data, { withCredentials: true });
+    },
+    onSuccess: () => {
+      showToast(editingExpense ? 'Expense updated successfully' : 'Expense recorded successfully');
+      setIsProcurementDrawerOpen(false);
+      setEditingExpense(null);
+      queryClient.invalidateQueries(['financeOverview']);
+    },
+    onError: (err) => showToast(err.response?.data?.message || 'Error processing expense', 'error')
+  });
+
+  const deleteExpenseMutation = useMutation({
+    mutationFn: async (id) => axios.delete(`${API_URL}/finance/procurement/${id}`, { withCredentials: true }),
+    onSuccess: () => {
+      showToast('Expense record deleted successfully');
+      queryClient.invalidateQueries(['financeOverview']);
+    },
+    onError: (err) => showToast(err.response?.data?.message || 'Error deleting expense', 'error')
   });
 
   const handleManualRefresh = async () => {
@@ -69,21 +145,45 @@ export default function FinanceDashboard() {
     );
   }
 
-  const { kpis, chartData, activityFeed, invoices, expenses, payments, commissions } = finance;
+  const { kpis, chartData, activityFeed, invoices, expenses, payments } = finance;
 
-  // Variants for Framer Motion
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
-  };
+  const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+  const itemVariants = { hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } } };
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-8 pb-24 overflow-x-hidden">
+    <div className="max-w-[1600px] mx-auto space-y-8 pb-24 overflow-x-hidden relative">
       
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast.show && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, x: '-50%' }}
+            animate={{ opacity: 1, y: 20, x: '-50%' }}
+            exit={{ opacity: 0, y: -50, x: '-50%' }}
+            className={`fixed top-0 left-1/2 z-50 px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 ${
+              toast.type === 'error' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'
+            }`}
+          >
+            {toast.type === 'error' ? <AlertCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+            {toast.message}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <InvoiceModal 
+        isOpen={isInvoiceModalOpen} 
+        onClose={() => { setIsInvoiceModalOpen(false); setEditingInvoice(null); }} 
+        onSubmit={(data) => invoiceMutation.mutate(data)}
+        initialData={editingInvoice}
+      />
+
+      <ProcurementDrawer 
+        isOpen={isProcurementDrawerOpen} 
+        onClose={() => { setIsProcurementDrawerOpen(false); setEditingExpense(null); }} 
+        onSubmit={(data) => expenseMutation.mutate(data)}
+        initialData={editingExpense}
+      />
+
       {/* Header Area */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white/50 backdrop-blur-xl p-8 rounded-3xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-0 z-20">
         <div>
@@ -104,10 +204,7 @@ export default function FinanceDashboard() {
           >
             <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#e5e0d8] text-[#2d2a26] rounded-xl font-bold hover:bg-[#fcfbf9] transition-colors shadow-sm">
-            <Download className="w-4 h-4" /> Export
-          </button>
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-[#2d2a26] text-[#fcfbf9] rounded-xl font-bold hover:bg-black hover:shadow-lg transition-all hover:-translate-y-0.5">
+          <button onClick={() => { setEditingInvoice(null); setIsInvoiceModalOpen(true); }} className="flex items-center gap-2 px-5 py-2.5 bg-[#2d2a26] text-[#fcfbf9] rounded-xl font-bold hover:bg-black hover:shadow-lg transition-all hover:-translate-y-0.5">
             <Plus className="w-4 h-4" /> Create Invoice
           </button>
         </div>
@@ -137,38 +234,30 @@ export default function FinanceDashboard() {
 
       {/* Main Content Area */}
       <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.3 }}
-        >
+        <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
+          
           {activeTab === 'dashboard' && (
             <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
               
               {/* KPI Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <motion.div variants={itemVariants}>
-                  <Card className="bg-white border-[#e5e0d8] shadow-sm hover:shadow-md transition-shadow h-full relative overflow-hidden group">
+                  <Card onClick={() => setActiveTab('analytics')} className="bg-white border-[#e5e0d8] shadow-sm hover:shadow-md hover:border-[#1a1a1a]/20 cursor-pointer transition-all h-full relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
                           <Wallet className="w-6 h-6" />
                         </div>
-                        <span className="flex items-center text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md">
-                          <TrendingUp className="w-3 h-3 mr-1"/> +12%
-                        </span>
                       </div>
                       <p className="text-sm font-bold text-[#8b8175] uppercase tracking-wider mb-1">Total Revenue</p>
-                      <p className="text-4xl font-extrabold text-[#2d2a26] font-nav-style">₹{(kpis.totalRevenue/100000).toFixed(2)}<span className="text-xl text-[#8b8175]">L</span></p>
+                      <p className="text-4xl font-extrabold text-[#2d2a26] font-nav-style">₹{formatCurrency(kpis.totalRevenue).value}<span className="text-xl text-[#8b8175]">{formatCurrency(kpis.totalRevenue).suffix}</span></p>
                     </CardContent>
                   </Card>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                  <Card className="bg-white border-[#e5e0d8] shadow-sm hover:shadow-md transition-shadow h-full relative overflow-hidden group">
+                  <Card onClick={() => setActiveTab('invoices')} className="bg-white border-[#e5e0d8] shadow-sm hover:shadow-md hover:border-[#1a1a1a]/20 cursor-pointer transition-all h-full relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
@@ -177,13 +266,13 @@ export default function FinanceDashboard() {
                         </div>
                       </div>
                       <p className="text-sm font-bold text-[#8b8175] uppercase tracking-wider mb-1">Pending Dues</p>
-                      <p className="text-4xl font-extrabold text-[#2d2a26] font-nav-style">₹{(kpis.pendingDues/100000).toFixed(2)}<span className="text-xl text-[#8b8175]">L</span></p>
+                      <p className="text-4xl font-extrabold text-[#2d2a26] font-nav-style">₹{formatCurrency(kpis.pendingDues).value}<span className="text-xl text-[#8b8175]">{formatCurrency(kpis.pendingDues).suffix}</span></p>
                     </CardContent>
                   </Card>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                  <Card className="bg-white border-[#e5e0d8] shadow-sm hover:shadow-md transition-shadow h-full relative overflow-hidden group">
+                  <Card onClick={() => setActiveTab('expenses')} className="bg-white border-[#e5e0d8] shadow-sm hover:shadow-md hover:border-[#1a1a1a]/20 cursor-pointer transition-all h-full relative overflow-hidden group">
                      <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
@@ -192,21 +281,21 @@ export default function FinanceDashboard() {
                         </div>
                       </div>
                       <p className="text-sm font-bold text-[#8b8175] uppercase tracking-wider mb-1">Total Expenses</p>
-                      <p className="text-4xl font-extrabold text-[#2d2a26] font-nav-style">₹{(kpis.totalExpenses/100000).toFixed(2)}<span className="text-xl text-[#8b8175]">L</span></p>
+                      <p className="text-4xl font-extrabold text-[#2d2a26] font-nav-style">₹{formatCurrency(kpis.totalExpenses).value}<span className="text-xl text-[#8b8175]">{formatCurrency(kpis.totalExpenses).suffix}</span></p>
                     </CardContent>
                   </Card>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                  <Card className="bg-white border-[#e5e0d8] shadow-sm hover:shadow-md transition-shadow h-full bg-gradient-to-br from-[#2d2a26] to-[#1a1815] text-white">
+                  <Card onClick={() => setActiveTab('analytics')} className="bg-white border-[#e5e0d8] shadow-sm hover:shadow-lg cursor-pointer transition-all h-full bg-gradient-to-br from-[#2d2a26] to-[#1a1815] text-white hover:scale-[1.02]">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white border border-white/20">
-                          <DollarSign className="w-6 h-6" />
+                          <IndianRupee className="w-6 h-6" />
                         </div>
                       </div>
                       <p className="text-sm font-bold text-[#d0cac3] uppercase tracking-wider mb-1">Net Profit</p>
-                      <p className="text-4xl font-extrabold text-white font-nav-style">₹{(kpis.netProfit/100000).toFixed(2)}<span className="text-xl text-[#8b8175]">L</span></p>
+                      <p className="text-4xl font-extrabold text-white font-nav-style">₹{formatCurrency(kpis.netProfit).value}<span className="text-xl text-[#8b8175]">{formatCurrency(kpis.netProfit).suffix}</span></p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -242,7 +331,7 @@ export default function FinanceDashboard() {
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f0" />
                           <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#8b8175', fontSize: 12}} dy={10} />
-                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#8b8175', fontSize: 12}} tickFormatter={(val) => `₹${val/1000}k`} />
+                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#8b8175', fontSize: 12}} tickFormatter={(val) => `₹${formatCurrency(val).value}${formatCurrency(val).suffix}`} />
                           <RechartsTooltip 
                             contentStyle={{ borderRadius: '12px', border: '1px solid #e5e0d8', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
                             formatter={(value) => [`₹${value.toLocaleString(undefined, {maximumFractionDigits:0})}`, '']}
@@ -303,7 +392,6 @@ export default function FinanceDashboard() {
                     </div>
                   </Card>
                 </motion.div>
-
               </div>
             </motion.div>
           )}
@@ -320,7 +408,7 @@ export default function FinanceDashboard() {
                         <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f0" />
                           <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#8b8175', fontSize: 13}} dy={15} />
-                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#8b8175', fontSize: 13}} dx={-15} tickFormatter={(val) => `₹${val/1000}k`} />
+                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#8b8175', fontSize: 13}} dx={-15} tickFormatter={(val) => `₹${formatCurrency(val).value}${formatCurrency(val).suffix}`} />
                           <RechartsTooltip 
                             cursor={{fill: '#fcfbf9'}}
                             contentStyle={{ borderRadius: '12px', border: '1px solid #e5e0d8', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
@@ -350,7 +438,8 @@ export default function FinanceDashboard() {
                         <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Billed Amount</th>
                         <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Amount Paid</th>
                         <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Due Date</th>
-                        <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider text-right">Status</th>
+                        <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Status</th>
+                        <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#e5e0d8]">
@@ -366,14 +455,14 @@ export default function FinanceDashboard() {
                             <div className="font-bold text-[#2d2a26]">{inv.clientName}</div>
                             <div className="text-xs text-[#8b8175] mt-0.5">{inv.projectName || 'Consultation'}</div>
                           </td>
-                          <td className="p-5 font-bold text-[#2d2a26]">₹{inv.totalAmount.toLocaleString()}</td>
+                          <td className="p-5 font-bold text-[#2d2a26]">₹{inv.totalAmount?.toLocaleString()}</td>
                           <td className="p-5 font-bold text-green-600">
                             {inv.amountPaid > 0 ? `₹${inv.amountPaid.toLocaleString()}` : '-'}
                           </td>
                           <td className="p-5 text-sm text-[#8b8175]">
                             {inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : 'N/A'}
                           </td>
-                          <td className="p-5 text-right">
+                          <td className="p-5">
                             <span className={`inline-flex items-center justify-center px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-md border ${
                               inv.status === 'Paid' ? 'bg-green-50 text-green-700 border-green-200' :
                               inv.status === 'Partial' ? 'bg-blue-50 text-blue-700 border-blue-200' :
@@ -382,6 +471,12 @@ export default function FinanceDashboard() {
                             }`}>
                               {inv.status}
                             </span>
+                          </td>
+                          <td className="p-5 text-right">
+                            <ActionMenu 
+                              onEdit={() => { setEditingInvoice(inv); setIsInvoiceModalOpen(true); }}
+                              onDelete={() => { if(window.confirm('Delete this invoice?')) deleteInvoiceMutation.mutate(inv._id); }}
+                            />
                           </td>
                         </tr>
                       ))}
@@ -393,17 +488,23 @@ export default function FinanceDashboard() {
           )}
 
           {activeTab === 'expenses' && (
-            <motion.div variants={containerVariants} initial="hidden" animate="visible">
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+              <div className="flex justify-end">
+                <button onClick={() => { setEditingExpense(null); setIsProcurementDrawerOpen(true); }} className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#e5e0d8] text-[#2d2a26] rounded-xl font-bold hover:bg-[#fcfbf9] transition-colors shadow-sm">
+                  <Plus className="w-4 h-4" /> Log Expense
+                </button>
+              </div>
               <Card className="bg-white rounded-2xl border border-[#e5e0d8] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto scrollbar-hide">
                   <table className="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                       <tr className="bg-[#fcfbf9] border-b border-[#e5e0d8]">
                         <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Category</th>
-                        <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Description / Vendor</th>
+                        <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Description</th>
                         <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Date</th>
                         <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Amount</th>
-                        <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider text-right">Status</th>
+                        <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider">Status</th>
+                        <th className="p-5 text-xs font-bold text-[#8b8175] uppercase tracking-wider text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#e5e0d8]">
@@ -415,23 +516,36 @@ export default function FinanceDashboard() {
                             </span>
                           </td>
                           <td className="p-5">
-                            <div className="font-bold text-[#2d2a26]">{exp.description}</div>
-                            {exp.vendorName && (
+                            <div className="font-bold text-[#2d2a26] flex items-center gap-2">
+                              {exp.description}
+                              {exp.receiptUrl && (
+                                <a href={exp.receiptUrl} target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-700" title="View Receipt">
+                                  <FileText className="w-4 h-4" />
+                                </a>
+                              )}
+                            </div>
+                            {exp.vendorId?.name && (
                               <div className="text-xs text-[#8b8175] mt-1 flex items-center gap-1">
-                                <Briefcase className="w-3 h-3" /> {exp.vendorName}
+                                <Briefcase className="w-3 h-3" /> {exp.vendorId.name}
                               </div>
                             )}
                           </td>
                           <td className="p-5 text-sm text-[#8b8175]">
                             {new Date(exp.date).toLocaleDateString()}
                           </td>
-                          <td className="p-5 font-bold text-red-600">-₹{exp.amount.toLocaleString()}</td>
-                          <td className="p-5 text-right">
+                          <td className="p-5 font-bold text-red-600">-₹{exp.amount?.toLocaleString()}</td>
+                          <td className="p-5">
                             <span className={`inline-flex px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-md border ${
                               exp.status === 'Paid' ? 'bg-gray-50 text-gray-700 border-gray-200' : 'bg-amber-50 text-amber-700 border-amber-200'
                             }`}>
                               {exp.status}
                             </span>
+                          </td>
+                          <td className="p-5 text-right">
+                             <ActionMenu 
+                              onEdit={() => { setEditingExpense(exp); setIsProcurementDrawerOpen(true); }}
+                              onDelete={() => { if(window.confirm('Delete this expense?')) deleteExpenseMutation.mutate(exp._id); }}
+                            />
                           </td>
                         </tr>
                       ))}

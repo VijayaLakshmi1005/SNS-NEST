@@ -104,7 +104,7 @@ export default function Tracking() {
     const fetchTrackingData = async () => {
       try {
         setLoading(true);
-        const res = await api.get('/projects/current');
+        const res = await api.get('/tracking/current');
         const data = res.data.data;
         
         setProject(data.project);
@@ -119,7 +119,12 @@ export default function Tracking() {
         setError(null);
         
         // 2. Initialize Socket.io Connection
-        const token = localStorage.getItem('token');
+        let token = localStorage.getItem('token');
+        if (!token) {
+          const authStorage = JSON.parse(localStorage.getItem('auth-storage') || '{}');
+          token = authStorage?.state?.token;
+        }
+        
         if (token && data.project?._id) {
           const socketUrl = import.meta.env.VITE_API_BASE_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'https://sns-nest-backend.onrender.com');
           const socket = io(socketUrl, {
@@ -181,7 +186,7 @@ export default function Tracking() {
     if (!siteCaptionInput || !sitePhotoInput) return;
     try {
       setSubmittingPhoto(true);
-      const res = await api.post(`/projects/${project._id}/site-updates`, {
+      const res = await api.post(`/tracking/${project._id}/site-updates`, {
         caption: siteCaptionInput,
         images: [sitePhotoInput]
       });
@@ -207,7 +212,7 @@ export default function Tracking() {
     if (!activityInput) return;
     try {
       setSubmittingActivity(true);
-      const res = await api.post(`/projects/${project._id}/activities`, {
+      const res = await api.post(`/tracking/${project._id}/activities`, {
         type: 'milestone',
         message: activityInput
       });

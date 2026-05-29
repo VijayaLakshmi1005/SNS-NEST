@@ -31,8 +31,7 @@ export default function TopDesigners({ data }) {
                   <div>
                     <h4 className="text-sm font-semibold text-[#1a1a1a]">{designer.fullName}</h4>
                     <p className="text-xs text-[#8b8175] flex items-center">
-                      <Star className="w-3 h-3 text-yellow-500 mr-1 fill-yellow-500" />
-                      {designer.rating} ({designer.completedProjects} completed)
+                      {designer.completedProjects} projects completed
                     </p>
                   </div>
                 </div>
