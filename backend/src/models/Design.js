@@ -34,4 +34,4 @@ const designSchema = new mongoose.Schema({
 // Full-text index for fuzzy search
 designSchema.index({ title: 'text', description: 'text', style: 'text' });
 
-export const Design = mongoose.model('Design', designSchema);
+export const Design = mongoose.models.Design || mongoose.model('Design', designSchema);

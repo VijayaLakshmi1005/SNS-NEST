@@ -40,4 +40,4 @@ const estimateSchema = new mongoose.Schema({
 
 estimateSchema.index({ client: 1 });
 
-export const Estimate = mongoose.model('Estimate', estimateSchema);
+export const Estimate = mongoose.models.Estimate || mongoose.model('Estimate', estimateSchema);

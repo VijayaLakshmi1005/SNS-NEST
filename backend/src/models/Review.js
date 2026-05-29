@@ -29,4 +29,4 @@ const reviewSchema = new mongoose.Schema({
 
 reviewSchema.index({ designer: 1 });
 
-export const Review = mongoose.model('Review', reviewSchema);
+export const Review = mongoose.models.Review || mongoose.model('Review', reviewSchema);

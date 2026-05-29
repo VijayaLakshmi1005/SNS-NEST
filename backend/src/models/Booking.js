@@ -37,4 +37,4 @@ const bookingSchema = new mongoose.Schema({
 bookingSchema.index({ client: 1 });
 bookingSchema.index({ designer: 1, dateTime: 1 });
 
-export const Booking = mongoose.model('Booking', bookingSchema);
+export const Booking = mongoose.models.Booking || mongoose.model('Booking', bookingSchema);

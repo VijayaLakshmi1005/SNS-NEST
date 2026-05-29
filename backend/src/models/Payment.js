@@ -38,4 +38,4 @@ const paymentSchema = new mongoose.Schema({
 
 paymentSchema.index({ client: 1 });
 
-export const Payment = mongoose.model('Payment', paymentSchema);
+export const Payment = mongoose.models.Payment || mongoose.model('Payment', paymentSchema);

@@ -60,4 +60,4 @@ projectSchema.index({ client: 1 });
 projectSchema.index({ designer: 1 });
 projectSchema.index({ status: 1 });
 
-export const Project = mongoose.model('Project', projectSchema);
+export const Project = mongoose.models.Project || mongoose.model('Project', projectSchema);
