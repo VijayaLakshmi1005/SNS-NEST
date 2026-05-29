@@ -85,7 +85,6 @@ supportTicketSchema.pre('save', async function(next) {
 
 supportTicketSchema.index({ client: 1 });
 supportTicketSchema.index({ status: 1 });
-supportTicketSchema.index({ ticketNumber: 1 });
 supportTicketSchema.index({ assignedAdmin: 1 });
 supportTicketSchema.index({ assignedDesigner: 1 });
 

@@ -1,41 +1,7 @@
 import { Notification } from './notification.model.js';
 import { getIO } from '../../config/socket.js';
 
-// Auto-seed for MVP
-const seedNotifications = async () => {
-  try {
-    const count = await Notification.countDocuments();
-    if (count === 0) {
-      await Notification.create([
-        {
-          type: 'Payment',
-          title: 'Payment Received',
-          message: '₹40,000 received from Aarav Patel for Consultation.',
-          roleScope: 'admin',
-          link: '/admin/finance'
-        },
-        {
-          type: 'Support',
-          title: 'New Support Ticket',
-          message: 'Priya Sharma opened a ticket regarding delayed marble.',
-          roleScope: 'admin',
-          link: '/admin/support'
-        },
-        {
-          type: 'Lead',
-          title: 'New Lead Registered',
-          message: 'Vikram Singh registered from Google Ads.',
-          roleScope: 'admin'
-        }
-      ]);
-      console.log('Seeded luxury notifications');
-    }
-  } catch (error) {
-    console.error('Notification Seed Error:', error);
-  }
-};
-
-seedNotifications();
+// Auto-seed for MVP is disabled to prevent crashes and hardcoded data
 
 // Trigger a global notification (Internal Use inside other controllers)
 export const triggerNotification = async (type, title, message, roleScope = 'admin', link = null, userId = null) => {
