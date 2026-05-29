@@ -15,8 +15,8 @@ export const connectDB = async () => {
     const conn = await mongoose.connect(mongoUri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     
-    // Seed default user and project
-    await seedDatabase();
+    // Seed default user and project (disabled to avoid hardcoded mock data)
+    // await seedDatabase();
   } catch (error) {
     console.error(`MongoDB Connection Error: ${error.message}`);
     process.exit(1);
