@@ -336,7 +336,11 @@ export default function AntigravitySequence({ onProgress }) {
           <div className="flex flex-col md:flex-row gap-3 md:gap-4 lg:gap-6 w-full max-w-7xl items-center justify-center px-4 md:px-0">
             
             {/* Card 1: Senthil */}
-            <div ref={card1Ref} className="relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
+            <div 
+              ref={card1Ref} 
+              onClick={() => navigate('/founders#senthil')}
+              className="cursor-pointer relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12"
+            >
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#E8E2DA]/95 pointer-events-none" />
               <div className="relative z-10 flex flex-row md:flex-col items-center md:items-start h-full gap-4 md:gap-0">
                 <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden mb-0 md:mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
@@ -350,7 +354,7 @@ export default function AntigravitySequence({ onProgress }) {
                     Dedicated and results-oriented professional specializing in driving business growth, building robust client relationships, and expanding market presence through targeted strategies.
                   </p>
                   <div className="mt-1 md:mt-auto">
-                    <Link to="/founders" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
+                    <Link to="/founders#senthil" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
                       <span className="border-b border-[#1A1210]/30 pb-0.5 md:pb-1">Read Details</span>
                       <span className="transform group-hover:translate-x-1 transition-transform">→</span>
                     </Link>
@@ -360,7 +364,11 @@ export default function AntigravitySequence({ onProgress }) {
             </div>
             
             {/* Card 2: Narendra */}
-            <div ref={card2Ref} className="relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
+            <div 
+              ref={card2Ref} 
+              onClick={() => navigate('/founders#narendra')}
+              className="cursor-pointer relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12"
+            >
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#E8E2DA]/95 pointer-events-none" />
               <div className="relative z-10 flex flex-row md:flex-col items-center md:items-start h-full gap-4 md:gap-0">
                 <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden mb-0 md:mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
@@ -374,7 +382,7 @@ export default function AntigravitySequence({ onProgress }) {
                     Driven by the balance of aesthetic elegance and structural practicality, turning floor plans into sanctuaries that reflect the true personality of inhabitants.
                   </p>
                   <div className="mt-1 md:mt-auto">
-                    <Link to="/founders" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
+                    <Link to="/founders#senthil" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
                       <span className="border-b border-[#1A1210]/30 pb-0.5 md:pb-1">Read Details</span>
                       <span className="transform group-hover:translate-x-1 transition-transform">→</span>
                     </Link>
@@ -384,7 +392,11 @@ export default function AntigravitySequence({ onProgress }) {
             </div>
 
             {/* Card 3: Sreenivas */}
-            <div ref={card3Ref} className="relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
+            <div 
+              ref={card3Ref} 
+              onClick={() => navigate('/founders#sreenivas')}
+              className="cursor-pointer relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12"
+            >
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#E8E2DA]/95 pointer-events-none" />
               <div className="relative z-10 flex flex-row md:flex-col items-center md:items-start h-full gap-4 md:gap-0">
                 <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden mb-0 md:mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
@@ -398,7 +410,7 @@ export default function AntigravitySequence({ onProgress }) {
                     Passionate about crafting elegant, functional, and contemporary spaces. Driven by the philosophy that design creates spaces inspiring comfort, productivity, and happiness.
                   </p>
                   <div className="mt-1 md:mt-auto">
-                    <Link to="/founders" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
+                    <Link to="/founders#senthil" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
                       <span className="border-b border-[#1A1210]/30 pb-0.5 md:pb-1">Read Details</span>
                       <span className="transform group-hover:translate-x-1 transition-transform">→</span>
                     </Link>

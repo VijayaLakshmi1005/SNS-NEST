@@ -10,6 +10,7 @@ export default function Preloader({ progress, onComplete }) {
   const startTime = useRef(Date.now());
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [globalAssetsLoaded, setGlobalAssetsLoaded] = useState(false);
+  const [hasSeenPreloader] = useState(() => sessionStorage.getItem('sns_preloader_seen') === 'true');
 
   // Global Asset Preloading
   useEffect(() => {
@@ -24,8 +25,12 @@ export default function Preloader({ progress, onComplete }) {
       }
       setGlobalAssetsLoaded(true);
     };
-    checkAssets();
-  }, []);
+    if (!hasSeenPreloader) {
+      checkAssets();
+    } else {
+      setGlobalAssetsLoaded(true);
+    }
+  }, [hasSeenPreloader]);
 
   useEffect(() => {
     // Fast play the video
@@ -40,17 +45,25 @@ export default function Preloader({ progress, onComplete }) {
 
   useEffect(() => {
     // When Antigravity sequence hits 100%, AND all global assets/fonts are loaded, AND video is ready
-    if (progress === 100 && globalAssetsLoaded && isVideoReady) {
+    if (progress === 100 && globalAssetsLoaded && (isVideoReady || hasSeenPreloader)) {
+      if (hasSeenPreloader) {
+        if (onComplete) onComplete();
+        return;
+      }
+      
       const elapsed = Date.now() - startTime.current;
       // Enforce a strict minimum 4-second display time as mandated
       const remainingWait = Math.max(0, 4000 - elapsed);
 
       // Instant exit without any fadeout or sliding effects, as requested
       setTimeout(() => {
+        sessionStorage.setItem('sns_preloader_seen', 'true');
         if (onComplete) onComplete();
       }, remainingWait);
     }
-  }, [progress, globalAssetsLoaded, isVideoReady, onComplete]);
+  }, [progress, globalAssetsLoaded, isVideoReady, onComplete, hasSeenPreloader]);
+
+  if (hasSeenPreloader) return null;
 
   return (
     <div

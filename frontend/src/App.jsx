@@ -203,7 +203,14 @@ function App() {
         }, 200);
       } else if (location.hash) {
         setTimeout(() => {
-          lenis.scrollTo(location.hash, { immediate: true });
+          const target = document.querySelector(location.hash);
+          if (target) {
+            lenis.scrollTo(target, { immediate: true });
+            setTimeout(() => {
+              window.dispatchEvent(new Event('resize'));
+              ScrollTrigger.refresh();
+            }, 50);
+          }
         }, 200);
       }
     }

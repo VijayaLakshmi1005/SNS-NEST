@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -13,10 +13,18 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Founders() {
   const containerRef = useRef(null);
+  const location = useLocation();
   
-  // Scroll to top on mount and init animations
+  // Scroll to hash or top on mount and init animations
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (location.hash) {
+      setTimeout(() => {
+        const el = document.querySelector(location.hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 500); // Wait for GSAP layout to settle
+    } else {
+      window.scrollTo(0, 0);
+    }
     
     let ctx = gsap.context(() => {
       const sections = gsap.utils.toArray('.founder-section');
@@ -121,7 +129,7 @@ export default function Founders() {
         </div>
 
         {/* Senthil */}
-        <section className="founder-section flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
+        <section id="senthil" className="founder-section flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
           <div className="img-container w-full lg:w-5/12 aspect-[3/4] md:aspect-[4/5] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(26,18,16,0.15)] relative group">
             <img 
               src={senthilImg} 
@@ -163,7 +171,7 @@ export default function Founders() {
         </section>
 
         {/* Narendra */}
-        <section className="founder-section flex flex-col lg:flex-row-reverse gap-12 lg:gap-24 items-center">
+        <section id="narendra" className="founder-section flex flex-col lg:flex-row-reverse gap-12 lg:gap-24 items-center">
           <div className="img-container w-full lg:w-5/12 aspect-[3/4] md:aspect-[4/5] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(26,18,16,0.15)] relative group">
             <img 
               src={narendraImg} 
@@ -200,7 +208,7 @@ export default function Founders() {
         </section>
 
         {/* Sreenivas */}
-        <section className="founder-section flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
+        <section id="sreenivas" className="founder-section flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
           <div className="img-container w-full lg:w-5/12 aspect-[3/4] md:aspect-[4/5] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(26,18,16,0.15)] relative group">
             <img 
               src={sreenivasImg} 
