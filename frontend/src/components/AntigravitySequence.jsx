@@ -333,70 +333,76 @@ export default function AntigravitySequence({ onProgress }) {
             <p ref={titlePRef} className="font-neuemontreal text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-[rgba(26,18,16,0.6)]">Meet the minds behind SNS Nest</p>
           </div>
 
-          <div className="flex flex-row gap-4 lg:gap-6 w-full max-w-7xl items-stretch justify-start md:justify-center overflow-x-auto md:overflow-visible snap-x snap-mandatory px-4 md:px-0 pb-8 md:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-col md:flex-row gap-3 md:gap-4 lg:gap-6 w-full max-w-7xl items-center justify-center px-4 md:px-0">
             
             {/* Card 1: Senthil */}
-            <div ref={card1Ref} className="snap-center shrink-0 relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-6 lg:p-8 rounded-2xl w-[85vw] md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
+            <div ref={card1Ref} className="relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#E8E2DA]/95 pointer-events-none" />
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
+              <div className="relative z-10 flex flex-row md:flex-col items-center md:items-start h-full gap-4 md:gap-0">
+                <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden mb-0 md:mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
                   <img src={senthilImg} alt="Sendhil Kumar S" className="w-full h-full object-cover transition-all duration-700 scale-100 group-hover:scale-110" />
                 </div>
-                <h3 className="font-cormorant italic text-2xl md:text-3xl text-[#1A1210] mb-1">Sendhil Kumar S</h3>
-                <p className="font-neuemontreal text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#817773] mb-3">Business Dev & Marketing</p>
-                <div className="w-8 h-px bg-[#1A1210]/20 mb-3" />
-                <p className="font-neuemontreal text-[11px] md:text-xs text-[#4A4340] line-clamp-3 leading-relaxed mb-6 font-medium">
-                  Dedicated and results-oriented professional specializing in driving business growth, building robust client relationships, and expanding market presence through targeted strategies.
-                </p>
-                <div className="mt-auto">
-                  <Link to="/founders" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
-                    <span className="border-b border-[#1A1210]/30 pb-1">Read Details</span>
-                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
-                  </Link>
+                <div className="flex flex-col justify-center w-full">
+                  <h3 className="font-cormorant italic text-xl md:text-2xl md:text-3xl text-[#1A1210] mb-0.5 md:mb-1 leading-none">Sendhil Kumar S</h3>
+                  <p className="font-neuemontreal text-[7.5px] md:text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#817773] mb-1 md:mb-3">Business Dev & Marketing</p>
+                  <div className="hidden md:block w-8 h-px bg-[#1A1210]/20 mb-3" />
+                  <p className="hidden md:block font-neuemontreal text-[11px] md:text-xs text-[#4A4340] line-clamp-3 leading-relaxed mb-6 font-medium">
+                    Dedicated and results-oriented professional specializing in driving business growth, building robust client relationships, and expanding market presence through targeted strategies.
+                  </p>
+                  <div className="mt-1 md:mt-auto">
+                    <Link to="/founders" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
+                      <span className="border-b border-[#1A1210]/30 pb-0.5 md:pb-1">Read Details</span>
+                      <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
             
             {/* Card 2: Narendra */}
-            <div ref={card2Ref} className="snap-center shrink-0 relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-6 lg:p-8 rounded-2xl w-[85vw] md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
+            <div ref={card2Ref} className="relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#E8E2DA]/95 pointer-events-none" />
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
+              <div className="relative z-10 flex flex-row md:flex-col items-center md:items-start h-full gap-4 md:gap-0">
+                <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden mb-0 md:mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
                   <img src={narendraImg} alt="Narendra Reddy G N" className="w-full h-full object-cover object-top transition-all duration-700 scale-100 group-hover:scale-110" />
                 </div>
-                <h3 className="font-cormorant italic text-2xl md:text-3xl text-[#1A1210] mb-1">Narendra Reddy</h3>
-                <p className="font-neuemontreal text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#817773] mb-3">CEO & Principal Designer</p>
-                <div className="w-8 h-px bg-[#1A1210]/20 mb-3" />
-                <p className="font-neuemontreal text-[11px] md:text-xs text-[#4A4340] line-clamp-3 leading-relaxed mb-6 font-medium">
-                  Driven by the balance of aesthetic elegance and structural practicality, turning floor plans into sanctuaries that reflect the true personality of inhabitants.
-                </p>
-                <div className="mt-auto">
-                  <Link to="/founders" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
-                    <span className="border-b border-[#1A1210]/30 pb-1">Read Details</span>
-                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
-                  </Link>
+                <div className="flex flex-col justify-center w-full">
+                  <h3 className="font-cormorant italic text-xl md:text-2xl md:text-3xl text-[#1A1210] mb-0.5 md:mb-1 leading-none">Narendra Reddy</h3>
+                  <p className="font-neuemontreal text-[7.5px] md:text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#817773] mb-1 md:mb-3">CEO & Principal Designer</p>
+                  <div className="hidden md:block w-8 h-px bg-[#1A1210]/20 mb-3" />
+                  <p className="hidden md:block font-neuemontreal text-[11px] md:text-xs text-[#4A4340] line-clamp-3 leading-relaxed mb-6 font-medium">
+                    Driven by the balance of aesthetic elegance and structural practicality, turning floor plans into sanctuaries that reflect the true personality of inhabitants.
+                  </p>
+                  <div className="mt-1 md:mt-auto">
+                    <Link to="/founders" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
+                      <span className="border-b border-[#1A1210]/30 pb-0.5 md:pb-1">Read Details</span>
+                      <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Card 3: Sreenivas */}
-            <div ref={card3Ref} className="snap-center shrink-0 relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-6 lg:p-8 rounded-2xl w-[85vw] md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
+            <div ref={card3Ref} className="relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#E8E2DA]/95 pointer-events-none" />
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
+              <div className="relative z-10 flex flex-row md:flex-col items-center md:items-start h-full gap-4 md:gap-0">
+                <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden mb-0 md:mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
                   <img src={sreenivasImg} alt="S Sreenivasulu" className="w-full h-full object-cover transition-all duration-700 scale-100 group-hover:scale-110" />
                 </div>
-                <h3 className="font-cormorant italic text-2xl md:text-3xl text-[#1A1210] mb-1">S Sreenivasulu</h3>
-                <p className="font-neuemontreal text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#817773] mb-3">Interior Designer & VM</p>
-                <div className="w-8 h-px bg-[#1A1210]/20 mb-3" />
-                <p className="font-neuemontreal text-[11px] md:text-xs text-[#4A4340] line-clamp-3 leading-relaxed mb-6 font-medium">
-                  Passionate about crafting elegant, functional, and contemporary spaces. Driven by the philosophy that design creates spaces inspiring comfort, productivity, and happiness.
-                </p>
-                <div className="mt-auto">
-                  <Link to="/founders" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
-                    <span className="border-b border-[#1A1210]/30 pb-1">Read Details</span>
-                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
-                  </Link>
+                <div className="flex flex-col justify-center w-full">
+                  <h3 className="font-cormorant italic text-xl md:text-2xl md:text-3xl text-[#1A1210] mb-0.5 md:mb-1 leading-none">S Sreenivasulu</h3>
+                  <p className="font-neuemontreal text-[7.5px] md:text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#817773] mb-1 md:mb-3">Interior Designer & VM</p>
+                  <div className="hidden md:block w-8 h-px bg-[#1A1210]/20 mb-3" />
+                  <p className="hidden md:block font-neuemontreal text-[11px] md:text-xs text-[#4A4340] line-clamp-3 leading-relaxed mb-6 font-medium">
+                    Passionate about crafting elegant, functional, and contemporary spaces. Driven by the philosophy that design creates spaces inspiring comfort, productivity, and happiness.
+                  </p>
+                  <div className="mt-1 md:mt-auto">
+                    <Link to="/founders" className="inline-flex items-center gap-2 text-[#1A1210] font-neuemontreal uppercase tracking-widest text-[8px] md:text-[9px] hover:opacity-70 transition-opacity">
+                      <span className="border-b border-[#1A1210]/30 pb-0.5 md:pb-1">Read Details</span>
+                      <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
