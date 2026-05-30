@@ -21,6 +21,7 @@ import AiRoom from './ai-room/AiRoom'
 import Chat from './chat/Chat'
 import Wishlist from './wishlist/Wishlist'
 import Support from './support/Support'
+import Founders from '../pages/Founders'
 
 // Temporary placeholders for remaining modules to ensure routing works
 const Placeholder = ({ name }) => (
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+  },
+  {
+    path: '/founders',
+    element: <Founders />
   },
   {
     path: '/client',

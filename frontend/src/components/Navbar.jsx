@@ -21,11 +21,33 @@ export default function Navbar({
     navigate('/')
   }
 
+  const handleNavClick = (e, path) => {
+    if (window.location.pathname === '/' && path.startsWith('/#')) {
+      e.preventDefault();
+      const hash = path.substring(1); // e.g. '#home'
+      if (window.lenis) {
+        if (hash === '#contact') {
+          // Scroll completely to the bottom to reveal the contact portal
+          window.lenis.scrollTo('bottom', { duration: 2.5, ease: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        } else {
+          window.lenis.scrollTo(hash, { duration: 1.5, ease: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        }
+      } else {
+        if (hash === '#contact') {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        } else {
+          document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+    // Else, React Router natively navigates and App.jsx handles the hash scrolling
+  };
+
   return (
     <>
       {/* Top Left Logo & Company Name */}
       <div className="fixed top-[20px] left-4 md:top-[44px] md:left-12 z-50 pointer-events-auto">
-        <a href="#home" className="flex items-center lg:items-start gap-2 sm:gap-2.5 outline-none hover:opacity-80 transition-opacity duration-300">
+        <Link to="/#home" onClick={(e) => handleNavClick(e, '/#home')} className="flex items-center lg:items-start gap-2 sm:gap-2.5 outline-none hover:opacity-80 transition-opacity duration-300">
           <img
             src={logoImg}
             alt="SNS Nest Logo"
@@ -40,7 +62,7 @@ export default function Navbar({
               Find & Design Solutions
             </span>
           </div>
-        </a>
+        </Link>
       </div>
 
       {/* Top Right Header Actions Panel */}
@@ -118,11 +140,11 @@ export default function Navbar({
         className="fixed top-8 md:top-12 left-1/2 -translate-x-1/2 z-50 hidden lg:flex items-center justify-center gap-10 font-nav-style text-sm md:text-base font-extrabold tracking-wider whitespace-nowrap transition-colors duration-300 ease-in-out pointer-events-auto"
         style={{ color: navTextColor }}
       >
-        <a href="#home" className="hover:scale-105 transition-all duration-300">HOME</a>
-        <a href="#reviews" className="hover:scale-105 transition-all duration-300">REVIEWS</a>
-        <a href="#portfolio" className="hover:scale-105 transition-all duration-300">PORTFOLIO</a>
-        <a href="#about" className="hover:scale-105 transition-all duration-300">ABOUT</a>
-        <a href="#contact" className="hover:scale-105 transition-all duration-300">CONTACT</a>
+        <Link to="/#home" onClick={(e) => handleNavClick(e, '/#home')} className="hover:scale-105 transition-all duration-300">HOME</Link>
+        <Link to="/#reviews" onClick={(e) => handleNavClick(e, '/#reviews')} className="hover:scale-105 transition-all duration-300">REVIEWS</Link>
+        <Link to="/#portfolio" onClick={(e) => handleNavClick(e, '/#portfolio')} className="hover:scale-105 transition-all duration-300">PORTFOLIO</Link>
+        <Link to="/founders" className="hover:scale-105 transition-all duration-300">ABOUT</Link>
+        <Link to="/#contact" onClick={(e) => handleNavClick(e, '/#contact')} className="hover:scale-105 transition-all duration-300">CONTACT</Link>
       </nav>
 
       {/* Unique & Highly Aesthetic Mode Selector Switch */}

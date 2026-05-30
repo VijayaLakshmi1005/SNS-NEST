@@ -63,7 +63,7 @@ export default function PortfolioIntro() {
   }
 
   return (
-    <div className="portfolio-intro-canvas relative w-full z-40 bg-[#C7A58D]">
+    <div id="portfolio" className="portfolio-intro-canvas relative w-full z-40 bg-[#C7A58D]">
       {/* Invisible mask to fade out text before it hits the transparent navbar */}
       <div className="sticky top-0 left-0 w-full h-[180px] pointer-events-none z-30 bg-gradient-to-b from-[#C7A58D] via-[#C7A58D] to-transparent" />
       
@@ -97,7 +97,7 @@ export default function PortfolioIntro() {
         </div>
 
         {/* ── Bottom CTA ── */}
-        <div className="flex flex-col items-center justify-center text-center mt-auto pt-8 sm:pt-12 border-t border-[#1A1210]/10">
+        <div id="contact" className="flex flex-col items-center justify-center text-center mt-auto pt-8 sm:pt-12 border-t border-[#1A1210]/10">
           <h3 className="font-cormorant italic text-2xl sm:text-3xl lg:text-4xl text-[#1A1210] font-light mb-6">
             Let’s create something beautiful together.
           </h3>

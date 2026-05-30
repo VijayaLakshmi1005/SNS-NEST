@@ -10,6 +10,7 @@ export default function Preloader({ progress, onComplete }) {
   const startTime = useRef(Date.now());
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [globalAssetsLoaded, setGlobalAssetsLoaded] = useState(false);
+  const [hasSeenPreloader] = useState(() => sessionStorage.getItem('sns_preloader_seen') === 'true');
 
   // Global Asset Preloading
   useEffect(() => {
@@ -24,8 +25,12 @@ export default function Preloader({ progress, onComplete }) {
       }
       setGlobalAssetsLoaded(true);
     };
-    checkAssets();
-  }, []);
+    if (!hasSeenPreloader) {
+      checkAssets();
+    } else {
+      setGlobalAssetsLoaded(true);
+    }
+  }, [hasSeenPreloader]);
 
   useEffect(() => {
     // Fast play the video
@@ -40,20 +45,28 @@ export default function Preloader({ progress, onComplete }) {
 
   useEffect(() => {
     // When Antigravity sequence hits 100%, AND all global assets/fonts are loaded, AND video is ready
-    if (progress === 100 && globalAssetsLoaded && isVideoReady) {
+    if (progress === 100 && globalAssetsLoaded && (isVideoReady || hasSeenPreloader)) {
+      if (hasSeenPreloader) {
+        if (onComplete) onComplete();
+        return;
+      }
+      
       const elapsed = Date.now() - startTime.current;
       // Enforce a strict minimum 4-second display time as mandated
       const remainingWait = Math.max(0, 4000 - elapsed);
 
       // Instant exit without any fadeout or sliding effects, as requested
       setTimeout(() => {
+        sessionStorage.setItem('sns_preloader_seen', 'true');
         if (onComplete) onComplete();
       }, remainingWait);
     }
-  }, [progress, globalAssetsLoaded, isVideoReady, onComplete]);
+  }, [progress, globalAssetsLoaded, isVideoReady, onComplete, hasSeenPreloader]);
+
+  if (hasSeenPreloader) return null;
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="fixed inset-0 z-[9999] bg-[#E8E2DA] flex flex-col items-center justify-center pointer-events-none overflow-hidden"
       style={{
@@ -65,10 +78,10 @@ export default function Preloader({ progress, onComplete }) {
       {/* Wrapper containing text and video. Opacity is strictly 0 until the video is fully loaded. 
           Uses flexbox to mathematically center both elements. Added px-4 so it doesn't touch edges on tiny phones. */}
       <div ref={contentRef} className="absolute inset-0 w-full h-full flex items-center justify-center px-4" style={{ opacity: isVideoReady ? 1 : 0 }}>
-        
+
         {/* The video is placed back as absolute fullscreen to prevent any hard edges from showing on wide desktop monitors.
             It uses object-contain on mobile with a scale to stay proportional, and object-cover on desktop. */}
-        <video 
+        <video
           ref={videoRef}
           src={loadingVideo}
           autoPlay
@@ -76,7 +89,7 @@ export default function Preloader({ progress, onComplete }) {
           loop
           playsInline
           onLoadedData={() => setIsVideoReady(true)}
-          className="absolute inset-0 w-full h-full object-cover z-0 mix-blend-darken" 
+          className="absolute inset-0 w-full h-full object-cover z-0 mix-blend-darken"
         />
 
         {/* Elegant Cinematic Placement: Moved to the bottom right corner so the spinning top takes center stage. 
