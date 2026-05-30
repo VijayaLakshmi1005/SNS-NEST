@@ -47,9 +47,10 @@ const THEME = {
 const SIDEBAR_LINKS = [
   { name: 'Dashboard', icon: LayoutDashboard, path: '/client/dashboard' },
   { name: 'Designs', icon: ImageIcon, path: '/client/designs' },
+  { name: 'Floor Plans', icon: ImageIcon, path: '/client/floor-plans' },
+  { name: 'Design Center', icon: Wand2, path: '/client/design-center' },
   { name: 'Consultations', icon: CalendarDays, path: '/client/booking' },
   { name: 'Estimation', icon: Calculator, path: '/client/estimate' },
-  { name: 'AI Visualizer', icon: Wand2, path: '/client/ai-room' },
   { name: 'Tracking', icon: Bell, path: '/client/tracking' },
   { name: 'Messages', icon: MessageSquare, path: '/client/chat' },
   { name: 'Wishlist', icon: Heart, path: '/client/wishlist' },

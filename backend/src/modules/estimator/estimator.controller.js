@@ -68,6 +68,17 @@ export const downloadPdf = catchAsync(async (req, res) => {
   } else {
     // Generate estimate payload dynamically
     estimatePayload = await estimatorService.calculateEstimate(req.body, req.user._id);
+    
+    // Override with manual inputs if provided (Admin edits)
+    if (req.body.subtotal !== undefined) estimatePayload.subtotal = req.body.subtotal;
+    if (req.body.gst !== undefined) estimatePayload.gst = req.body.gst;
+    if (req.body.totalAmount !== undefined) estimatePayload.totalAmount = req.body.totalAmount;
+    if (req.body.manualRoomCosts) {
+      estimatePayload.rooms = estimatePayload.rooms.map(r => ({
+        name: r.name,
+        cost: req.body.manualRoomCosts[r.name] !== undefined ? Number(req.body.manualRoomCosts[r.name]) : r.cost
+      }));
+    }
   }
 
   const pdfBuffer = await estimatorService.generatePdf(estimatePayload, req.user);

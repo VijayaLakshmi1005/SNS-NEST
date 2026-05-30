@@ -51,7 +51,23 @@ const projectSchema = new mongoose.Schema({
   budget: {
     type: Number,
     required: true
-  }
+  },
+  projectType: {
+    type: String,
+    default: 'Residential Interior Design'
+  },
+  expectedCompletion: {
+    type: Date
+  },
+  uploads: [{
+    fileName: String,
+    fileUrl: String,
+    fileType: { type: String, enum: ['Floor Plan', '2D Layout', '3D Render', 'Material Board', 'Other'], default: 'Other' },
+    status: { type: String, enum: ['Pending Approval', 'Approved', 'Rejected', 'Revision Requested', 'No Approval Needed'], default: 'Pending Approval' },
+    uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    uploadedAt: { type: Date, default: Date.now },
+    feedback: String
+  }]
 }, {
   timestamps: true
 });

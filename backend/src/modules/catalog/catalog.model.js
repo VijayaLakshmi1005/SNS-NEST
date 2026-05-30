@@ -6,9 +6,12 @@ const catalogSchema = new mongoose.Schema({
   
   type: {
     type: String,
-    enum: ['Service', 'Product', 'Concept', 'Package'],
     required: true
   },
+  
+  format: { type: String }, // Service, Product, Concept, Package
+  
+  tier: { type: String }, // Basic, Standard, Premium, Luxury
   
   category: { type: String, required: true, index: true },
   subCategory: { type: String },

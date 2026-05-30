@@ -6,6 +6,7 @@ export const registerSchema = z.object({
     email: z.string({ required_error: 'Email is required' }).email('Invalid email address'),
     mobile: z.string({ required_error: 'Mobile number is required' }).min(10, 'Invalid mobile number'),
     password: z.string({ required_error: 'Password is required' }).min(6, 'Password must be at least 6 characters'),
+    location: z.string().optional(),
     role: z.enum(['client', 'designer', 'admin']).optional(),
   }),
 });

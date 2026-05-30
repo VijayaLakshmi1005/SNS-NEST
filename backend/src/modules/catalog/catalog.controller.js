@@ -6,20 +6,49 @@ import { processCatalogMedia } from './upload.engine.js';
 import { getIO } from '../../config/socket.js';
 
 export const getAllCatalogItems = catchAsync(async (req, res) => {
-  const { category, style, search, minPrice, maxPrice, type } = req.query;
+  const { category, style, search, minPrice, maxPrice, type, tier, format } = req.query;
   
   let query = {};
+  let andConditions = [];
   
-  if (category) query.category = category;
-  if (type) query.type = type;
-  if (style) query.styles = { $in: [style] };
-  if (search) {
-    query.$or = [
-      { title: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } },
-      { 'images.extractedText': { $regex: search, $options: 'i' } }
-    ];
+  if (format) {
+    const formatRegex = new RegExp(format, 'i');
+    andConditions.push({ $or: [{ format: formatRegex }, { type: formatRegex }] });
   }
+
+  if (category) {
+    const catRegex = new RegExp(category, 'i');
+    andConditions.push({ $or: [{ category: catRegex }, { styles: { $regex: catRegex } }, { type: catRegex }] });
+  }
+  if (type) {
+    // Make the type matching more flexible (e.g. "Living Room Design" -> matches "Living Room")
+    const baseType = type.replace(/ Design/i, '').replace(/ Interiors/i, '').replace(/ Area/i, '');
+    const typeRegex = new RegExp(baseType, 'i');
+    andConditions.push({ $or: [{ type: typeRegex }, { roomTypes: { $regex: typeRegex } }, { category: typeRegex }] });
+  }
+  if (tier) {
+    const tierRegex = new RegExp(tier, 'i');
+    andConditions.push({ tier: tierRegex });
+  }
+  if (style) {
+    const styleRegex = new RegExp(style, 'i');
+    andConditions.push({ styles: { $regex: styleRegex } });
+  }
+  
+  if (search) {
+    andConditions.push({
+      $or: [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { 'images.extractedText': { $regex: search, $options: 'i' } }
+      ]
+    });
+  }
+
+  if (andConditions.length > 0) {
+    query.$and = andConditions;
+  }
+
   if (minPrice || maxPrice) {
     query['pricing.basePrice'] = {};
     if (minPrice) query['pricing.basePrice'].$gte = Number(minPrice);
@@ -63,7 +92,9 @@ export const uploadToCatalog = catchAsync(async (req, res) => {
     title: parsedBody.title || 'Untitled Design',
     slug: (parsedBody.title || 'untitled').toLowerCase().replace(/\s+/g, '-') + '-' + Date.now(),
     type: parsedBody.type || 'Service',
+    format: parsedBody.format || 'Service',
     category: parsedBody.category || 'Uncategorized',
+    tier: parsedBody.tier || 'Standard',
     description: parsedBody.description || aiData.extractedText,
     pricing: {
       basePrice: parsedBody.basePrice || 0,
@@ -112,6 +143,12 @@ export const toggleWishlist = catchAsync(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, { isSaved: existingIndex === -1 }, 'Wishlist updated'));
 });
 
+export const getMyWishlist = catchAsync(async (req, res) => {
+  const wishlist = await Wishlist.findOne({ user: req.user.id });
+  const ids = wishlist ? wishlist.items.map(i => i.catalogItem) : [];
+  return res.status(200).json(new ApiResponse(200, ids, 'Wishlist retrieved'));
+});
+
 export const getAnalytics = catchAsync(async (req, res) => {
   const totalItems = await CatalogItem.countDocuments();
   const trending = await CatalogItem.find().sort({ 'stats.views': -1, 'stats.wishlistSaves': -1 }).limit(5);
@@ -124,6 +161,19 @@ export const getAnalytics = catchAsync(async (req, res) => {
     trending,
     recent
   }, 'Analytics retrieved'));
+});
+
+export const updateCatalogItem = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  
+  const item = await CatalogItem.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
+  if (!item) return res.status(404).json(new ApiResponse(404, null, 'Item not found'));
+  
+  const io = getIO();
+  if (io) io.emit('catalog:item_updated', item);
+  
+  return res.status(200).json(new ApiResponse(200, item, 'Item updated successfully'));
 });
 
 export const deleteCatalogItem = catchAsync(async (req, res) => {

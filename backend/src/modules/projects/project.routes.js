@@ -4,6 +4,8 @@ import {
   createProject,
   getProjects,
   getProjectById,
+  updateProject,
+  deleteProject,
   getCurrentProject,
   assignUsers,
   addMilestone,
@@ -32,6 +34,8 @@ router.post('/', restrictTo('admin'), createProject);
 router.get('/', getProjects);
 router.get('/current', getCurrentProject);
 router.get('/:id', getProjectById);
+router.patch('/:id', restrictTo('admin'), updateProject);
+router.delete('/:id', restrictTo('admin'), deleteProject);
 router.patch('/:id/progress', updateProjectProgress);
 
 router.get('/:id/tasks', getProjectTasks);

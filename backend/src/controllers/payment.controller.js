@@ -60,16 +60,24 @@ export const getPaymentHistory = catchAsync(async (req, res) => {
 
 export const getPaymentStatus = catchAsync(async (req, res) => {
   const userId = req.user._id;
+  
+  // Get active project budget
+  const { Project } = await import('../models/Project.js');
+  const project = await Project.findOne({ client: userId }).sort({ createdAt: -1 });
+  const totalAmount = project?.budget || 0;
+
   const payments = await Payment.find({ client: userId, status: 'Paid' });
   const paidAmount = payments.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+  const pendingAmount = Math.max(0, totalAmount - paidAmount);
 
   return res.status(200).json(
     new ApiResponse(
       200,
       {
-        paidAmount: paidAmount || 980000,
-        totalAmount: 2940000,
-        pendingAmount: Math.max(0, 2940000 - paidAmount),
+        paidAmount: paidAmount,
+        totalAmount: totalAmount,
+        pendingAmount: pendingAmount,
+        invoiceCount: payments.length,
         nextDueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
       },
       'Payment status retrieved successfully'

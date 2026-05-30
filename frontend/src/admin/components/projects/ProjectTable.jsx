@@ -1,10 +1,30 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Briefcase, Eye, Clock, Building2, Home } from 'lucide-react';
+import { Search, Filter, Briefcase, Eye, Clock, Building2, Home, Edit, Trash2 } from 'lucide-react';
+import axios from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
+import EditProjectModal from './EditProjectModal';
+
+const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
 
 export default function ProjectTable({ projects, isLoading, onOpenWorkspace }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingProject, setEditingProject] = useState(null);
+  const queryClient = useQueryClient();
+  
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this project?')) {
+      try {
+        await axios.delete(`${API_URL}/projects/${id}`, { withCredentials: true });
+        queryClient.invalidateQueries(['admin-projects']);
+        queryClient.invalidateQueries(['admin-projects-analytics']);
+      } catch (err) {
+        console.error('Failed to delete project:', err);
+        alert(err.response?.data?.message || 'Failed to delete project');
+      }
+    }
+  };
   
   const filteredProjects = projects.filter(p => 
     p.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,7 +82,7 @@ export default function ProjectTable({ projects, isLoading, onOpenWorkspace }) {
               <th className="px-6 py-4 text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Progress</th>
               <th className="px-6 py-4 text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Payments</th>
               <th className="px-6 py-4 text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Timeline</th>
-              <th className="px-6 py-4 text-right">Workspace</th>
+              <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#e5e0d8] bg-white">
@@ -139,12 +159,27 @@ export default function ProjectTable({ projects, isLoading, onOpenWorkspace }) {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => onOpenWorkspace(project._id)}
-                          className="px-3 py-1.5 bg-[#2d2a26] text-white hover:bg-[#1a1816] rounded-xl text-xs font-medium transition-colors flex items-center gap-2"
+                          title="Workspace"
+                          className="p-1.5 bg-[#fcfbf9] text-[#8b8175] hover:text-[#2d2a26] border border-[#e5e0d8] hover:border-[#d4cecb] rounded-lg transition-colors flex items-center justify-center"
                         >
-                          <Eye className="w-3.5 h-3.5" /> Workspace
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => setEditingProject(project)}
+                          title="Edit Project"
+                          className="p-1.5 bg-[#fcfbf9] text-[#8b8175] hover:text-[#2d2a26] border border-[#e5e0d8] hover:border-[#d4cecb] rounded-lg transition-colors flex items-center justify-center"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(project._id)}
+                          title="Delete Project"
+                          className="p-1.5 bg-red-50 text-red-500 hover:text-red-600 border border-red-100 hover:border-red-200 rounded-lg transition-colors flex items-center justify-center"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -155,6 +190,12 @@ export default function ProjectTable({ projects, isLoading, onOpenWorkspace }) {
           </tbody>
         </table>
       </div>
+      
+      <EditProjectModal 
+        isOpen={!!editingProject} 
+        onClose={() => setEditingProject(null)} 
+        project={editingProject} 
+      />
     </div>
   );
 }

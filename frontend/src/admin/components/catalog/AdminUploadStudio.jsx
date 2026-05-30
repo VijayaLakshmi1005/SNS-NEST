@@ -13,8 +13,10 @@ export default function AdminUploadStudio({ isOpen, onClose }) {
   const [progress, setProgress] = useState(0);
   const [formData, setFormData] = useState({
     title: '',
-    type: 'Product',
-    category: 'Furniture',
+    type: 'Residential Interior Design',
+    format: 'Service',
+    category: 'Minimal',
+    tier: 'Basic',
     basePrice: ''
   });
   const queryClient = useQueryClient();
@@ -49,7 +51,9 @@ export default function AdminUploadStudio({ isOpen, onClose }) {
     payload.append('data', JSON.stringify({
       title: formData.title,
       type: formData.type,
+      format: formData.format,
       category: formData.category,
+      tier: formData.tier,
       basePrice: Number(formData.basePrice) || 0
     }));
     
@@ -69,7 +73,7 @@ export default function AdminUploadStudio({ isOpen, onClose }) {
       setTimeout(() => {
         queryClient.invalidateQueries(['admin-catalog']);
         setFiles([]);
-        setFormData({ title: '', type: 'Product', category: 'Furniture', basePrice: '' });
+        setFormData({ title: '', type: 'Residential Interior Design', format: 'Service', category: 'Minimal', tier: 'Basic', basePrice: '' });
         setIsUploading(false);
         onClose();
       }, 500);
@@ -118,10 +122,23 @@ export default function AdminUploadStudio({ isOpen, onClose }) {
                 onChange={e => setFormData({...formData, type: e.target.value})} 
                 className="w-full px-4 py-2 bg-[#fcfbf9] border border-[#e5e0d8] rounded-xl text-sm focus:outline-none focus:border-[#2d2a26]"
               >
-                <option value="Product">Product</option>
-                <option value="Service">Service</option>
-                <option value="Concept">Concept</option>
-                <option value="Package">Package</option>
+                <optgroup label="Residential">
+                  <option value="Residential Interior Design">Residential Interior Design</option>
+                  <option value="Living Room Design">Living Room Design</option>
+                  <option value="Bedroom Design">Bedroom Design</option>
+                  <option value="Modular Kitchen Design">Modular Kitchen Design</option>
+                  <option value="Wardrobe Design">Wardrobe Design</option>
+                  <option value="False Ceiling Design">False Ceiling Design</option>
+                  <option value="TV Unit Design">TV Unit Design</option>
+                  <option value="Space Planning">Space Planning</option>
+                </optgroup>
+                <optgroup label="Commercial">
+                  <option value="Commercial Interior Design">Commercial Interior Design</option>
+                  <option value="Office Interiors">Office Interiors</option>
+                  <option value="Retail Shop Interiors">Retail Shop Interiors</option>
+                  <option value="Showroom Design">Showroom Design</option>
+                  <option value="Reception Area Design">Reception Area Design</option>
+                </optgroup>
               </select>
             </div>
             <div className="space-y-1">
@@ -131,14 +148,42 @@ export default function AdminUploadStudio({ isOpen, onClose }) {
                 onChange={e => setFormData({...formData, category: e.target.value})} 
                 className="w-full px-4 py-2 bg-[#fcfbf9] border border-[#e5e0d8] rounded-xl text-sm focus:outline-none focus:border-[#2d2a26]"
               >
+                <option value="Minimal">Minimal</option>
+                <option value="Vintage">Vintage</option>
+                <option value="Modern">Modern</option>
                 <option value="Furniture">Furniture</option>
                 <option value="Decor">Decor</option>
                 <option value="Lighting">Lighting</option>
                 <option value="Interior Design">Interior Design</option>
-                <option value="Consultation">Consultation</option>
               </select>
             </div>
-            <div className="space-y-1 sm:col-span-2">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Format</label>
+              <select 
+                value={formData.format} 
+                onChange={e => setFormData({...formData, format: e.target.value})} 
+                className="w-full px-4 py-2 bg-[#fcfbf9] border border-[#e5e0d8] rounded-xl text-sm focus:outline-none focus:border-[#2d2a26]"
+              >
+                <option value="Service">Service</option>
+                <option value="Product">Product</option>
+                <option value="Concept">Concept</option>
+                <option value="Package">Package</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Tier</label>
+              <select 
+                value={formData.tier} 
+                onChange={e => setFormData({...formData, tier: e.target.value})} 
+                className="w-full px-4 py-2 bg-[#fcfbf9] border border-[#e5e0d8] rounded-xl text-sm focus:outline-none focus:border-[#2d2a26]"
+              >
+                <option value="Basic">Basic</option>
+                <option value="Standard">Standard</option>
+                <option value="Premium">Premium</option>
+                <option value="Luxury">Luxury</option>
+              </select>
+            </div>
+            <div className="space-y-1">
               <label className="text-xs font-semibold text-[#8b8175] uppercase tracking-wider">Base Price (INR)</label>
               <input 
                 type="number" 

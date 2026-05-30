@@ -13,9 +13,9 @@ const ensureDesignersExist = async () => {
   const targetNames = ['Sreenivasulu', 'Narendra', 'Sendil'];
   
   for (const name of targetNames) {
-    const exists = await User.findOne({ fullName: name, role: ROLES.DESIGNER });
+    const email = `${name.toLowerCase()}@sns-nest.com`;
+    const exists = await User.findOne({ email });
     if (!exists) {
-      const email = `${name.toLowerCase()}@sns-nest.com`;
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash('Designer@123', salt);
       

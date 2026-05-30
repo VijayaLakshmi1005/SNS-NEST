@@ -37,8 +37,13 @@ api.interceptors.request.use(
 
 export const apiRequest = async (url, options = {}) => {
   const method = options.method || 'GET';
-  const data = options.body || options.data || null;
+  const data = options.body !== undefined ? options.body : (options.data !== undefined ? options.data : undefined);
   const headers = options.headers || {};
+
+  // If we are sending FormData, let the browser set the Content-Type with the boundary
+  if (data instanceof FormData) {
+    delete headers['Content-Type'];
+  }
 
   try {
     const response = await api({

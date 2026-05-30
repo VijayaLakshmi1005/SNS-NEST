@@ -166,8 +166,11 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/support-tickets', supportTicketRoutes);
 app.use('/api/live-notifications', liveNotificationRoutes);
 import searchRoutes from './modules/search/search.routes.js';
+import inquiryRoutes from './routes/inquiry.routes.js';
+
 app.use('/api/search', searchRoutes);
 app.use('/api/crm', crmRoutes);
+app.use('/api/inquiries', inquiryRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -177,6 +180,6 @@ app.get('/', (req, res) => {
 // Final fallback Error Boundaries
 app.use(errorHandler);
 
-// Trigger nodemon restart
+// Trigger nodemon restart 3
 
 export default app;

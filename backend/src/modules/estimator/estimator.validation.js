@@ -32,5 +32,6 @@ export const downloadPdfSchema = z.object({
     subtotal: z.number().optional(),
     gst: z.number().optional(),
     totalAmount: z.number().optional(),
+    manualRoomCosts: z.record(z.union([z.number(), z.string()])).optional(),
   })
 });

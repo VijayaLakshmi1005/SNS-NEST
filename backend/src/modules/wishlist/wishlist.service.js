@@ -10,18 +10,18 @@ export const ensureWishlistSeeded = async (userId) => {
 
   console.log(`Seeding custom premium wishlist collections and inspirations for user: ${userId}`);
 
-  // Find or create designer to assign cover coverages
-  let designer = await User.findOne({ role: 'designer' });
-  if (!designer) {
-    designer = new User({
-      fullName: 'John Designer',
-      email: 'designer@snsnest.com',
-      mobile: '9876543210',
-      password: 'designer123',
-      role: 'designer',
+  // Find or create admin to assign cover coverages
+  let admin = await User.findOne({ role: 'admin' });
+  if (!admin) {
+    admin = new User({
+      fullName: 'John Admin',
+      email: 'admin_wishlist@snsnest.com',
+      mobile: '9876543211',
+      password: 'admin123',
+      role: 'admin',
       isVerified: true
     });
-    await designer.save();
+    await admin.save();
   }
 
   // 1. Create Curated Collections
@@ -61,28 +61,28 @@ export const ensureWishlistSeeded = async (userId) => {
       roomType: 'Kitchen',
       style: 'Scandinavian',
       images: ['https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=800'],
-      designerId: designer._id,
+      designerId: admin._id,
       tags: ['fluted oak', 'quartz countertops', 'hidden appliances']
     },
     {
       roomType: 'Living Room',
       style: 'Minimal',
       images: ['https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80&w=800'],
-      designerId: designer._id,
+      designerId: admin._id,
       tags: ['organic tones', 'linen sofa', 'limewash paint']
     },
     {
       roomType: 'Bedroom',
       style: 'Luxury',
       images: ['https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&q=80&w=800'],
-      designerId: designer._id,
+      designerId: admin._id,
       tags: ['walnut paneling', 'ambient backlighting', 'velvet bedhead']
     },
     {
       roomType: 'Office',
       style: 'Contemporary',
       images: ['https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=800'],
-      designerId: designer._id,
+      designerId: admin._id,
       tags: ['oak desk', 'ergonomic setup', 'floating shelves']
     }
   ];

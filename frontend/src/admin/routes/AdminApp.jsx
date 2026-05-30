@@ -19,6 +19,7 @@ const AnalyticsDashboard = React.lazy(() => import('../pages/admin/AnalyticsDash
 const SupportOverview = React.lazy(() => import('../pages/admin/SupportOverview'));
 const ActivityFeed = React.lazy(() => import('../pages/admin/ActivityFeed'));
 const UserManagement = React.lazy(() => import('../pages/admin/UserManagement'));
+const Inquiries = React.lazy(() => import('../pages/admin/Inquiries'));
 
 export default function AdminApp() {
   return (
@@ -33,6 +34,7 @@ export default function AdminApp() {
           <Route path="projects/:id" element={<ProjectWorkspace />} />
           <Route path="leads" element={<LeadManagement />} />
           <Route path="leads/:id" element={<LeadProfile />} />
+          <Route path="inquiries" element={<Inquiries />} />
           <Route path="products" element={<CatalogManagement />} />
           <Route path="products/:id" element={<ProductDetail />} />
           <Route path="cms" element={<CmsDashboard />} />
