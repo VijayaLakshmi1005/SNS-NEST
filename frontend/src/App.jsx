@@ -345,7 +345,7 @@ function App() {
 
                 {/* Line 1: YOUR VISION, -> OUR (Beautiful beige when scrambling/settled on navy!) */}
                 <span
-                  className={`text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px] font-bold tracking-tight uppercase transition-all duration-300 ${isUniformStyle ? 'font-neuemontreal' : 'font-clash'
+                  className={`text-[26px] xs:text-[30px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px] font-bold tracking-tight uppercase transition-all duration-300 ${isUniformStyle ? 'font-neuemontreal' : 'font-clash'
                     }`}
                   style={{ color: currentLine1Color }}
                 >
@@ -355,8 +355,8 @@ function App() {
                 {/* Line 2: sculpted -> TESTIMONY (Beautiful beige when scrambling/settled on navy, zero glow!) */}
                 <span
                   className={`${isUniformStyle
-                    ? 'font-neuemontreal font-bold uppercase text-[34px] xs:text-[38px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px]'
-                    : 'font-berlinerins font-medium lowercase text-[58px] xs:text-[64px] sm:text-[46px] md:text-[60px] lg:text-[76px] xl:text-[88px]'
+                    ? 'font-neuemontreal font-bold uppercase text-[26px] xs:text-[30px] sm:text-[26px] md:text-[35px] lg:text-[45px] xl:text-[52px]'
+                    : 'font-berlinerins font-medium lowercase text-[46px] xs:text-[52px] sm:text-[46px] md:text-[60px] lg:text-[76px] xl:text-[88px]'
                     } tracking-tight transition-all duration-300`}
                   style={{
                     color: currentLine2Color,

@@ -107,7 +107,7 @@ export default function Founders() {
         </Link>
       </div>
 
-      <main className="max-w-6xl mx-auto px-6 md:px-12 pt-32 md:pt-48 space-y-32 md:space-y-48">
+      <main className="max-w-6xl mx-auto px-6 md:px-12 pt-24 md:pt-48 space-y-20 md:space-y-48">
         
         {/* Title */}
         <div className="page-title text-center space-y-6 max-w-3xl mx-auto">

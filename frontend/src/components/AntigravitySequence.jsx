@@ -333,10 +333,10 @@ export default function AntigravitySequence({ onProgress }) {
             <p ref={titlePRef} className="font-neuemontreal text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-[rgba(26,18,16,0.6)]">Meet the minds behind SNS Nest</p>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 lg:gap-6 w-full max-w-7xl items-center justify-center">
+          <div className="flex flex-row gap-4 lg:gap-6 w-full max-w-7xl items-stretch justify-start md:justify-center overflow-x-auto md:overflow-visible snap-x snap-mandatory px-4 md:px-0 pb-8 md:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             
             {/* Card 1: Senthil */}
-            <div ref={card1Ref} className="relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
+            <div ref={card1Ref} className="snap-center shrink-0 relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-6 lg:p-8 rounded-2xl w-[85vw] md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#E8E2DA]/95 pointer-events-none" />
               <div className="relative z-10 flex flex-col h-full">
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
@@ -358,7 +358,7 @@ export default function AntigravitySequence({ onProgress }) {
             </div>
             
             {/* Card 2: Narendra */}
-            <div ref={card2Ref} className="relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
+            <div ref={card2Ref} className="snap-center shrink-0 relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-6 lg:p-8 rounded-2xl w-[85vw] md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#E8E2DA]/95 pointer-events-none" />
               <div className="relative z-10 flex flex-col h-full">
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
@@ -380,7 +380,7 @@ export default function AntigravitySequence({ onProgress }) {
             </div>
 
             {/* Card 3: Sreenivas */}
-            <div ref={card3Ref} className="relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-6 lg:p-8 rounded-2xl w-full md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
+            <div ref={card3Ref} className="snap-center shrink-0 relative group overflow-hidden bg-[#E8E2DA]/80 backdrop-blur-2xl p-6 lg:p-8 rounded-2xl w-[85vw] md:w-1/3 text-left border border-[#1A1210]/5 shadow-2xl pointer-events-auto opacity-0 translate-y-12">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#E8E2DA]/95 pointer-events-none" />
               <div className="relative z-10 flex flex-col h-full">
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-4 border border-[#1A1210]/10 shadow-[0_0_20px_rgba(26,18,16,0.1)]">
