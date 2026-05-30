@@ -33,11 +33,12 @@ function App() {
 
   useEffect(() => {
     // Initialize Lenis smooth scroll with enhanced touch support
+    const isMobile = window.innerWidth < 768;
     const lenis = new Lenis({
-      duration: 1.4,
+      duration: isMobile ? 1.0 : 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      touchMultiplier: 1.5,
+      touchMultiplier: isMobile ? 1.2 : 1.5,
       syncTouch: true, // Smooth scrolling on mobile touch events
     });
     window.lenis = lenis;
@@ -211,7 +212,7 @@ function App() {
               ScrollTrigger.refresh();
             }, 50);
           }
-        }, 200);
+        }, 50);
       }
     }
 

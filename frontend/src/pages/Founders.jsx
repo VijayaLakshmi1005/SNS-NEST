@@ -20,8 +20,9 @@ export default function Founders() {
     if (location.hash) {
       setTimeout(() => {
         const el = document.querySelector(location.hash);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 500); // Wait for GSAP layout to settle
+        // Instant jump for immediate responsiveness
+        if (el) el.scrollIntoView({ behavior: 'auto' });
+      }, 50); 
     } else {
       window.scrollTo(0, 0);
     }
