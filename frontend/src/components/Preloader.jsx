@@ -53,7 +53,7 @@ export default function Preloader({ progress, onComplete }) {
   }, [progress, globalAssetsLoaded, isVideoReady, onComplete]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="fixed inset-0 z-[9999] bg-[#E8E2DA] flex flex-col items-center justify-center pointer-events-none overflow-hidden"
       style={{
@@ -65,10 +65,10 @@ export default function Preloader({ progress, onComplete }) {
       {/* Wrapper containing text and video. Opacity is strictly 0 until the video is fully loaded. 
           Uses flexbox to mathematically center both elements. Added px-4 so it doesn't touch edges on tiny phones. */}
       <div ref={contentRef} className="absolute inset-0 w-full h-full flex items-center justify-center px-4" style={{ opacity: isVideoReady ? 1 : 0 }}>
-        
+
         {/* The video is placed back as absolute fullscreen to prevent any hard edges from showing on wide desktop monitors.
             It uses object-contain on mobile with a scale to stay proportional, and object-cover on desktop. */}
-        <video 
+        <video
           ref={videoRef}
           src={loadingVideo}
           autoPlay
@@ -76,7 +76,7 @@ export default function Preloader({ progress, onComplete }) {
           loop
           playsInline
           onLoadedData={() => setIsVideoReady(true)}
-          className="absolute inset-0 w-full h-full object-cover z-0 mix-blend-darken" 
+          className="absolute inset-0 w-full h-full object-cover z-0 mix-blend-darken"
         />
 
         {/* Elegant Cinematic Placement: Moved to the bottom right corner so the spinning top takes center stage. 

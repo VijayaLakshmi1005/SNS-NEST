@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useThemeStore } from './client/store/themeStore'
 import Lenis from '@studio-freight/lenis'
 import gsap from 'gsap'
@@ -17,6 +18,7 @@ import { interpolateColor, scrambleText } from './utils/scramble'
 gsap.registerPlugin(ScrollTrigger)
 
 function App() {
+  const location = useLocation()
   const { isNight, setNightMode } = useThemeStore()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -38,6 +40,7 @@ function App() {
       touchMultiplier: 1.5,
       syncTouch: true, // Smooth scrolling on mobile touch events
     });
+    window.lenis = lenis;
 
     // Lock scrolling while preloader is active
     if (!siteLoaded) {
@@ -192,6 +195,19 @@ function App() {
 
     const timer = setTimeout(initTimeline, 100);
 
+    // If navigating back from Founders page or via hash links, scroll once site loads
+    if (siteLoaded) {
+      if (location.state?.scrollToBottom) {
+        setTimeout(() => {
+          lenis.scrollTo('bottom', { immediate: true });
+        }, 200);
+      } else if (location.hash) {
+        setTimeout(() => {
+          lenis.scrollTo(location.hash, { immediate: true });
+        }, 200);
+      }
+    }
+
     return () => {
       lenis.destroy();
       gsap.ticker.remove(lenis.raf);
@@ -296,7 +312,8 @@ function App() {
       {/* ========================================================================= */}
       {/* UNIFIED SCROLLING STORYTELLING SHOWCASE (h-[350vh] for smooth linear translate) */}
       {/* ========================================================================= */}
-      <div ref={mainSectionRef} className="relative w-full h-[350vh] bg-[#C7A58D]">
+      <div id="home" className="absolute top-0 w-full h-10 pointer-events-none" />
+      <div id="reviews" ref={mainSectionRef} className="relative w-full h-[350vh] bg-[#C7A58D]">
         {/* Pinned Viewport Container (Natively locked via GSAP ScrollTrigger) */}
         <div className="sticky top-0 left-0 w-full h-screen mobile-dvh overflow-hidden" style={{ backgroundColor: testimonyBgColor, transition: 'background-color 0.1s linear' }}>
 
@@ -383,7 +400,7 @@ function App() {
       <PortfolioIntro />
 
       {/* ========================================================================= */}
-      {/* INTERACTION LAYER 4: ANTIGRAVITY CINEMATIC SEQUENCE                        */}
+      {/* INTERACTION LAYER 4: ANTIGRAVITY TIMELINE + CONTACT REVEAL               */}
       {/* ========================================================================= */}
       <AntigravitySequence onProgress={setLoadingProgress} />
 
