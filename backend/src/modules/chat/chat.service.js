@@ -13,22 +13,22 @@ export const ensureConversationsSeeded = async (userId) => {
 
   console.log(`Seeding dynamic conversations and message history for user: ${userId}`);
 
-  // Find John Designer or seed if missing
-  let designer = await User.findOne({ role: 'designer' });
-  if (!designer) {
-    designer = new User({
-      fullName: 'John Designer',
-      email: 'designer@snsnest.com',
-      mobile: '9876543210',
-      password: 'designer123',
-      role: 'designer',
+  // Find Admin or seed if missing
+  let adminUser = await User.findOne({ role: 'admin' });
+  if (!adminUser) {
+    adminUser = new User({
+      fullName: 'Admin Support',
+      email: 'admin@snsnest.com',
+      mobile: '1234567890',
+      password: 'adminpassword123',
+      role: 'admin',
       isVerified: true
     });
-    await designer.save();
+    await adminUser.save();
   }
 
   // Check if they are the same user
-  if (designer._id.toString() === userId.toString()) {
+  if (adminUser._id.toString() === userId.toString()) {
     // If user is the designer, find the client to seed
     const client = await User.findOne({ role: 'client' });
     if (client) {

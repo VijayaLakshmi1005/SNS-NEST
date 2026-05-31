@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Calendar, Clock, Video, User, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/Card';
-
-const API_URL = import.meta.env.VITE_API_URL || 'https://sns-nest-backend.onrender.com/api';
+import { apiRequest } from '../utils/api';
 
 // Generates next 14 days
 const generateDates = () => {
@@ -30,27 +28,27 @@ export default function Consultations() {
   const { data: designers = [] } = useQuery({
     queryKey: ['available-designers'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/appointments/designers`, { withCredentials: true, transports: ['websocket', 'polling'] });
-      return res.data.data;
+      const res = await apiRequest('/appointments/designers');
+      return res.data;
     }
   });
 
   const { data: appointments = [] } = useQuery({
     queryKey: ['my-appointments'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/appointments`, { withCredentials: true, transports: ['websocket', 'polling'] });
-      return res.data.data;
+      const res = await apiRequest('/appointments');
+      return res.data;
     }
   });
 
   const handleBook = async () => {
     setIsSubmitting(true);
     try {
-      await axios.post(`${API_URL}/appointments`, formData, { withCredentials: true, transports: ['websocket', 'polling'] });
+      await apiRequest('/appointments', { method: 'POST', body: formData });
       queryClient.invalidateQueries(['my-appointments']);
       setStep(4); // Success step
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to book consultation. Slot might be taken.');
+      alert(err?.message || 'Failed to book consultation. Slot might be taken.');
     }
     setIsSubmitting(false);
   };

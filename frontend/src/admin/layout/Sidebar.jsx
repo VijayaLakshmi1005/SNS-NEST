@@ -16,11 +16,14 @@ import {
   LifeBuoy, 
   Bell,
   Box,
-  X
+  X,
+  MessageSquare,
+  Activity
 } from 'lucide-react';
 
 const navItems = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Inquiries', path: '/admin/inquiries', icon: MessageSquare },
   { name: 'Projects', path: '/admin/projects', icon: FolderKanban },
   { name: 'Leads', path: '/admin/leads', icon: Megaphone },
   { name: 'Catalog', path: '/admin/products', icon: ShoppingBag },
@@ -72,9 +75,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           })}
         </nav>
       </div>
-      <div className="p-4 border-t border-[#e6e6df]">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#d4cfc5] flex items-center justify-center text-xs font-bold uppercase text-[#1a1a1a]">
+      <div className="p-4 border-t border-[#e6e6df] flex items-center justify-between">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="w-8 h-8 flex-shrink-0 rounded-full bg-[#d4cfc5] flex items-center justify-center text-xs font-bold uppercase text-[#1a1a1a]">
             {user?.fullName?.charAt(0) || 'U'}
           </div>
           <div className="overflow-hidden">
@@ -82,6 +85,16 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <p className="text-xs text-[#8b8175] capitalize truncate">{user?.role || 'Admin'}</p>
           </div>
         </div>
+        <button 
+          onClick={() => {
+            useAuthStore.getState().logout();
+            window.location.href = '/login';
+          }}
+          className="p-2 text-[#8b8175] hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+          title="Logout"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </button>
       </div>
     </div>
   );

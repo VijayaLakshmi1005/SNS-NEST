@@ -313,7 +313,7 @@ export default function Tracking() {
                   Assigned Architect
                 </span>
                 <span className={`text-xs font-bold ${theme.text}`}>
-                  {team?.designer?.name || 'John Designer'}
+                  {team?.designer?.name || 'Unassigned'}
                 </span>
               </div>
               <div>
@@ -321,7 +321,7 @@ export default function Tracking() {
                   Project Manager
                 </span>
                 <span className={`text-xs font-bold ${theme.text}`}>
-                  {team?.projectManager?.name || 'Anand Kumar'}
+                  {team?.projectManager?.name || 'Unassigned'}
                 </span>
               </div>
               <div>
@@ -730,12 +730,12 @@ export default function Tracking() {
               <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-[#C9B7A7]/50">
                 <img
                   src={team?.designer?.profileImage || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200'}
-                  alt="John Designer"
+                  alt={team?.designer?.name || 'Unassigned'}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div>
-                <h4 className={`text-sm font-black ${theme.text}`}>{team?.designer?.name || 'John Designer'}</h4>
+                <h4 className={`text-sm font-black ${theme.text}`}>{team?.designer?.name || 'Unassigned'}</h4>
                 <span className={`text-[10px] uppercase font-bold tracking-widest ${theme.goldText}`}>
                   Lead Interior Architect
                 </span>

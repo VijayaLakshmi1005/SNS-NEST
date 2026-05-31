@@ -12,24 +12,17 @@ export const ensureProjectTrackingData = async (project, clientUserId) => {
   if (!progress) {
     console.log(`Seeding dynamic project tracking dashboard details for project: ${project.title}`);
     
-    // Find designer or fallback to John Designer
     const designer = await User.findById(project.designer) || {
-      fullName: 'John Designer',
-      email: 'designer@snsnest.com',
-      mobile: '9876543210',
+      fullName: 'Unassigned',
+      email: '',
+      mobile: '',
       profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200'
     };
 
-    // 1. Create Project Progress details
     progress = new ProjectProgress({
       projectId: project._id,
-      overallProgress: 65,
-      roomProgress: [
-        { name: 'Modular Kitchen', progress: 80 },
-        { name: 'Master Bedroom', progress: 60 },
-        { name: 'Walk-in Wardrobe', progress: 100 },
-        { name: 'False Ceiling & Lighting', progress: 45 }
-      ],
+      overallProgress: project.progress || 0,
+      roomProgress: [], // Can be populated dynamically later
       team: {
         designer: {
           name: designer.fullName,
@@ -38,78 +31,40 @@ export const ensureProjectTrackingData = async (project, clientUserId) => {
           profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200'
         },
         projectManager: {
-          name: 'Anand Kumar',
-          mobile: '9123456789'
+          name: 'Unassigned',
+          mobile: ''
         },
         installationLead: {
-          name: 'Ramesh Singh',
-          mobile: '9876541230'
+          name: 'Unassigned',
+          mobile: ''
         }
       },
-      documents: [
-        { name: 'Scandinavian Villa Layout Plan.pdf', category: 'Floor Plan', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' },
-        { name: 'Bespoke Statutario Marble Signoff.pdf', category: 'Agreement', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' },
-        { name: 'Execution Agreement Phase 2.pdf', category: 'Agreement', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' }
-      ]
+      documents: (project.uploads || []).map(u => ({
+        name: u.fileName,
+        category: u.fileType,
+        url: u.fileUrl
+      }))
     });
     await progress.save();
 
-    // 2. Create Milestones
-    const today = new Date();
-    const subDays = (d) => { const n = new Date(); n.setDate(today.getDate() - d); return n; };
-    const addDays = (d) => { const n = new Date(); n.setDate(today.getDate() + d); return n; };
-
-    const milestonesData = [
-      { title: 'Consultation Completed', status: 'completed', completionDate: subDays(12), notes: 'Initial consulting and luxury brief compiled.', originalDate: subDays(12), revisedDate: subDays(12) },
-      { title: 'Design Approved', status: 'completed', completionDate: subDays(7), notes: 'Scandinavian aesthetic layout plan & 3D renders signed off.', originalDate: subDays(7), revisedDate: subDays(7) },
-      { title: 'Material Procurement', status: 'completed', completionDate: subDays(3), notes: 'Raw Statutario stones, water-resistant ply, and premium hardware ordered.', originalDate: subDays(3), revisedDate: subDays(3) },
-      { title: 'Site Preparation', status: 'completed', completionDate: subDays(1), notes: 'Dismantling of existing woodwork, wall plastering & leveling completed.', originalDate: subDays(1), revisedDate: subDays(1) },
-      { title: 'Execution Started', status: 'current', notes: 'Modular kitchen assembly, plumbing rework, false ceiling aluminum channels framework in progress.', originalDate: today, revisedDate: today },
-      { title: 'Furniture Installation', status: 'pending', notes: 'Installation of custom walk-in wardrobe and bedroom panels.', delayed: true, delayReason: 'Germany walnut timber shipment transit delay', originalDate: addDays(5), revisedDate: addDays(10) },
-      { title: 'False Ceiling Installation', status: 'pending', notes: 'Gypboard screw fixing, joint taping & luxury paint coating.', originalDate: addDays(12), revisedDate: addDays(12) },
-      { title: 'Final Styling', status: 'pending', notes: 'Bespoke pendant lighting setup, custom rug laying & luxury styling checks.', originalDate: addDays(18), revisedDate: addDays(18) },
-      { title: 'Final Delivery', status: 'pending', notes: 'Deep cleaning, professional sanitization and official key handover.', originalDate: addDays(24), revisedDate: addDays(29) }
-    ];
-
-    await Milestone.insertMany(milestonesData.map(m => ({ ...m, projectId: project._id })));
-
-    // 3. Create Material Procurements
-    const procurementsData = [
-      { name: 'Water-resistant Marine Plywood', status: 'delivered', deliveryForecast: subDays(2) },
-      { name: 'Bespoke Statutario Marble Slab', status: 'delivered', deliveryForecast: subDays(3) },
-      { name: 'Imported Walnut Timber Panels', status: 'shipped', deliveryForecast: addDays(10), delayReason: 'Suez Canal shipping delay' },
-      { name: 'Ambient Dimmable LED Spotlights', status: 'ordered', deliveryForecast: addDays(5) }
-    ];
-
-    await Procurement.insertMany(procurementsData.map(p => ({ ...p, projectId: project._id })));
-
-    // 4. Create Site Photo Updates
-    const siteUpdatesData = [
-      {
-        images: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800'],
-        caption: 'Aluminum grid framing completed for modern living room false ceiling layout.',
-        uploadedBy: designer._id,
-        uploadedByName: designer.fullName || 'John Designer'
-      },
-      {
-        images: ['https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=800'],
-        caption: 'Custom walnut wardrobe base framework dry assembly in Master Bedroom.',
-        uploadedBy: designer._id,
-        uploadedByName: designer.fullName || 'John Designer'
-      }
-    ];
-
-    await SiteUpdate.insertMany(siteUpdatesData.map(s => ({ ...s, projectId: project._id })));
-
-    // 5. Create Activity Logs
-    const activitiesData = [
-      { type: 'upload', message: 'Designer uploaded 2 new site photos showing false ceiling framing and bedroom wardrobe assembly.', createdBy: designer._id, createdByName: designer.fullName },
-      { type: 'milestone', message: 'Milestone "Site Preparation" marked as COMPLETED by installation lead Ramesh Singh.', createdBy: designer._id, createdByName: 'Ramesh Singh' },
-      { type: 'procurement', message: 'Statutario Marble blocks successfully delivered to site logistics compound.', createdBy: designer._id, createdByName: 'System Logistics' },
-      { type: 'delay', message: 'Milestone "Furniture Installation" delayed by 5 days due to Germany walnut shipment customs clearance.', createdBy: designer._id, createdByName: 'Anand Kumar' }
-    ];
-
-    await Activity.insertMany(activitiesData.map(a => ({ ...a, projectId: project._id })));
+    // Create Milestones dynamically from Project timeline
+    if (project.timeline && project.timeline.length > 0) {
+      const milestonesData = project.timeline.map((step, index) => {
+        const today = new Date();
+        const futureDate = new Date();
+        futureDate.setDate(today.getDate() + (index * 7)); // Spread out by 1 week each
+        return {
+          projectId: project._id,
+          title: step.status,
+          status: step.completed ? 'completed' : 'pending',
+          notes: step.comments || '',
+          originalDate: futureDate,
+          revisedDate: futureDate,
+          completionDate: step.completed ? today : null
+        };
+      });
+      await Milestone.insertMany(milestonesData);
+    }
   }
 
   return progress;
@@ -163,6 +118,25 @@ export const getCurrentTracking = async (userId) => {
   const siteUpdates = await SiteUpdate.find({ projectId: project._id }).sort({ createdAt: -1 });
   const procurement = await Procurement.find({ projectId: project._id });
 
+  // Override old dummy data with live project details
+  const designer = await User.findById(project.designer);
+  const liveTeam = {
+    designer: {
+      name: designer?.fullName || 'Unassigned',
+      email: designer?.email || '',
+      mobile: designer?.mobile || '',
+      profileImage: designer?.profileImage || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200'
+    },
+    projectManager: { name: 'Unassigned', mobile: '' },
+    installationLead: { name: 'Unassigned', mobile: '' }
+  };
+
+  const liveDocuments = (project.uploads || []).map(u => ({
+    name: u.fileName,
+    category: u.fileType,
+    url: u.fileUrl
+  }));
+
   return {
     project: {
       _id: project._id,
@@ -176,8 +150,8 @@ export const getCurrentTracking = async (userId) => {
     },
     overallProgress: progressDetails.overallProgress,
     roomProgress: progressDetails.roomProgress,
-    team: progressDetails.team,
-    documents: progressDetails.documents,
+    team: liveTeam,
+    documents: liveDocuments,
     milestones,
     activities,
     siteUpdates,
@@ -200,6 +174,25 @@ export const getProjectTracking = async (projectId, userId) => {
   const siteUpdates = await SiteUpdate.find({ projectId }).sort({ createdAt: -1 });
   const procurement = await Procurement.find({ projectId });
 
+  // Override old dummy data with live project details
+  const designer = await User.findById(project.designer);
+  const liveTeam = {
+    designer: {
+      name: designer?.fullName || 'Unassigned',
+      email: designer?.email || '',
+      mobile: designer?.mobile || '',
+      profileImage: designer?.profileImage || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200'
+    },
+    projectManager: { name: 'Unassigned', mobile: '' },
+    installationLead: { name: 'Unassigned', mobile: '' }
+  };
+
+  const liveDocuments = (project.uploads || []).map(u => ({
+    name: u.fileName,
+    category: u.fileType,
+    url: u.fileUrl
+  }));
+
   return {
     project: {
       _id: project._id,
@@ -212,8 +205,8 @@ export const getProjectTracking = async (projectId, userId) => {
     },
     overallProgress: progressDetails?.overallProgress || 0,
     roomProgress: progressDetails?.roomProgress || [],
-    team: progressDetails?.team || {},
-    documents: progressDetails?.documents || [],
+    team: liveTeam,
+    documents: liveDocuments,
     milestones,
     activities,
     siteUpdates,
@@ -259,7 +252,7 @@ export const addSiteUpdate = async (projectId, caption, images, userId) => {
     images,
     caption,
     uploadedBy: userId,
-    uploadedByName: user?.fullName || 'John Designer'
+    uploadedByName: user?.fullName || 'Unassigned'
   });
   await siteUpdate.save();
 

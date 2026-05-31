@@ -30,22 +30,32 @@ export default function Register() {
   const navigate = useNavigate()
 
   const [showPassword, setShowPassword] = useState(false)
-  const [password, setPassword] = useState('vj1234')
-  const [name, setName] = useState('Vj')
-  const [email, setEmail] = useState('vj@123.com')
-  const [mobile, setMobile] = useState('7204058683')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [mobile, setMobile] = useState('')
+  const [location, setLocation] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleRegister = async (e) => {
     e.preventDefault()
+    setError('')
+    setLoading(true)
+    
     try {
+      if (!name || !email || !mobile || !password || !location) {
+        throw new Error('Please fill in all fields')
+      }
+
       // 1. Try to register the user on the backend
-      try {
-        await apiRequest('/auth/register', {
-          method: 'POST',
-          data: { fullName: name, email, mobile, password, role: 'client' }
-        });
-      } catch (regErr) {
-        console.warn('Registration failed/exists, trying login anyway:', regErr);
+      const regRes = await apiRequest('/auth/register', {
+        method: 'POST',
+        data: { fullName: name, email, mobile, password, location, role: 'client' }
+      });
+
+      if (!regRes.success && regRes.message) {
+        throw new Error(regRes.message)
       }
 
       // 2. Immediately log in with the credentials
@@ -58,37 +68,14 @@ export default function Register() {
         localStorage.setItem('token', res.data.accessToken);
         navigate('/client/dashboard');
       } else {
-        throw new Error('No token returned');
+        throw new Error('Registration successful, but failed to log in automatically.');
       }
     } catch (err) {
-      // Fallback: Login with default seeded user to guarantee they get in
-      try {
-        const fallbackRes = await apiRequest('/auth/login', {
-          method: 'POST',
-          data: { email: 'vj@123.com', password: 'vj1234' }
-        });
-        if (fallbackRes && fallbackRes.data && fallbackRes.data.accessToken) {
-          localStorage.setItem('token', fallbackRes.data.accessToken);
-          navigate('/client/dashboard');
-        }
-      } catch (fallbackErr) {
-        console.error('All login paths failed:', fallbackErr);
-      }
+      setError(err.response?.data?.message || err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
     }
   }
-
-  // Simple password strength calculation
-  const getStrength = (pass) => {
-    let score = 0
-    if (pass.length > 5) score += 1
-    if (pass.length > 8) score += 1
-    if (/[A-Z]/.test(pass)) score += 1
-    if (/[0-9]/.test(pass)) score += 1
-    return score
-  }
-
-  const strength = getStrength(password)
-  const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500']
 
   return (
     <div className={`min-h-screen w-full flex ${theme.bg}`}>
@@ -118,6 +105,12 @@ export default function Register() {
             <h1 className={`text-3xl font-extrabold ${theme.text} mb-3 font-nav-style`}>Create Account</h1>
             <p className={`text-sm ${theme.textMuted}`}>Begin your premium interior design journey.</p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
+              {error}
+            </div>
+          )}
 
           <form className="space-y-5" onSubmit={handleRegister} noValidate>
             <div className="space-y-2">
@@ -154,6 +147,17 @@ export default function Register() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <label className={`text-xs uppercase tracking-widest font-semibold ${theme.textMuted}`}>Location</label>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="City, State"
+                className={`w-full px-5 py-3.5 rounded-xl border ${theme.input} text-sm transition-colors outline-none`}
+              />
+            </div>
+
             <div className="space-y-2 relative">
               <label className={`text-xs uppercase tracking-widest font-semibold ${theme.textMuted}`}>Password</label>
               <div className="relative">
@@ -172,28 +176,15 @@ export default function Register() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {/* Password Strength Meter */}
-              {password.length > 0 && (
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="flex-1 flex gap-1 h-1.5 rounded-full overflow-hidden bg-black/10">
-                    {[1, 2, 3, 4].map((level) => (
-                      <div
-                        key={level}
-                        className={`flex-1 transition-colors duration-300 ${level <= strength ? strengthColors[strength - 1] : 'bg-transparent'}`}
-                      />
-                    ))}
-                  </div>
-                  <ShieldCheck className={`w-3 h-3 ${strength === 4 ? 'text-green-500' : theme.textMuted}`} />
-                </div>
-              )}
             </div>
 
             <button
               type="submit"
-              className={`w-full mt-4 flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 ${theme.button}`}
+              disabled={loading}
+              className={`w-full mt-4 flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 ${theme.button} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              <span>Join Now</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{loading ? 'Creating Account...' : 'Join Now'}</span>
+              {!loading && <ArrowRight className="w-4 h-4" />}
             </button>
           </form>
 

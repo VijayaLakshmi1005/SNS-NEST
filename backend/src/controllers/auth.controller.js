@@ -7,7 +7,7 @@ import { sendMail } from '../config/mail.js';
 import jwt from 'jsonwebtoken';
 
 export const registerUser = catchAsync(async (req, res) => {
-  const { fullName, email, mobile, password, role } = req.body;
+  const { fullName, email, mobile, password, location, role } = req.body;
 
   const existingUser = await User.findOne({ $or: [{ email }, { mobile }] });
   if (existingUser) {
@@ -21,6 +21,7 @@ export const registerUser = catchAsync(async (req, res) => {
     email,
     mobile,
     password,
+    location,
     role,
     otp: { code, expiresAt }
   });

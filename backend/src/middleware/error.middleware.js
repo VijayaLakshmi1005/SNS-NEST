@@ -22,7 +22,7 @@ export const errorHandler = (err, req, res, next) => {
 
   // Log error stack for devs (silence for common auth errors)
   if (error.statusCode !== 401 && error.statusCode !== 403) {
-    console.error(`[Error Boundary]: ${err.stack || err.message}`);
+    console.error(`[Error Boundary - ${req?.method} ${req?.originalUrl}]: ${err.stack || err.message}`);
   } else {
     console.warn(`[Auth Warning]: ${error.message}`);
   }

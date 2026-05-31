@@ -22,9 +22,9 @@ export default function AdminLayout() {
       )}
 
       <Sidebar isOpen={isMobileMenuOpen} setIsOpen={setIsMobileMenuOpen} />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10 w-full">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden relative w-full">
         {/* Top Header */}
-        <header className="h-16 border-b border-[#e6e6df] bg-[#fbfbf9] flex items-center justify-between px-4 sm:px-6 shrink-0">
+        <header className="h-16 border-b border-[#e6e6df] bg-[#fbfbf9] flex items-center justify-between px-4 sm:px-6 shrink-0 z-20">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu className="w-5 h-5" />

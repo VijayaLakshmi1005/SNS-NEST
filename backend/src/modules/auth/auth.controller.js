@@ -33,7 +33,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 // @access  Public
 export const register = async (req, res) => {
   try {
-    const { name, email, password, mobile } = req.body;
+    const { fullName, email, password, mobile, location } = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -41,10 +41,11 @@ export const register = async (req, res) => {
     }
 
     const user = await User.create({
-      fullName: name,
+      fullName,
       email,
       password,
       mobile: mobile || '0000000000', // Mock mobile if not provided
+      location: location || '',
       role: 'client' // Force client role for public registration
     });
 

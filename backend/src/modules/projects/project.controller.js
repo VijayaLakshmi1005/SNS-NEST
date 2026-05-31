@@ -64,15 +64,43 @@ export const getProjectById = catchAsync(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, project, 'Project fetched'));
 });
 
+export const updateProject = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  
+  const project = await ProjectModular.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
+  if (!project) throw new ApiError(404, 'Project not found');
+
+  await logActivity(id, req.user._id, 'Project Updated', 'system', 'Project details were updated by admin');
+  
+  return res.status(200).json(new ApiResponse(200, project, 'Project updated successfully'));
+});
+
+export const deleteProject = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const project = await ProjectModular.findByIdAndDelete(id);
+  
+  if (!project) throw new ApiError(404, 'Project not found');
+  
+  // Optionally clean up related tasks/activities here
+  await ProjectActivity.deleteMany({ project: id });
+  
+  return res.status(200).json(new ApiResponse(200, null, 'Project deleted successfully'));
+});
+
+import { Project } from '../../models/Project.js';
+
 export const getCurrentProject = catchAsync(async (req, res) => {
   const query = {};
   if (req.user.role === 'client') query.client = req.user._id;
 
-  const project = await ProjectModular.findOne(query).sort({ createdAt: -1 })
+  const project = await Project.findOne(query).sort({ createdAt: -1 })
     .populate('client', 'fullName email mobile')
-    .populate('designer', 'name email specialization');
+    .populate('designer', 'fullName email');
   
-  if (!project) throw new ApiError(404, 'No active project found');
+  if (!project) {
+    return res.status(200).json(new ApiResponse(200, null, 'No active project found'));
+  }
   return res.status(200).json(new ApiResponse(200, project, 'Current project fetched'));
 });
 
@@ -180,10 +208,9 @@ export const updateMilestoneStatus = catchAsync(async (req, res) => {
 
 export const uploadDocument = catchAsync(async (req, res) => {
   const { id } = req.params;
-  // Use mocked fileUrl if actual upload logic isn't provided yet
   const { fileName, fileUrl = 'https://res.cloudinary.com/demo/image/upload/sample.jpg', fileType, requiresApproval } = req.body;
 
-  const project = await ProjectModular.findById(id);
+  const project = await Project.findById(id);
   if (!project) throw new ApiError(404, 'Project not found');
 
   const status = requiresApproval ? 'Pending Approval' : 'No Approval Needed';
@@ -199,14 +226,14 @@ export const approveDocument = catchAsync(async (req, res) => {
   const { id, uploadId } = req.params;
   const { status, feedback } = req.body;
 
-  const project = await ProjectModular.findById(id);
+  const project = await Project.findById(id);
   if (!project) throw new ApiError(404, 'Project not found');
 
   const upload = project.uploads.id(uploadId);
   if (!upload) throw new ApiError(404, 'Document not found');
 
   upload.status = status;
-  if (feedback) upload.clientFeedback = feedback;
+  if (feedback) upload.feedback = feedback;
 
   await project.save();
   await logActivity(id, req.user._id, `Document ${status}`, 'approval', `Feedback: ${feedback || 'None'}`);

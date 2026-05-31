@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useThemeStore } from '../store/themeStore'
 import { apiRequest } from '../utils/api'
@@ -20,8 +20,11 @@ import {
   Check,
   Percent,
   FileDown,
-  Loader2
+  Loader2,
+  Send
 } from 'lucide-react'
+
+import SendInquiryModal from './SendInquiryModal'
 
 const THEME = {
   light: {
@@ -56,9 +59,13 @@ const ROOM_ICONS = {
   'Office Space': '💼'
 }
 
-export default function Estimate() {
+export default function Estimate({ initialConfig, adminMode }) {
   const { isNight } = useThemeStore()
   const theme = isNight ? THEME.dark : THEME.light
+  
+  const fileInputRef = useRef(null)
+  const [adminFile, setAdminFile] = useState(null)
+  const [adminDesigner, setAdminDesigner] = useState('')
 
   // 1. Backend Config States (Retrieved dynamically, NOT hardcoded)
   const [packages, setPackages] = useState([])
@@ -67,13 +74,17 @@ export default function Estimate() {
   const [loadingConfig, setLoadingConfig] = useState(true)
 
   // 2. Interactive Input States
-  const [propertyType, setPropertyType] = useState('Apartment')
-  const [bhkType, setBhkType] = useState('2 BHK')
-  const [squareFeet, setSquareFeet] = useState(1000)
-  const [city, setCity] = useState('Bangalore')
-  const [selectedRooms, setSelectedRooms] = useState(['Living Room', 'Bedroom', 'Modular Kitchen'])
-  const [packageType, setPackageType] = useState('Premium')
-  const [materialQuality, setMaterialQuality] = useState('Standard')
+  const [propertyType, setPropertyType] = useState(initialConfig?.propertyType || 'Apartment')
+  const [bhkType, setBhkType] = useState(initialConfig?.bhkType || '2 BHK')
+  const [squareFeet, setSquareFeet] = useState(initialConfig?.homeSize || 1000)
+  const [city, setCity] = useState(initialConfig?.city || 'Bangalore')
+  const [selectedRooms, setSelectedRooms] = useState(initialConfig?.selectedRooms || ['Living Room', 'Bedroom', 'Modular Kitchen'])
+  const safePackageType = ['Essential', 'Premium', 'Luxury'].includes(initialConfig?.packageType || initialConfig?.quality) 
+    ? (initialConfig?.packageType || initialConfig?.quality) 
+    : 'Premium';
+
+  const [packageType, setPackageType] = useState(safePackageType)
+  const [materialQuality, setMaterialQuality] = useState(initialConfig?.materialQuality || 'Standard')
 
   // EMI Sub-state
   const [downPayment, setDownPayment] = useState(200000)
@@ -86,6 +97,33 @@ export default function Estimate() {
   const [saving, setSaving] = useState(false)
   const [savingStatus, setSavingStatus] = useState('')
   const [activeTab, setActiveTab] = useState('calculator') // 'calculator' | 'packages' | 'history'
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  
+  const [manualBaseAmount, setManualBaseAmount] = useState('')
+  const [manualRoomCosts, setManualRoomCosts] = useState({})
+
+  useEffect(() => {
+    if (calculationResult?.rooms) {
+      setManualRoomCosts(prev => {
+        const next = { ...prev };
+        let changed = false;
+        calculationResult.rooms.forEach(r => {
+          if (next[r.name] === undefined) {
+            next[r.name] = r.cost;
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
+    }
+  }, [calculationResult?.rooms])
+
+  useEffect(() => {
+    if (calculationResult?.subtotal) {
+      // Only set it if it's currently empty, to not override admin's manual input if they are actively editing
+      setManualBaseAmount(prev => prev === '' ? calculationResult.subtotal.toString() : prev);
+    }
+  }, [calculationResult?.subtotal])
 
   // Supported cities list
   const cities = ['Mumbai', 'Delhi NCR', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Others']
@@ -161,6 +199,14 @@ export default function Estimate() {
     tenureMonths,
     interestRate
   ])
+
+  // Calculated derived display values
+  const displaySubtotal = adminMode && calculationResult?.rooms
+    ? calculationResult.rooms.reduce((sum, r) => sum + Number(manualRoomCosts[r.name] !== undefined ? manualRoomCosts[r.name] : r.cost), 0)
+    : (calculationResult?.subtotal || 0);
+
+  const displayGst = displaySubtotal * 0.18;
+  const displayTotal = displaySubtotal + displayGst;
 
   // Adjust standard Square Feet when BHK shifts to keep inputs realistic
   const handleBhkChange = (bhk) => {
@@ -244,9 +290,10 @@ export default function Estimate() {
             rooms: selectedRooms,
             packageType,
             materialQuality,
-            subtotal: calculationResult?.subtotal,
-            gst: calculationResult?.gst,
-            totalAmount: calculationResult?.totalAmount
+            subtotal: displaySubtotal,
+            gst: displayGst,
+            totalAmount: displayTotal,
+            manualRoomCosts
           }
 
       // We make a custom request with axios to specify blob type
@@ -289,6 +336,33 @@ export default function Estimate() {
     }
     return formatINR(val)
   }
+
+  const generatePdfBlob = async () => {
+    try {
+      const payload = {
+        propertyType,
+        bhkType,
+        squareFeet,
+        city,
+        rooms: selectedRooms,
+        packageType,
+        materialQuality,
+        subtotal: displaySubtotal,
+        gst: displayGst,
+        totalAmount: displayTotal,
+        manualRoomCosts
+      };
+      const response = await apiRequest('/estimator/download-pdf', {
+        method: 'POST',
+        body: payload,
+        responseType: 'blob'
+      });
+      return new Blob([response], { type: 'application/pdf' });
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  };
 
   if (loadingConfig) {
     return (
@@ -411,35 +485,26 @@ export default function Estimate() {
                       step="50"
                       value={squareFeet}
                       onChange={(e) => setSquareFeet(Number(e.target.value))}
-                      className="w-full h-1.5 bg-black/10 dark:bg-white/10 rounded-full appearance-none cursor-pointer accent-stone-700 dark:accent-stone-300"
+                      className="w-full h-2 bg-stone-300 dark:bg-stone-700 rounded-full appearance-none cursor-pointer accent-stone-800 dark:accent-stone-200"
                     />
                   </div>
 
-                  {/* City and Local Multipliers */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-black/10 dark:border-white/10">
+                  {/* City Selection */}
+                  <div className="pt-4 border-t border-black/10 dark:border-white/10">
                     <div>
                       <label className={`text-[10px] uppercase tracking-widest font-bold ${theme.textMuted} block mb-2`}>Execution city</label>
-                      <div className="relative">
+                      <div className="relative max-w-xs">
                         <select
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
                           className={`w-full py-2.5 px-3 rounded-xl border text-xs font-bold outline-none cursor-pointer ${theme.cardInner} ${theme.text}`}
                         >
-                          {cities.map((c) => (
+                          {['Mumbai', 'Delhi NCR', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Others'].map((c) => (
                             <option key={c} value={c} className="bg-stone-900 text-stone-200">{c}</option>
                           ))}
                         </select>
                         <MapPin className={`absolute right-3 top-3 w-4 h-4 ${theme.textMuted} pointer-events-none`} />
                       </div>
-                    </div>
-
-                    <div className={`p-3 rounded-xl ${theme.cardInner} flex flex-col justify-center`}>
-                      <span className={`text-[9px] uppercase tracking-wider ${theme.textMuted}`}>City Factor Index</span>
-                      <span className={`text-sm font-bold ${theme.text} mt-1`}>
-                        {city === 'Mumbai' ? '1.25x (High Labour & Logistics)' : 
-                         ['Bangalore', 'Delhi NCR'].includes(city) ? '1.15x (Standard Premium)' :
-                         city === 'Hyderabad' ? '1.05x (Balanced)' : '1.00x - 0.90x (Optimized)'}
-                      </span>
                     </div>
                   </div>
 
@@ -564,24 +629,36 @@ export default function Estimate() {
 
                 {/* Subtotals & Taxes */}
                 <div className={`space-y-3.5 mb-6 text-sm border-b ${isNight ? 'border-stone-850' : 'border-[#D6CCC2]/50'} pb-5`}>
-                  <div className={`flex justify-between ${isNight ? 'text-stone-400' : 'text-[#4A4340]/90'}`}>
+                  <div className={`flex justify-between items-center ${isNight ? 'text-stone-400' : 'text-[#4A4340]/90'}`}>
                     <span>Base Room Subtotal</span>
-                    <span className="font-semibold">{formatINR(calculationResult?.subtotal)}</span>
+                    <span className="font-semibold">{formatINR(displaySubtotal)}</span>
                   </div>
 
                   {/* Room Wise Breakdown Dropdown list */}
-                  <div className={`pl-3 border-l ${isNight ? 'border-stone-800' : 'border-[#D6CCC2]/50'} space-y-1.5 py-1 text-xs ${isNight ? 'text-stone-500' : 'text-[#4A4340]/80'}`}>
+                  <div className={`pl-3 border-l ${isNight ? 'border-stone-800' : 'border-[#D6CCC2]/50'} space-y-2 py-1 text-xs ${isNight ? 'text-stone-500' : 'text-[#4A4340]/80'}`}>
                     {calculationResult?.rooms?.map((r) => (
-                      <div key={r.name} className="flex justify-between">
+                      <div key={r.name} className="flex justify-between items-center">
                         <span>{r.name}</span>
-                        <span className="font-medium">{formatINR(r.cost)}</span>
+                        {adminMode ? (
+                          <div className="flex items-center gap-1">
+                            <span className="font-semibold text-[10px]">₹</span>
+                            <input
+                              type="number"
+                              value={manualRoomCosts[r.name] !== undefined ? manualRoomCosts[r.name] : r.cost}
+                              onChange={(e) => setManualRoomCosts(prev => ({...prev, [r.name]: e.target.value}))}
+                              className={`w-20 px-1 py-0.5 bg-transparent border-b text-right font-semibold focus:outline-none ${isNight ? 'border-stone-600 focus:border-white' : 'border-stone-400 focus:border-black'}`}
+                            />
+                          </div>
+                        ) : (
+                          <span className="font-medium">{formatINR(r.cost)}</span>
+                        )}
                       </div>
                     ))}
                   </div>
 
                   <div className={`flex justify-between ${isNight ? 'text-stone-400' : 'text-[#4A4340]/90'}`}>
                     <span>Taxes & GST (18%)</span>
-                    <span className="font-semibold">{formatINR(calculationResult?.gst)}</span>
+                    <span className="font-semibold">{formatINR(displayGst)}</span>
                   </div>
                 </div>
 
@@ -589,9 +666,9 @@ export default function Estimate() {
                 <div className={`p-5 rounded-2xl ${isNight ? 'bg-stone-900/60 border border-stone-850' : 'bg-[#F5EBE0] border border-[#D6CCC2]/60'} mb-6`}>
                   <span className={`text-[10px] uppercase tracking-widest font-bold block mb-1 ${isNight ? 'text-stone-400' : 'text-[#4A4340]/80'}`}>Estimated Grand Total (INR)</span>
                   <div className={`text-3xl font-extrabold font-mono tracking-tight flex items-baseline gap-2 ${isNight ? 'text-[#F5EBE0]' : 'text-[#2B2B2B]'}`}>
-                    {formatINR(calculationResult?.totalAmount)}
+                    {formatINR(displayTotal)}
                     <span className={`text-xs font-normal ${isNight ? 'text-stone-500' : 'text-[#4A4340]/60'}`}>
-                      ({formatFriendlyINR(calculationResult?.totalAmount)})
+                      ({formatFriendlyINR(displayTotal)})
                     </span>
                   </div>
                   <p className={`text-[10px] mt-2 ${isNight ? 'text-stone-500' : 'text-[#4A4340]/60'}`}>
@@ -615,74 +692,7 @@ export default function Estimate() {
                   </div>
                 )}
 
-                {/* Interactive EMI preview */}
-                <div className={`mb-6 p-4 rounded-xl text-xs border ${isNight ? 'bg-stone-900 border-stone-850' : 'bg-[#F5EBE0]/80 border-[#D6CCC2]/60'}`}>
-                  <div className={`flex items-center gap-2 mb-3 font-bold uppercase tracking-wider ${isNight ? 'text-stone-300' : 'text-[#2B2B2B]'}`}>
-                    <CreditCard className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    EMI Estimator Options
-                  </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <div className={`flex justify-between mb-1.5 ${isNight ? 'text-stone-400' : 'text-[#4A4340]/90'}`}>
-                        <span>Down Payment (₹)</span>
-                        <span className="font-mono font-semibold">{formatINR(downPayment)}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="50000"
-                        max={Math.max(50000, (calculationResult?.totalAmount || 100000) - 50000)}
-                        step="10000"
-                        value={downPayment}
-                        onChange={(e) => setDownPayment(Number(e.target.value))}
-                        className="w-full accent-stone-700 dark:accent-stone-300 cursor-pointer"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      <div>
-                        <span className={`block mb-1 text-[10px] font-semibold ${isNight ? 'text-stone-500' : 'text-[#4A4340]/80'}`}>Tenure (Months)</span>
-                        <select
-                          value={tenureMonths}
-                          onChange={(e) => setTenureMonths(Number(e.target.value))}
-                          className={`w-full border rounded px-2 py-1 outline-none font-bold text-xs ${isNight ? 'bg-stone-950 border-stone-800 text-stone-300' : 'bg-white border-[#D6CCC2] text-[#2B2B2B]'}`}
-                        >
-                          {[6, 12, 18, 24, 36].map(m => <option key={m} value={m}>{m} M</option>)}
-                        </select>
-                      </div>
-
-                      <div>
-                        <span className={`block mb-1 text-[10px] font-semibold ${isNight ? 'text-stone-500' : 'text-[#4A4340]/80'}`}>Interest Rate (%)</span>
-                        <input
-                          type="number"
-                          step="0.1"
-                          min="5"
-                          max="20"
-                          value={interestRate}
-                          onChange={(e) => setInterestRate(Number(e.target.value))}
-                          className={`w-full border rounded px-2 py-1 outline-none font-bold text-xs ${isNight ? 'bg-stone-950 border-stone-800 text-stone-300' : 'bg-white border-[#D6CCC2] text-[#2B2B2B]'}`}
-                        />
-                      </div>
-                    </div>
-
-                    {calculationResult?.emiDetails?.monthlyEmi > 0 && (
-                      <div className={`mt-3 p-3 rounded border flex justify-between items-center ${isNight ? 'bg-stone-950 border-stone-800 text-stone-300' : 'bg-white border-[#D6CCC2]/60 text-[#2B2B2B]'}`}>
-                        <div>
-                          <span className={`text-[10px] block uppercase font-semibold ${isNight ? 'text-stone-500' : 'text-[#4A4340]/60'}`}>Monthly EMI</span>
-                          <span className={`text-sm font-extrabold font-mono ${isNight ? 'text-emerald-400' : 'text-[#2B2B2B]'}`}>
-                            {formatINR(calculationResult.emiDetails.monthlyEmi)}/mo
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span className={`text-[10px] block uppercase font-semibold ${isNight ? 'text-stone-500' : 'text-[#4A4340]/60'}`}>Total Payable</span>
-                          <span className="text-xs font-bold font-mono">
-                            {formatINR(calculationResult.emiDetails.totalPayable)}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                {/* EMI Estimator Removed as per client request */}
 
                 {/* Action buttons */}
                 <div className="space-y-3">
@@ -722,6 +732,59 @@ export default function Estimate() {
                       </>
                     )}
                   </button>
+
+                  {/* Action: Send to Admin or Send Final Proposal (Admin Mode) */}
+                  {adminMode ? (
+                    <div className="space-y-4 pt-4 border-t border-[#D6CCC2]/50">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#4A4340] mb-2">Mapped 3D Model (Optional)</label>
+                        <div 
+                          className={`w-full border-2 border-dashed ${adminFile ? 'border-emerald-500 bg-emerald-50' : 'border-[#e5e5e0]'} rounded-xl p-4 text-center cursor-pointer`}
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <input type="file" className="hidden" ref={fileInputRef} onChange={(e) => setAdminFile(e.target.files[0])} accept=".png,.jpg,.jpeg,.pdf,.zip" />
+                          {adminFile ? (
+                            <span className="font-bold text-emerald-600 text-xs">{adminFile.name}</span>
+                          ) : (
+                            <span className="text-[#8b8175] text-xs font-semibold flex items-center justify-center gap-2">Click to upload 3D render</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#4A4340] mb-2">Assign Designer</label>
+                        <select 
+                          value={adminDesigner}
+                          onChange={(e) => setAdminDesigner(e.target.value)}
+                          className="w-full p-2.5 text-xs font-semibold border border-[#e5e5e0] rounded-xl outline-none focus:border-[#1c1c1c] bg-transparent"
+                        >
+                          <option value="">-- Select Designer --</option>
+                          {adminMode.designers?.map(d => (
+                            <option key={d._id} value={d._id}>{d.fullName}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <button
+                        onClick={async () => {
+                          const pdfBlob = await generatePdfBlob();
+                          adminMode.onSendProposal(adminFile, adminDesigner, displayTotal, pdfBlob, manualRoomCosts, { subtotal: displaySubtotal, gst: displayGst });
+                        }}
+                        className={`w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${isNight ? 'bg-emerald-500 text-white hover:bg-emerald-600' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}
+                      >
+                        <Send className="w-4 h-4" />
+                        Send Proposal & PDF Quote
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setIsModalOpen(true)}
+                      className={`w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${isNight ? 'bg-emerald-500 text-white hover:bg-emerald-600' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}
+                    >
+                      <Send className="w-4 h-4" />
+                      Send Request to Admin
+                    </button>
+                  )}
                 </div>
 
               </div>
@@ -943,6 +1006,21 @@ export default function Estimate() {
         )}
 
       </AnimatePresence>
+
+      <SendInquiryModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        estimationDetails={{
+          squareFeet,
+          bhkType,
+          totalAmount: calculationResult?.totalAmount,
+          materialQuality,
+          packageType,
+          propertyType,
+          city,
+          selectedRooms
+        }}
+      />
 
     </div>
   )

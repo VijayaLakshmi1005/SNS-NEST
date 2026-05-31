@@ -7,6 +7,8 @@ import { ClientRoute, AdminRoute, PublicRoute } from './components/RouteGuards'
 
 // Pages
 import Dashboard from './dashboard/Dashboard'
+import FloorPlanCenter from './dashboard/FloorPlanCenter'
+import DesignCenter from './dashboard/DesignCenter'
 import Login from './auth/Login'
 import Register from './auth/Register'
 import ForgotPassword from './auth/ForgotPassword'
@@ -46,6 +48,9 @@ export const router = createBrowserRouter([
         element: <ClientLayout />,
         children: [
           { path: 'dashboard', element: <Dashboard /> },
+          { path: 'floor-plans', element: <FloorPlanCenter /> },
+          { path: 'design-center', element: <DesignCenter /> },
+          { path: 'master-plan', element: <FloorPlanCenter /> },
           { path: 'designs', element: <Designs /> },
           { path: 'booking', element: <Consultations /> },
           { path: 'estimate', element: <Estimate /> },
