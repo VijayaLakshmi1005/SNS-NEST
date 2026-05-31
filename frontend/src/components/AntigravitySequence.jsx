@@ -96,6 +96,7 @@ export default function AntigravitySequence({ onProgress }) {
   const stream4Ref = useRef(null);
   const streamsContainerRef = useRef(null);
   const formRef = useRef(null);
+  const topographicBgRef = useRef(null);
 
   const titleRef = useRef(null);
   const titleH2Ref = useRef(null);
@@ -436,8 +437,50 @@ export default function AntigravitySequence({ onProgress }) {
         {/* ========================================================================= */}
         {/* INTERACTION LAYER: CONTACT CONTENT REVEAL                                 */}
         {/* ========================================================================= */}
-        <div ref={formRef} className="absolute inset-0 z-50 flex flex-col items-center justify-center w-full px-4 pointer-events-none">
-          <div className="w-full max-w-4xl relative flex flex-col items-center justify-center pointer-events-auto mt-16 md:mt-20">
+        <div ref={formRef} className="absolute inset-0 z-50 flex flex-col items-center justify-center w-full px-4 pointer-events-none overflow-hidden">
+          {/* Topographic Background Image Layer - Native Inline SVG */}
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <svg width="100%" height="100%" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+              <g fill="none" stroke="#2A3B32" strokeWidth="0.3" opacity="0.85">
+                {/* AUTHENTIC GENERATIVE TOPOGRAPHY (Polar Contour Mapping) */}
+                {Array.from({ length: 45 }).map((_, i) => {
+                  // Starts from a small peak and expands outwards. Wide 90px spacing.
+                  const baseRadius = (i + 1) * 90;
+                  
+                  let d = "";
+                  
+                  // Draw a continuous closed loop
+                  for (let angle = 0; angle <= Math.PI * 2.05; angle += 0.05) {
+                    // Shape Multiplier strictly scales the radius, mathematically guaranteeing NO intersections.
+                    // -0.4 * sin(angle * 2) creates a massive diagonal "peanut" shape (stretching Top-Right to Bottom-Left)
+                    // 0.15 * cos(angle * 6) adds 6 beautiful, organic topographic ridges/valleys around the shape
+                    const shapeMultiplier = 1 
+                                          - 0.4 * Math.sin(angle * 2) 
+                                          + 0.15 * Math.cos(angle * 6);
+                                          
+                    const rTotal = baseRadius * shapeMultiplier;
+                    
+                    // Center the "peak" slightly off-center (Top Right quadrant)
+                    // Multiply X by 1.4 to subtly stretch the map to fit the 16:9 screen naturally
+                    const x = 1200 + Math.cos(angle) * rTotal * 1.4;
+                    const y = 400 + Math.sin(angle) * rTotal * 1.0;
+                    
+                    if (angle === 0) d += `M ${x} ${y}`;
+                    else d += ` L ${x} ${y}`;
+                  }
+                  
+                  return (
+                    <path 
+                      key={`topo-ring-${i}`} 
+                      d={d} 
+                      strokeLinejoin="round" 
+                    />
+                  );
+                })}
+              </g>
+            </svg>
+          </div>
+          <div className="w-full max-w-4xl relative z-10 flex flex-col items-center justify-center pointer-events-auto mt-16 md:mt-20">
             
             {/* Title & Conditional Prompt */}
             <div className="text-center relative z-10 mb-8 max-w-3xl mx-auto">
